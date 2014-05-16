@@ -8,6 +8,7 @@
   "private": false,
   "dependencies": {},
   "devDependencies": {
+    "browser-sync": "^0.9.1",
     "find": "^0.1.5",
     "gulp": "^3.6.2",
     "gulp-bower": "0.0.4",
@@ -30,6 +31,7 @@
     "gulp-watch": "^0.6.4",
     "phantomjs-server": "^1.9.2-1",
     "protractor": "^0.22.0",
+    "request": "^2.34.0",
     "selenium-webdriver": "^2.41.0"
   },
   "scripts": {

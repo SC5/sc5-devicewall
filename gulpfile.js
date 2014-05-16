@@ -1,6 +1,7 @@
 var path = require('path'),
     util = require('util'),
     gulp = require('gulp'),
+    browsersync = require('browser-sync'),
     $ = require('gulp-load-plugins')(),
     package = require('./package.json');
 
@@ -9,6 +10,7 @@ the task context. These are mainly for repeating configuration items */
 var config = {
   version: package.version,
   debug: Boolean($.util.env.debug),
+  browsersync: Boolean($.util.env.browsersync)
 };
 
 // Package management
@@ -41,8 +43,8 @@ gulp.task('clean', function() {
 
 /* Serve the web site */
 gulp.task('serve', $.serve({
-  root: 'dist',
-  port: 8080
+    root: 'dist',
+    port: 8080
 }));
 
 gulp.task('preprocess', function() {
@@ -119,22 +121,54 @@ gulp.task('integrate', ['javascript', 'stylesheets', 'assets'], function() {
     .pipe(gulp.dest('./dist'));
 });
 
-gulp.task('watch', ['integrate', 'test'], function() {
-  var server = $.livereload();
+var dependencies = (config.browsersync) ? ['integrate', 'test', 'browsersync'] : ['integrate', 'test', 'serve', 'livereload'];
+
+gulp.task('watch', dependencies, function() {
   
   // Watch the actual resources; Currently trigger a full rebuild
   gulp.watch([
     'src/css/**/*.scss', 
     'src/app/**/*.js', 
     'src/app/**/*.hbs', 
-    'src/*.html'
+    'src/*.html',
+    'tests/**/*.js'
   ], ['integrate', 'test']);
+
+});
   
+gulp.task('livereload', function() {
+
   // Only livereload if the HTML (or other static assets) are changed, because
   // the HTML will change for any JS or CSS change
   gulp.src('dist/**', { read: false })
     .pipe($.watch())
     .pipe($.livereload());
+
+});
+
+/* Watch, live reload and serve the web site with browsersync */
+gulp.task('browsersync', function() {
+
+    var bs = browsersync.init('dist/*', {
+      server: {
+        baseDir: 'dist'
+      }
+    });
+
+  bs.events.on('init', function(api) {
+
+      var request = require('request');
+
+      request(
+        'http://devicewall.sc5.io:8888/add',
+        { method: 'POST', form: { address: api.options.url + '/' } },
+        function(error, response, body) {
+          console.log(body);
+        }
+      );
+
+  });
+
 });
 
 gulp.task('webdriver', function(cb) {
@@ -170,8 +204,11 @@ gulp.task('test', ['webdriver'], function() {
     var args = ['--seleniumAddress', 'http://localhost:4444/'];
   }
 
+  // Set baseUrl 
+  args = args.concat(['--baseUrl', 'http://localhost:' + ((config.browsersync) ? 3002 : 8080) + '/']);
+
   // Run tests
-  gulp.src(['tests/*.js'])
+  gulp.src('tests/**/*.js')
     .pipe($.protractor.protractor({
       configFile: 'protractor.config.js',
       args: args
