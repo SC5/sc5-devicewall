@@ -44,8 +44,8 @@ gulp.task('clean', function() {
 
 /* Serve the web site */
 gulp.task('serve', $.serve({
-    root: 'dist',
-    port: 8080
+  root: 'dist',
+  port: 8080
 }));
 
 gulp.task('preprocess', function() {
