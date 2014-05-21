@@ -10,7 +10,8 @@ the task context. These are mainly for repeating configuration items */
 var config = {
   version: package.version,
   debug: Boolean($.util.env.debug),
-  browsersync: Boolean($.util.env.browsersync)
+  browsersync: Boolean($.util.env.browsersync),
+  appwallurl: 'http://appwall.sc5.io/',
 };
 
 // Package management
@@ -160,7 +161,7 @@ gulp.task('browsersync', function() {
       var request = require('request');
 
       request(
-        'http://devicewall.sc5.io:8888/add',
+        config.appwallurl + 'add',
         { method: 'POST', form: { address: api.options.url + '/' } },
         function(error, response, body) {
           console.log(body);
