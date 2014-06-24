@@ -1,4 +1,62 @@
 /* A simple test case to verify Compass build works ok */
-#{headings(all)} {
-  color: #020202;
+
+html {
+	min-height: 100%;
+}
+
+body {
+	background-color: #00a4e4;
+	background: radial-gradient(#00a4e4 25%, #005678 100%);
+	min-height: 100%;
+	color: #fff;
+	font-family: arial, sans-serif;
+	font-size: .75rem;
+}
+
+#main {
+	position: absolute;
+
+	width: 100%;
+	left: 0;
+	top: 50%;
+	text-align: center;
+	margin: -100px 0 0 0;
+
+}
+
+
+h1 {
+	text-transform: uppercase;
+	background-image: linear-gradient(#fff 20%, #ddd 80%);
+  	-webkit-background-clip: text;
+  	-webkit-text-fill-color: transparent;
+	font-size: 2.5rem;
+	position: relative;
+
+	&:after {
+		position: absolute;
+		left: 0;
+		top: 0;
+		content: attr(data-text);
+		background: none;
+		text-shadow: 0 0 5px 3px rgba(0, 0, 0, .5);
+		z-index: -1;
+	}
+
+}
+
+
+label {
+	display: inline-block;
+
+}
+
+footer {
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	width: 100%;
+	text-align: center;
+	font-size: .75rem;
+
 }

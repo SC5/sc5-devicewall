@@ -1,3 +1,5 @@
+/*
+
 describe('test page', function() {
 
   it('should load', function() {
@@ -11,3 +13,5 @@ describe('test page', function() {
   });
 
  });
+
+*/

@@ -1,15 +1,33 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-  <meta charset="utf-8" />
-  <title>BoBrSASS Test Page</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DeviceWall</title>
   <!-- inject:css -->
   <!-- endinject -->
 </head>
 <body>
-  <h1>BoBrSASS Test Page</h1>
-  <div id="status">
-    <p>If you see this, something is wrong with your installation.</p>
+  <div id="main">
+    <h1>DeviceWall</h1>
+    <div id="buttons">
+      <button type="button" id="pc">I'm A PC</button>
+      <button type="button" id="mobile">I'm A Mobile Device</button>
+    </div>
+    <div id="identify" style="display: none;">
+      <h4>Identify this device</h4>
+      <form id="identify-form">
+        <label>
+          Device name:
+          <input name="name" size="20" placeholder="iPhone 5S" id="name">
+        </label>
+        <label>
+          Code:
+          <input name="code" size="5" placeholder="P001" id="code">
+        </label>
+        <button type="submit">Save</button>
+      </form>
+    </div>
   </div>
   <footer>
     <p>Copyright 2014 SC5 Online</p>
