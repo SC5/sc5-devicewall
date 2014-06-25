@@ -1,8 +1,22 @@
-@mixin transition($transition) {
-  -webkit-transition: $transition;
-     -moz-transition: $transition;
-      -ms-transition: $transition;
-          transition: $transition;
+@mixin transition($value) {
+	-webkit-transition: $value;
+	-moz-transition: $value;
+	-ms-transition: $value;
+	transition: $value;
+}
+
+@mixin linear-gradient($values...) {
+  	background-image: -webkit-linear-gradient($values);
+  	background-image: -moz-linear-gradient($values);
+  	background-image: -ms-linear-gradient($values);
+  	background-image: linear-gradient($values);
+}
+
+@mixin radial-gradient($values...) {
+  	background-image: -webkit-radial-gradient($values);
+  	background-image: -moz-radial-gradient($values);
+  	background-image: -ms-radial-gradient($values);
+  	/*background-image: radial-gradient($values);*/
 }
 
 html {
@@ -10,8 +24,8 @@ html {
 }
 
 body {
-	background-color: #00a4e4;
-	background: radial-gradient(#00a4e4 25%, #005678 100%);
+	background-color: #005678;
+	@include radial-gradient(#00a4e4 25%, #005678 100%);
 	min-height: 100%;
 	color: #fff;
 	font-family: arial, sans-serif;
@@ -19,6 +33,7 @@ body {
 }
 
 #content {
+
 	position: absolute;
 	width: 100%;
 	left: 0;
@@ -27,18 +42,19 @@ body {
 	margin: -100px 0 0 0;
 	font-size: 1rem;
 	@include transition(top .3s ease-out);
-}
 
-#content.devices {
-	top: 100px;
-}
+	&.devices {
+		top: 100px;
+	}
 
+}
 
 #{headings(all)} {
 	
 }
 
 h1 {
+
 	text-transform: uppercase;
 	background-image: -webkit-linear-gradient(#fff 20%, #ddd 80%);
   	-webkit-background-clip: text;
@@ -71,17 +87,31 @@ label {
 }
 
 button {
+
+	overflow: hidden;
+	whitespace: no-wrap;
+
+
 	appearance: none;
 	display: inline-block;
 	border: 1px solid #777;
 	border-radius: 5px;
 	background-color: #eee;
 	color: #333;
-	padding: 4px 20px;
-	height: 28px;
-	line-height: 20px;
+	padding: 0 20px;
+	height: 38px;
+	line-height: 38px;
 	font-size: 1.2rem;
 	vertical-align: middle;
+
+	@include linear-gradient(#fff, #ddd);
+
+	&#go {
+		height: 48px;
+		line-height: 48px;
+		font-size: 1.6rem;
+	}
+
 }
 
 table {
@@ -100,8 +130,6 @@ table {
 	}
 
 }
-
-
 
 input[type=text] {
 	vertical-align: middle;

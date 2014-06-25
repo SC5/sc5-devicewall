@@ -29,9 +29,9 @@ app.on('update', function() {
 app.get('/devices', function(req, res) {
 
 	devices.sort(function(a, b) {
-		if (a.identifier > b.identifier) {
+		if (a.label > b.label) {
 			return 1;
-		} else if (a.identifier < b.identifier) {
+		} else if (a.label < b.label) {
 			return -1;
 		}
 		return 0;
@@ -49,10 +49,10 @@ app.get('/devices', function(req, res) {
 app.post('/identify', function(req, res) {
 
 	var 
-		identifier = req.body.identifier,
+		label = req.body.label,
 		name = req.body.name;
 
-	if (!identifier || !name) {
+	if (!label || !name) {
 		res.json('Invalid parameters.');
 		return;
 	}
@@ -61,7 +61,7 @@ app.post('/identify', function(req, res) {
 
 	devices.forEach(function(device, index) {
 
-		if (device.identifier == identifier) {
+		if (device.label == label) {
 			device.name = name;
 			updated = true;
 		}
@@ -70,7 +70,7 @@ app.post('/identify', function(req, res) {
 
 	if (!updated) {
 		devices.push({
-			identifier: identifier,
+			label: label,
 			name: name,
 			location: null,
 			user: null

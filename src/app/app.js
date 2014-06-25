@@ -34,7 +34,7 @@ function select(event) {
 
 		$.each(data, function(key, value) {
 
-    		var rowElement = $('<tr class="device"><td>' + value.identifier + '</td><td>' + value.name + '</td><td>' + value.location + '</td><td>' + value.user + '</td></tr>');
+    		var rowElement = $('<tr class="device"><td>' + value.label + '</td><td>' + value.name + '</td><td>' + value.location + '</td><td>' + value.user + '</td></tr>');
 /*
     		instanceElement
 				.append(
@@ -48,7 +48,7 @@ function select(event) {
                 .append('<a href="' + value.address + '"></a>');
 */
 
-			rowElement.append('<td></td>');
+			rowElement.append('<td><input type="checkbox" name="device[' + value.label + ']" value="1"></td>');
 
 	    	devicesList.append(rowElement);
 
@@ -76,14 +76,14 @@ function identify(event) {
 
 
 	var name = localStorage.getItem('name');
-	var identifier = localStorage.getItem('identifier');
+	var label = localStorage.getItem('label');
 
 	if (!name) {
 		name = navigator.userAgent;
 	}
 
 	$('#name').val(name);
-	$('#identifier').val(identifier);
+	$('#label').val(label);
 
 	return false;
 
@@ -99,21 +99,19 @@ function identifySubmit(event) {
 
 	var 
 		name = $('#name').val(),
-		identifier = $('#identifier').val();
+		label = $('#label').val();
 
 	localStorage.setItem('name', name);
-	localStorage.setItem('identifier', identifier);
+	localStorage.setItem('label', label);
 
-	alert(identifier + ' ' + name);
-
-	$.post('/identify', {name: name, identifier: identifier});
+	$.post('/identify', {name: name, label: label});
 
 	$('#identify').hide();
 	$('#wait').show();
 
 	return false;
 
-};
+}
 
 
 
