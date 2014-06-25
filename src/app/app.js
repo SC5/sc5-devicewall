@@ -21,12 +21,24 @@ function select(event) {
 
 	event.stopPropagation();
 
+	$('#devices-form').submit(selectSubmit);
+
 	$('#buttons').hide();
 	$('#devices').show();
 
-	$('#content').addClass('devices');
+	$('#content-box').addClass('devices');
 
+	var 
+		user = localStorage.getItem('user'),
+		address = localStorage.getItem('address');
 
+	if (user) {
+		$('#user').val(user);
+	}
+
+	if (address) {
+		$('#address').val(address);
+	}
 
 	var devicesList = $('#devices-list');
 
@@ -34,21 +46,9 @@ function select(event) {
 
 		$.each(data, function(key, value) {
 
-    		var rowElement = $('<tr class="device"><td>' + value.label + '</td><td>' + value.name + '</td><td>' + value.location + '</td><td>' + value.user + '</td></tr>');
-/*
-    		instanceElement
-				.append(
-                    iframeElement
-        				.load(function() {
-        					if (+new Date() - time < 5000) {
-        						instanceElement.fadeIn();
-        					}
-        				})
-    			)
-                .append('<a href="' + value.address + '"></a>');
-*/
+    		var rowElement = $('<tr class="device"><td>' + value.label + '</td><td>' + value.name + '</td><td>' + (value.location || '-') + '</td><td>' + (value.user || '-') + '</td></tr>');
 
-			rowElement.append('<td><input type="checkbox" name="device[' + value.label + ']" value="1"></td>');
+			rowElement.append('<td><input type="checkbox" name="devices[]" value="' + value.label + '"></td>');
 
 	    	devicesList.append(rowElement);
 
@@ -56,10 +56,30 @@ function select(event) {
 
 	});
 
-
-
 }
 
+
+
+
+
+function selectSubmit(event) {
+
+	event.stopPropagation();
+
+	var 
+		user = $('#user').val(),
+		address = $('#address').val();
+
+	localStorage.setItem('user', user);
+	localStorage.setItem('address', address);
+
+	$.post('/start', $('#devices-form').serialize(), function(data) {
+		console.log(data);
+	});
+
+	return false;
+
+}
 
 
 
@@ -69,14 +89,14 @@ function identify(event) {
 
 	event.stopPropagation();
 
+	$('#identify-form').submit(identifySubmit);
+
 	$('#buttons').hide();
 	$('#identify').show();
 
-	$('#identify-form').submit(identifySubmit);
-
-
-	var name = localStorage.getItem('name');
-	var label = localStorage.getItem('label');
+	var 
+		name = localStorage.getItem('name'),
+		label = localStorage.getItem('label');
 
 	if (!name) {
 		name = navigator.userAgent;
@@ -108,6 +128,15 @@ function identifySubmit(event) {
 
 	$('#identify').hide();
 	$('#wait').show();
+
+	var interval = setInterval(function() {
+		$.getJSON('/ping', {label: label}, function(data) {
+			if (data.address) {
+				clearInterval(interval);
+				location = data.address;
+			}
+		});
+	}, 1000);
 
 	return false;
 
