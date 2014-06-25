@@ -1,17 +1,65 @@
 var app = require('./app.js'),
     $ = require('jquery');
 
+
+
+
+
 function start() {
-  // Start the app here
+	// Start the app here
+
+	$('#pc').click(select);
+	$('#mobile').click(identify);
+
+}
 
 
-  $('#mobile').click(identify);
 
 
-  //alert(1);
+
+function select(event) {
+
+	event.stopPropagation();
+
+	$('#buttons').hide();
+	$('#devices').show();
+
+	$('#content').addClass('devices');
+
+
+
+	var devicesList = $('#devices-list');
+
+	$.getJSON('/devices', function(data) {
+
+		$.each(data, function(key, value) {
+
+    		var rowElement = $('<tr class="device"><td>' + value.identifier + '</td><td>' + value.name + '</td><td>' + value.location + '</td><td>' + value.user + '</td></tr>');
+/*
+    		instanceElement
+				.append(
+                    iframeElement
+        				.load(function() {
+        					if (+new Date() - time < 5000) {
+        						instanceElement.fadeIn();
+        					}
+        				})
+    			)
+                .append('<a href="' + value.address + '"></a>');
+*/
+
+			rowElement.append('<td></td>');
+
+	    	devicesList.append(rowElement);
+
+		});
+
+	});
+
 
 
 }
+
 
 
 
@@ -21,8 +69,6 @@ function identify(event) {
 
 	event.stopPropagation();
 
-
-	//alert(2);
 	$('#buttons').hide();
 	$('#identify').show();
 
@@ -30,35 +76,46 @@ function identify(event) {
 
 
 	var name = localStorage.getItem('name');
-	var code = localStorage.getItem('code');
+	var identifier = localStorage.getItem('identifier');
 
 	if (!name) {
 		name = navigator.userAgent;
 	}
 
 	$('#name').val(name);
-	$('#code').val(code);
+	$('#identifier').val(identifier);
 
 	return false;
 
-
 }
+
+
+
+
 
 function identifySubmit(event) {
 
 	event.stopPropagation();
 
-	var name = $('#name').val();
-	var code = $('#code').val();
-
+	var 
+		name = $('#name').val(),
+		identifier = $('#identifier').val();
 
 	localStorage.setItem('name', name);
-	localStorage.setItem('code', code);	
+	localStorage.setItem('identifier', identifier);
 
+	alert(identifier + ' ' + name);
+
+	$.post('/identify', {name: name, identifier: identifier});
+
+	$('#identify').hide();
+	$('#wait').show();
 
 	return false;
 
 };
+
+
 
 
 

@@ -8,31 +8,83 @@
   <!-- endinject -->
 </head>
 <body>
-  <div id="main">
-    <h1>DeviceWall</h1>
-    <div id="buttons">
-      <button type="button" id="pc">I'm A PC</button>
-      <button type="button" id="mobile">I'm A Mobile Device</button>
-    </div>
-    <div id="identify" style="display: none;">
-      <h4>Identify this device</h4>
-      <form id="identify-form">
-        <label>
-          Device name:
-          <input name="name" size="20" placeholder="iPhone 5S" id="name">
-        </label>
-        <label>
-          Code:
-          <input name="code" size="5" placeholder="P001" id="code">
-        </label>
-        <button type="submit">Save</button>
-      </form>
-    </div>
-  </div>
-  <footer>
-    <p>Copyright 2014 SC5 Online</p>
-  </footer>
+
+  <section id="container">
+
+    <section id="content">
+
+      <h1>DeviceWall</h1>
+
+      <section id="buttons">
+        <button type="button" id="pc">I'm a PC</button>
+        <button type="button" id="mobile">I'm a Mobile Device</button>
+      </section>
+
+      <section id="devices" style="display: none;">
+
+        <form id="devices-form">
+
+          <h2>Available devices</h2>
+          <table id="devices-list">
+            <tr>
+              <th>Identifier</th>
+              <th>Name</th>
+              <th>Location</th>
+              <th>User</th>
+              <th>Select for testing</th>
+            </tr>
+          </table>
+
+          <h2><label for="user">My name</label></h2>
+
+          <input type="text" name="user" size="20" placeholder="John Agile" id="user">
+
+          <h2><label for="address">Website to test</label></h2>
+
+          <input type="text" name="address" size="50" placeholder="http://www.sc5.io/" id="address">
+
+          <div class="buttons">
+            
+            <button type="submit" id="go">Go</button>
+
+          </div>
+
+        </form>
+
+      </section>
+
+      <section id="identify" style="display: none;">
+        <h2>Identify this device</h2>
+        <form id="identify-form">
+          <label>
+            Device name:
+            <input type="text" name="name" size="20" placeholder="Apple iPhone 5S" id="name">
+          </label>
+          <label>
+            Identifier:
+            <input type="text" name="identifier" size="5" placeholder="P001" id="identifier">
+          </label>
+          <button type="submit">Continue</button>
+        </form>
+      </section>
+
+      <section id="wait" style="display: none;">
+        <h2>Waiting to connect...</h2>
+        <p>
+          Please use your PC to select the testing devices.
+        </p>
+      </section>
+
+    </section>
+
+    <footer>
+      <p>Copyright 2014 SC5 Online</p>
+    </footer>
+
+  </section>
+
   <!-- inject:js -->
   <!-- endinject -->
+
 </body>
 </html>
