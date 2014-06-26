@@ -66,6 +66,8 @@ body {
 
 			}
 
+			@include transition(top .3s ease-out);
+
 		}
 
 		footer {
@@ -90,7 +92,6 @@ body {
 			margin: -120px 0 0 0;
 			height: 200px;
 			width: 100%;
-			@include transition(top .3s ease-out);
 			&.devices {
 				top: 120px;
 			}

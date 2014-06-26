@@ -98,11 +98,18 @@ app.get('/ping', function(req, res) {
 
 	var 
 		label = req.query.label,
+		user = req.query.user,
 		message = {};
 
 	instances.forEach(function(instance, index) {
-		if (instance.labels.indexOf(label) >= 0 && instance.browserSync && instance.updated + 30000 > (+new Date())) {
-			message.address = instance.browserSync + '?' + instance.address;
+		if (label) {
+			if (instance.labels.indexOf(label) >= 0 && instance.browserSync && instance.updated + 30000 > (+new Date())) {
+				message.address = instance.browserSync + '?' + instance.address;
+			}
+		} else if (user) {
+			if (instance.user == user && instance.browserSync) {
+				message.address = instance.browserSync + '?' + instance.address;
+			}
 		}
 	});
 
@@ -164,8 +171,6 @@ app.post('/start', function(req, res) {
 
 	// Start Browser Sync
 
-	res.type('application/json');
-	
 	var bs = browserSync.init(null, {
 		server: {
 			baseDir: 'browsersync'
@@ -186,10 +191,10 @@ app.post('/start', function(req, res) {
 
 		app.emit('update-instances');
 
-		res.json({message: 'Started Browser Sync', address: address});
-
 	});
 
+	res.type('application/json');
+	res.json({message: 'Started Browser Sync'});
 
 });
 

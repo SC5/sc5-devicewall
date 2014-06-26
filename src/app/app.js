@@ -24,11 +24,11 @@ function select(event) {
 	$('#devices-form').submit(selectSubmit);
 
 	$('#buttons').hide();
-	$('#devices').show();
 
 	$('#content').addClass('devices');
 
 	setTimeout(function() {
+		$('#devices').show();
 		$('#container').removeClass('centerized');
 	}, 300);
 
@@ -77,13 +77,32 @@ function selectSubmit(event) {
 	localStorage.setItem('user', user);
 	localStorage.setItem('address', address);
 
-	$.post('/start', $('#devices-form').serialize(), function(data) {
-		setTimeout(function() {
-			location = data.address;
-		}, 1000);
-	});
+	$.post('/start', $('#devices-form').serialize());
 
-	$('#container').hide();
+	var interval = setInterval(function() {
+		$.getJSON('/ping', {user: user}, function(data) {
+			if (data.address) {
+				clearInterval(interval);
+				setTimeout(function() {
+					location = data.address;
+				}, 1000);
+			}
+		});
+	}, 1000);
+
+	$('#container').addClass('centerized');
+
+	setTimeout(function() {
+
+		$('#devices').hide();
+		$('#content').removeClass('devices');
+
+		setTimeout(function() {
+			$('#wait').show();
+		}, 300);
+
+	}, 0);
+
 
 	return false;
 
