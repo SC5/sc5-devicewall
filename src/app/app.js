@@ -26,7 +26,11 @@ function select(event) {
 	$('#buttons').hide();
 	$('#devices').show();
 
-	$('#content-box').addClass('devices');
+	$('#content').addClass('devices');
+
+	setTimeout(function() {
+		$('#container').removeClass('centerized');
+	}, 300);
 
 	var 
 		user = localStorage.getItem('user'),

@@ -26,42 +26,87 @@
 }
 
 html {
-	min-height: 100%;
+	height: 100%;
 }
 
 body {
-	background-color: #005678;
-	@include radial-gradient(#00a4e4 25%, #005678 100%);
+
 	min-height: 100%;
 	padding: 0;
 	margin: 0;
+	background-color: #005678;
 	color: #fff;
 	font-family: arial, sans-serif;
 	font-size: 62.5%;
-}
+	@include radial-gradient(#00a4e4 25%, #005678 100%);
+	background-attachment: fixed;
 
-#container {
-	min-height: 100%;
-	position: relative;
-}
+	#container {
 
-#content {
-	min-height: 100%;
-}
+		#content {
 
-#content-box {
+			padding: 20px 0;
 
-	height: 200px;
+			text-align: center;
+			font-size: 1rem;
 
-	text-align: center;
-	font-size: 1rem;
-	@include transition(top .3s ease-out);
+			#buttons {
+				padding: 20px 0;
+			}
 
-	&.devices {
-		height: auto;
+			#devices {
+
+				.buttons {
+					margin: 30px 0;
+				}
+
+				input[type=text] {
+					text-align: center;
+				}
+
+			}
+
+		}
+
+		footer {
+			height: 20px;
+			line-height: 20px;
+			text-align: center;
+			font-size: .8rem;
+		}
+
+		&.centerized {
+			position: absolute;
+			left: 0;
+			top: 0;
+			width: 100%;
+			height: 100%;		
+		}
+
+		&.centerized #content {
+			position: absolute;
+			left: 0;
+			top: 50%;
+			margin: -120px 0 0 0;
+			height: 200px;
+			width: 100%;
+			@include transition(top .3s ease-out);
+			&.devices {
+				top: 120px;
+			}
+		}
+
+		&.centerized footer {
+			width: 100%;
+			position: absolute;
+			left: 0;
+			bottom: 0;
+		}	
+
 	}
 
 }
+
 
 #{headings(all)} {
 	
@@ -76,6 +121,8 @@ h1 {
 	font-size: 3.2rem;
 	font-weight: bold;
 	position: relative;
+	margin: 0;
+	padding: 0;
 
 	&:after {
 		position: absolute;
@@ -193,24 +240,4 @@ input[type=checkbox]:after {
 
 input[type=checkbox]:checked:after {
 	content: '\2713';
-}
-
-#devices {
-
-	.buttons {
-		margin: 30px 0;
-	}
-
-	input[type=text] {
-		text-align: center;
-	}
-
-}
-
-footer {
-	width: 100%;
-	height: 20px;
-	line-height: 20px;
-	text-align: center;
-	font-size: .8rem;
 }
