@@ -19,11 +19,13 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.on('update-devices', function() {
 	fs.writeFileSync('./devices.json', JSON.stringify(devices));
 	console.log('Updated devices.json');
+	console.log(devices);
 });
 
 app.on('update-instances', function() {
 	fs.writeFileSync('./instances.json', JSON.stringify(instances));
 	console.log('Updated instances.json');
+	console.log(instances);
 });
 
 
@@ -99,7 +101,7 @@ app.get('/ping', function(req, res) {
 		message = {};
 
 	instances.forEach(function(instance, index) {
-		if (instance.devices.indexOf(label) >= 0 && instance.browserSync) {
+		if (instance.labels.indexOf(label) >= 0 && instance.browserSync && instance.updated + 600000 > +new Date()) {
 			message.address = instance.browserSync + '?' + instance.address;
 		}
 	});
@@ -118,9 +120,23 @@ app.post('/start', function(req, res) {
 	var 
 		user = req.body.user,
 		address = req.body.address,
-		devices = req.body.devices || [];
+		labels = req.body.labels || [];
 
-	console.log(user, address, devices);
+	console.log(user, address, labels);
+
+	// Updating devices
+
+	devices.forEach(function(device, deviceIndex) {
+		labels.forEach(function(label, labelIndex) {
+			if (device.label == label) {
+				device.user = user;
+			}
+		});
+	});
+
+	app.emit('update-devices');
+
+	// Updating instances
 
 	var updated = false;
 
@@ -128,8 +144,9 @@ app.post('/start', function(req, res) {
 		if (instance.user == user) {
 			updated = true;
 			instance.address = address;
-			instance.devices = devices;
+			instance.labels = labels;
 			instance.browserSync = null;
+			instance.updated = +new Date();
 		}
 	});
 
@@ -137,35 +154,38 @@ app.post('/start', function(req, res) {
 		instances.push({
 			user: user,
 			address: address,
-			devices: devices,
-			browserSync: null
+			labels: labels,
+			browserSync: null,
+			updated: +new Date()
 		});
 	}
 
 	app.emit('update-instances');
 
+	// Start Browser Sync
 
 	var bs = browserSync.init(null, {
-		proxy: address
-		//	baseDir: 'browsersync'
-		//}
+		server: {
+			baseDir: 'browsersync'
+		},
+		browser: 'disable'
 	});
 
 	bs.events.on('init', function(api) {
 
-		//var address;
+		var address;
 
 		instances.forEach(function(instance, index) {
 			if (instance.user == user) {
 				instance.browserSync = api.options.url + '/';
-				//address = api.options.url + '/?' + instance.address;
+				address = api.options.url + '/?' + instance.address;
 			}
 		});
 
 		app.emit('update-instances');
 
 		res.type('application/json');
-		res.json({message: 'Started Browser Sync', address: api.options.url + '/'});
+		res.json({message: 'Started Browser Sync', address: address});
 
 	});
 

@@ -48,7 +48,7 @@ function select(event) {
 
     		var rowElement = $('<tr class="device"><td>' + value.label + '</td><td>' + value.name + '</td><td>' + (value.location || '-') + '</td><td>' + (value.user || '-') + '</td></tr>');
 
-			rowElement.append('<td><input type="checkbox" name="devices[]" value="' + value.label + '"></td>');
+			rowElement.append('<td><input type="checkbox" name="labels[]" value="' + value.label + '"></td>');
 
 	    	devicesList.append(rowElement);
 
