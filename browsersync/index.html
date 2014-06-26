@@ -18,7 +18,8 @@
 	</head>
 	<body>
 		<script type="text/javascript">
-			document.write('<iframe src="' + location.search.substr(1) + '" seamless="seamless"></iframe>');
+			var src = location.search.substr(1);
+			document.write('<iframe src="' + src + '" seamless="seamless"></iframe>');
 		</script>
 	</body>
 </html>

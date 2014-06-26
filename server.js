@@ -101,7 +101,7 @@ app.get('/ping', function(req, res) {
 		message = {};
 
 	instances.forEach(function(instance, index) {
-		if (instance.labels.indexOf(label) >= 0 && instance.browserSync && instance.updated + 600000 > +new Date()) {
+		if (instance.labels.indexOf(label) >= 0 && instance.browserSync && instance.updated + 30000 > (+new Date())) {
 			message.address = instance.browserSync + '?' + instance.address;
 		}
 	});
@@ -164,6 +164,8 @@ app.post('/start', function(req, res) {
 
 	// Start Browser Sync
 
+	res.type('application/json');
+	
 	var bs = browserSync.init(null, {
 		server: {
 			baseDir: 'browsersync'
@@ -184,7 +186,6 @@ app.post('/start', function(req, res) {
 
 		app.emit('update-instances');
 
-		res.type('application/json');
 		res.json({message: 'Started Browser Sync', address: address});
 
 	});

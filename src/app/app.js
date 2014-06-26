@@ -79,6 +79,8 @@ function selectSubmit(event) {
 		}, 1000);
 	});
 
+	$('#container').hide();
+
 	return false;
 
 }
