@@ -68,6 +68,11 @@ body {
 
 			@include transition(top .3s ease-out);
 
+			&.pc .mobile,
+			&.mobile .pc {
+				display: none;
+			}
+
 		}
 
 		footer {

@@ -21,6 +21,8 @@ function select(event) {
 
 	event.stopPropagation();
 
+	$('#content').addClass('pc');
+
 	$('#devices-form').submit(selectSubmit);
 
 	$('#buttons').hide();
@@ -115,6 +117,8 @@ function selectSubmit(event) {
 function identify(event) {
 
 	event.stopPropagation();
+
+	$('#content').addClass('mobile');
 
 	$('#identify-form').submit(identifySubmit);
 
