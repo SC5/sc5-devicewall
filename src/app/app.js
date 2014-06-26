@@ -74,7 +74,9 @@ function selectSubmit(event) {
 	localStorage.setItem('address', address);
 
 	$.post('/start', $('#devices-form').serialize(), function(data) {
-		console.log(data);
+		setTimeout(function() {
+			location = data.address;
+		}, 1000);
 	});
 
 	return false;
@@ -133,7 +135,9 @@ function identifySubmit(event) {
 		$.getJSON('/ping', {label: label}, function(data) {
 			if (data.address) {
 				clearInterval(interval);
-				location = data.address;
+				setTimeout(function() {
+					location = data.address;
+				}, 1000);
 			}
 		});
 	}, 1000);

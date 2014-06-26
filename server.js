@@ -57,7 +57,7 @@ app.post('/identify', function(req, res) {
 		name = req.body.name;
 
 	if (!label || !name) {
-		res.json('Invalid parameters.');
+		res.json({message: 'Invalid parameters.'});
 		return;
 	}
 
@@ -84,7 +84,7 @@ app.post('/identify', function(req, res) {
 	app.emit('update-devices');
 
 	res.type('application/json');
-	res.json('Identified succesfully.');
+	res.json({message: 'Identified succesfully.'});
 
 });
 
@@ -96,16 +96,16 @@ app.get('/ping', function(req, res) {
 
 	var 
 		label = req.query.label,
-		pong = {};
+		message = {};
 
 	instances.forEach(function(instance, index) {
 		if (instance.devices.indexOf(label) >= 0 && instance.browserSync) {
-			pong.address = instance.browserSync;
+			message.address = instance.browserSync + '?' + instance.address;
 		}
 	});
 
 	res.type('application/json');
-  	res.json(pong);
+  	res.json(message);
 
 });
 
@@ -146,25 +146,29 @@ app.post('/start', function(req, res) {
 
 
 	var bs = browserSync.init(null, {
-		server: {
-			baseDir: 'browsersync'
-		}
+		proxy: address
+		//	baseDir: 'browsersync'
+		//}
 	});
 
 	bs.events.on('init', function(api) {
 
+		//var address;
+
 		instances.forEach(function(instance, index) {
 			if (instance.user == user) {
-				instance.browserSync = api.options.url;
+				instance.browserSync = api.options.url + '/';
+				//address = api.options.url + '/?' + instance.address;
 			}
 		});
 
 		app.emit('update-instances');
 
+		res.type('application/json');
+		res.json({message: 'Started Browser Sync', address: api.options.url + '/'});
+
 	});
 
-	res.type('application/json');
-	res.json('Started Browser Sync.');
 
 });
 
