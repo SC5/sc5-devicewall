@@ -181,6 +181,7 @@ app.post('/start', function(req, res) {
 		instances.forEach(function(instance, index) {
 			if (instance.user == user) {
 				instance.browserSync = api.options.url + '/';
+				instance.updated = +new Date();
 			}
 		});
 
