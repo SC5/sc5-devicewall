@@ -103,7 +103,7 @@ app.get('/ping', function(req, res) {
 
 	instances.forEach(function(instance, index) {
 		if (label) {
-			if (instance.labels.indexOf(label) >= 0 && instance.browserSync && instance.updated + 30000 > (+new Date())) {
+			if (instance.labels.indexOf(label) >= 0 && instance.browserSync && instance.updated + 10000 > (+new Date())) {
 				message.address = instance.browserSync;
 			}
 		} else if (user) {
