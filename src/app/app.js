@@ -29,6 +29,12 @@ function select(event) {
 
 	$('#content').addClass('devices');
 
+	$('#address').focus(function(event) {
+		if (!event.target.value) {
+			event.target.value = 'http://www.';
+		}
+	});
+
 	setTimeout(function() {
 		$('#devices').show();
 		$('#container').removeClass('centerized');

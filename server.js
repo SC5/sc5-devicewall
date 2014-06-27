@@ -104,11 +104,11 @@ app.get('/ping', function(req, res) {
 	instances.forEach(function(instance, index) {
 		if (label) {
 			if (instance.labels.indexOf(label) >= 0 && instance.browserSync && instance.updated + 30000 > (+new Date())) {
-				message.address = instance.browserSync + '?' + instance.address;
+				message.address = instance.browserSync;
 			}
 		} else if (user) {
 			if (instance.user == user && instance.browserSync) {
-				message.address = instance.browserSync + '?' + instance.address;
+				message.address = instance.browserSync;
 			}
 		}
 	});
@@ -172,20 +172,15 @@ app.post('/start', function(req, res) {
 	// Start Browser Sync
 
 	var bs = browserSync.init(null, {
-		server: {
-			baseDir: 'browsersync'
-		},
+		proxy: address,
 		browser: 'disable'
 	});
 
 	bs.events.on('init', function(api) {
 
-		var address;
-
 		instances.forEach(function(instance, index) {
 			if (instance.user == user) {
 				instance.browserSync = api.options.url + '/';
-				address = api.options.url + '/?' + instance.address;
 			}
 		});
 
