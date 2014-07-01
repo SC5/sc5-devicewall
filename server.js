@@ -54,12 +54,10 @@ app.get('/devices', function(req, res) {
 
 app.post('/identify', function(req, res) {
 
-	var 
-		label = req.body.label,
-		name = req.body.name;
+	var label = req.body.label;
 
-	if (!label || !name) {
-		res.json({message: 'Invalid parameters.'});
+	if (!label) {
+		res.json({message: 'Label missing.'});
 		return;
 	}
 
@@ -68,7 +66,6 @@ app.post('/identify', function(req, res) {
 	devices.forEach(function(device, index) {
 
 		if (device.label == label) {
-			device.name = name;
 			device.updated = +new Date();
 			updated = true;
 		}
@@ -78,9 +75,6 @@ app.post('/identify', function(req, res) {
 	if (!updated) {
 		devices.push({
 			label: label,
-			name: name,
-			location: null,
-			user: null,
 			updated: +new Date()
 		});
 	}
@@ -216,7 +210,34 @@ app.post('/stop', function(req, res) {
 	app.emit('update-devices');
 
 	res.type('application/json');
-	res.json({message: 'Testing stopped'});
+	res.json({message: 'Removed tester'});
+
+});
+
+
+
+
+
+
+app.post('/save', function(req, res) {
+
+	var 
+		label = req.body.label,
+		key = req.body.key,
+		value = req.body.value;
+
+	// Update device
+
+	devices.forEach(function(device, index) {
+		if (device.label == label) {
+			device[key] = value;
+		}
+	});
+
+	app.emit('update-devices');
+
+	res.type('application/json');
+	res.json({message: 'Saved value'});
 
 });
 

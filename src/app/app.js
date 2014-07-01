@@ -6,10 +6,26 @@ var app = require('./app.js'),
 
 
 function start() {
+
 	// Start the app here
 
-	$('#pc').click(select);
-	$('#mobile').click(identify);
+	var device = localStorage.getItem('device');
+
+	if (device == 1) {
+
+		select();
+
+	} else if (device == 2) {
+
+		identify();
+
+	} else {
+
+		$('#buttons').show();
+		$('#pc').click(select);
+		$('#mobile').click(identify);
+
+	}
 
 }
 
@@ -19,7 +35,7 @@ function start() {
 
 function select(event) {
 
-	event.stopPropagation();
+	localStorage.setItem('device', 1);
 
 	$('#content').addClass('pc');
 
@@ -58,47 +74,69 @@ function select(event) {
 
 		$.each(data, function(key, value) {
 
-    		var rowElement = $('<tr class="device"></tr>');
+    		var rowElement = $('<tr class="device" data-label="' + value.label + '"></tr>');
 
 			rowElement.append(    		
 				'<td>' + value.label + '</td>' + 
-				'<td>' + value.name + '</td>' + 
-				'<td>' + (value.location || '-') + '</td>'
+				'<td contenteditable data-key="name" title="Edit">' + (value.name || '') + '</td>' + 
+				'<td contenteditable data-key="model" title="Edit">' + (value.model || '') + '</td>' + 
+				'<td contenteditable data-key="os" title="Edit">' + (value.os || '') + '</td>' + 
+				'<td contenteditable data-key="serial" title="Edit">' + (value.serial || '') + '</td>' + 
+				'<td contenteditable data-key="imei" title="Edit">' + (value.imei || '') + '</td>' + 
+				'<td contenteditable data-key="location" title="Edit">' + (value.location || '') + '</td>' + 
+				'<td contenteditable data-key="owner" title="Edit">' + (value.owner || '') + '</td>'
 			);
 
 			if (user == value.user) {
 
 				var 
-					cellElement = $('<td></td>'),
-					anchorElement = $('<a href="" title="Remove">' + (value.user || '-') + '</a>');
+					cellElement = $('<td class="emphasize" title="Remove"></td>'),
+					spanElement = $('<span>' + (value.user || '-') + '</span>');
 
-				anchorElement.click(function(event) {
-
-					event.stopPropagation();
+				spanElement.click(function(event) {
 
 					$.post('/stop', {label: value.label});
 
-					anchorElement.remove();
-					cellElement.append('-');
+					spanElement.remove();
+					cellElement.removeClass('emphasize');
 
 					return false;
 
 				});
 
-				cellElement.append(anchorElement);
+				cellElement.append(spanElement);
 				rowElement.append(cellElement);
 
 			} else {
-				rowElement.append('<td>' + (value.user || '-') + '</td>');
+				rowElement.append('<td>' + (value.user || '') + '</td>');
 			};
 
 			rowElement.append(
-				'<td>' + (value.last_used ? moment(new Date(value.last_used)).format('YYYY-MM-DD HH:mm:ss') : '-') + '</td>' +
+				'<td><time>' + (value.last_used ? moment(new Date(value.last_used)).format('YYYY-MM-DD HH:mm:ss') : '') + '</time></td>' +
 				'<td><input type="checkbox" name="labels[]" value="' + value.label + '"></td>'
     		);
 
 	    	devicesList.append(rowElement);
 
+		});
+
+		$('#devices-list [contenteditable]').blur(function(event) {
+
+			var
+				element = $(event.target),
+				label = element.parent().attr('data-label'),
+				key = element.attr('data-key'),
+				value = element.text();
+
+			$.post('/save', {label: label, key: key, value: value});
+
+		});
+
+		$('#devices-list [contenteditable]').keypress(function(event) {
+			if (event.which == 13) {
+				event.target.blur();
+				return false;
+			}
 		});
 
 	});
@@ -110,8 +148,6 @@ function select(event) {
 
 
 function selectSubmit(event) {
-
-	event.stopPropagation();
 
 	var 
 		user = $('#user').val(),
@@ -157,7 +193,7 @@ function selectSubmit(event) {
 
 function identify(event) {
 
-	event.stopPropagation();
+	localStorage.setItem('device', 2);
 
 	$('#content').addClass('mobile');
 
@@ -166,15 +202,8 @@ function identify(event) {
 	$('#buttons').hide();
 	$('#identify').show();
 
-	var 
-		name = localStorage.getItem('name'),
-		label = localStorage.getItem('label');
+	var label = localStorage.getItem('label');
 
-	if (!name) {
-		name = navigator.userAgent;
-	}
-
-	$('#name').val(name);
 	$('#label').val(label);
 
 	return false;
@@ -187,16 +216,11 @@ function identify(event) {
 
 function identifySubmit(event) {
 
-	event.stopPropagation();
+	var label = $('#label').val();
 
-	var 
-		name = $('#name').val(),
-		label = $('#label').val();
-
-	localStorage.setItem('name', name);
 	localStorage.setItem('label', label);
 
-	$.post('/identify', {name: name, label: label});
+	$.post('/identify', {label: label});
 
 	$('#identify').hide();
 	$('#wait').show();

@@ -193,6 +193,8 @@ table {
 	width: 50%;
 	border-collapse: collapse;
 
+	font-size: .9rem;
+
 	th,
 	td {
 
@@ -203,19 +205,30 @@ table {
 		padding: 5px 15px;
 		background-color: rgba(0, 0, 0, .05);
 
-		&:last-child {
-			text-align: center;
-		}
 
-		a {
-			text-decoration: none;
-			color: inherit;
+		&[contenteditable] {
+
+			cursor: pointer;
 
 			&:hover {
-				background-color: #fff;
-				color: #00a4e4;
+				background-color: rgba(255, 255, 255, .1);
 			}
 
+		}
+
+		&.emphasize {
+
+			cursor: pointer;
+			background-color: rgba(0, 0, 0, .1);
+
+			&:hover {
+				background-color: rgba(255, 255, 255, .1);
+			}
+
+		}
+
+		&:last-child {
+			text-align: center;
 		}
 
 	}

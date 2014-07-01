@@ -15,7 +15,7 @@
 
       <h1>DeviceWall</h1>
 
-      <section id="buttons">
+      <section id="buttons" style="display: none;">
         <button type="button" id="pc">I'm a PC</button>
         <button type="button" id="mobile">I'm a Mobile Device</button>
       </section>
@@ -29,7 +29,12 @@
             <tr>
               <th>Label</th>
               <th>Name</th>
-              <th>Location</th>
+              <th>Model code</th>
+              <th>OS</th>
+              <th>Serial number</th>
+              <th>IMEI code</th>
+              <th>Home</th>
+              <th>Owner</th>
               <th>User</th>
               <th>Last used</th>
               <th>Select for testing</th>
@@ -58,14 +63,10 @@
         <h2>Identify this device</h2>
         <form id="identify-form">
           <label>
-            Device name:
-            <input type="text" name="name" size="20" placeholder="Apple iPhone 5S" id="name">
-          </label>
-          <label>
-            Label:
+            Label
             <input type="text" name="label" size="5" placeholder="P001" id="label">
           </label>
-          <button type="submit">Continue</button>
+          <button type="submit">Go</button>
         </form>
       </section>
 
