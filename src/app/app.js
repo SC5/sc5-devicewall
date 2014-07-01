@@ -58,15 +58,43 @@ function select(event) {
 
 		$.each(data, function(key, value) {
 
-    		var rowElement = $(
-    			'<tr class="device">' + 
-    				'<td>' + value.label + '</td>' + 
-    				'<td>' + value.name + '</td>' + 
-    				'<td>' + (value.location || '-') + '</td>' + 
-    				'<td>' + (value.user || '-') + '</td>' +
-    				'<td>' + (value.last_used ? moment(new Date(value.last_used)).format('YYYY-MM-DD HH:mm:ss') : '-') + '</td>' +
-    				'<td><input type="checkbox" name="labels[]" value="' + value.label + '"></td>' +
-    			'</tr>'
+    		var rowElement = $('<tr class="device"></tr>');
+
+			rowElement.append(    		
+				'<td>' + value.label + '</td>' + 
+				'<td>' + value.name + '</td>' + 
+				'<td>' + (value.location || '-') + '</td>'
+			);
+
+			if (user == value.user) {
+
+				var 
+					cellElement = $('<td></td>'),
+					anchorElement = $('<a href="" title="Remove">' + (value.user || '-') + '</a>');
+
+				anchorElement.click(function(event) {
+
+					event.stopPropagation();
+
+					$.post('/stop', {label: value.label});
+
+					anchorElement.remove();
+					cellElement.append('-');
+
+					return false;
+
+				});
+
+				cellElement.append(anchorElement);
+				rowElement.append(cellElement);
+
+			} else {
+				rowElement.append('<td>' + (value.user || '-') + '</td>');
+			};
+
+			rowElement.append(
+				'<td>' + (value.last_used ? moment(new Date(value.last_used)).format('YYYY-MM-DD HH:mm:ss') : '-') + '</td>' +
+				'<td><input type="checkbox" name="labels[]" value="' + value.label + '"></td>'
     		);
 
 	    	devicesList.append(rowElement);

@@ -156,7 +156,6 @@ label {
 button {
 
 	@include box-sizing(content-box);
-	
 
 	overflow: hidden;
 	white-space: nowrap;
@@ -180,7 +179,7 @@ button {
 
 	color: #333;
 
-	&#go {
+	&.go {
 		height: 48px;
 		line-height: 48px;
 		font-size: 1.6rem;
@@ -196,12 +195,29 @@ table {
 
 	th,
 	td {
+
 		white-space: nowrap;
 		vertical-align: top;
 		text-align: left;
 		border: 1px solid rgba(0, 0, 0, .1);
 		padding: 5px 15px;
 		background-color: rgba(0, 0, 0, .05);
+
+		&:last-child {
+			text-align: center;
+		}
+
+		a {
+			text-decoration: none;
+			color: inherit;
+
+			&:hover {
+				background-color: #fff;
+				color: #00a4e4;
+			}
+
+		}
+
 	}
 
 }

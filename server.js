@@ -201,6 +201,29 @@ app.post('/start', function(req, res) {
 
 
 
+app.post('/stop', function(req, res) {
+
+	var label = req.body.label;
+
+	// Update device
+
+	devices.forEach(function(device, index) {
+		if (device.label == label) {
+			device.user = null;
+		}
+	});
+
+	app.emit('update-devices');
+
+	res.type('application/json');
+	res.json({message: 'Testing stopped'});
+
+});
+
+
+
+
+
 app.use(express.static(__dirname + '/dist'));
 
 var server = app.listen(process.argv[2] || 80, function() {
