@@ -58,9 +58,16 @@ function select(event) {
 
 		$.each(data, function(key, value) {
 
-    		var rowElement = $('<tr class="device"><td>' + value.label + '</td><td>' + value.name + '</td><td>' + (value.location || '-') + '</td><td>' + (value.user || '-') + '</td></tr>');
-
-			rowElement.append('<td><input type="checkbox" name="labels[]" value="' + value.label + '"></td>');
+    		var rowElement = $(
+    			'<tr class="device">' + 
+    				'<td>' + value.label + '</td>' + 
+    				'<td>' + value.name + '</td>' + 
+    				'<td>' + (value.location || '-') + '</td>' + 
+    				'<td>' + (value.user || '-') + '</td>' +
+    				'<td>' + (value.last_used ? moment(new Date(value.last_used)).format('YYYY-MM-DD HH:mm:ss') : '-') + '</td>' +
+    				'<td><input type="checkbox" name="labels[]" value="' + value.label + '"></td>' +
+    			'</tr>'
+    		);
 
 	    	devicesList.append(rowElement);
 

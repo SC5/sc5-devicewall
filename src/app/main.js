@@ -1,5 +1,6 @@
 var app = require('./app.js'),
-    $ = require('jquery');
+    $ = require('jquery'),
+    moment = require('moment');
 
 $(document).ready(function() {
 	app.start();

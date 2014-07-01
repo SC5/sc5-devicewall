@@ -69,6 +69,7 @@ app.post('/identify', function(req, res) {
 
 		if (device.label == label) {
 			device.name = name;
+			device.updated = +new Date();
 			updated = true;
 		}
 
@@ -79,7 +80,8 @@ app.post('/identify', function(req, res) {
 			label: label,
 			name: name,
 			location: null,
-			user: null
+			user: null,
+			updated: +new Date()
 		});
 	}
 
@@ -137,6 +139,7 @@ app.post('/start', function(req, res) {
 		labels.forEach(function(label, labelIndex) {
 			if (device.label == label) {
 				device.user = user;
+				device.last_used = +new Date();
 			}
 		});
 	});

@@ -66,6 +66,10 @@ gulp.task('javascript', ['preprocess'], function() {
           jquery: {
             path: path.join(componentsPath, 'jquery/dist/jquery.js'),
             exports: 'jQuery'
+          },
+          moment: {
+            path: path.join(componentsPath, 'moment/moment.js'),
+            exports: 'moment'
           }
         }
       };
