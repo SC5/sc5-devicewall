@@ -49,7 +49,9 @@ app.get('/devices', function(req, res) {
 		return 0;
 	});
 
+
 	res.type('application/json');
+	res.set('Cache-Control', 'no-cache');
   	res.json(devices);
 
 });
