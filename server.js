@@ -35,10 +35,16 @@ app.on('update-instances', function() {
 app.get('/devices', function(req, res) {
 
 	devices.sort(function(a, b) {
-		if (a.label > b.label) {
+		if (a.location > b.location) {
 			return 1;
-		} else if (a.label < b.label) {
+		} else if (a.location < b.location) {
 			return -1;
+		} else {
+			if (a.label > b.label) {
+				return 1;
+			} else if (a.label < b.label) {
+				return -1;
+			}
 		}
 		return 0;
 	});
