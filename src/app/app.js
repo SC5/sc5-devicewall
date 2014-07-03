@@ -93,7 +93,7 @@ function select(event) {
 					cellElement = $('<td class="emphasize" title="Remove"></td>'),
 					spanElement = $('<span>' + (value.user || '-') + '</span>');
 
-				spanElement.click(function(event) {
+				cellElement.click(function(event) {
 
 					$.post('/stop', {label: value.label});
 
@@ -109,7 +109,7 @@ function select(event) {
 
 			} else {
 				rowElement.append('<td>' + (value.user || '') + '</td>');
-			};
+			}
 
 			rowElement.append(
 				'<td><time>' + (value.last_used ? moment(new Date(value.last_used)).format('YYYY-MM-DD HH:mm:ss') : '') + '</time></td>' +
