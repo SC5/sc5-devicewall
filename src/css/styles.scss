@@ -172,6 +172,7 @@ table {
 		border: 1px solid rgba(0, 0, 0, .1);
 		padding: 5px 15px;
 		background-color: rgba(0, 0, 0, .05);
+		font-weight: normal;
 
 		&[contenteditable] {
 
@@ -192,7 +193,7 @@ table {
 		&.emphasize {
 
 			cursor: pointer;
-			background-color: rgba(0, 0, 0, .1);
+			font-weight: bold;
 
 			&:hover {
 				background-color: rgba(255, 255, 255, .1);
