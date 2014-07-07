@@ -10,8 +10,7 @@ the task context. These are mainly for repeating configuration items */
 var config = {
   version: package.version,
   debug: Boolean($.util.env.debug),
-  browsersync: Boolean($.util.env.browsersync),
-  appwallurl: 'http://appwall.sc5.io/',
+  browsersync: Boolean($.util.env.browsersync)
 };
 
 // Package management
@@ -154,24 +153,10 @@ gulp.task('livereload', function() {
 /* Watch, live reload and serve the web site with browsersync */
 gulp.task('browsersync', function() {
 
-    var bs = browsersync.init('dist/*', {
-      server: {
-        baseDir: 'dist'
-      }
-    });
-
-  bs.events.on('init', function(api) {
-
-      var request = require('request');
-
-      request(
-        config.appwallurl + 'add',
-        { method: 'POST', form: { address: api.options.url + '/' } },
-        function(error, response, body) {
-          console.log(body);
-        }
-      );
-
+  var bs = browsersync.init('dist/*', {
+    server: {
+      baseDir: 'dist'
+    }
   });
 
 });
