@@ -1,8 +1,15 @@
 FROM sc5io/ubuntu:14.04
 
-RUN npm install
+# Install dependencies
+RUN npm install -g gulp
+RUN apt-get install -y rbenv
+RUN gem install sass compass
 
-RUN gulp clean; gulp
+# Setup app
+RUN mkdir /root/devicewall
+ADD . /root/devicewall
+RUN cd /root/devicewall; npm install; npm build
 
-EXPOSE 8888
-RUN node server.js 8888
+# Start
+EXPOSE 80
+CMD cd /root/devicewall; npm start
