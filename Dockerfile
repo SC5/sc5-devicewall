@@ -1,5 +1,7 @@
 FROM sc5io/ubuntu:14.04
 
+RUN rm $HOME/.npmrc
+
 # Dirs
 RUN mkdir -p /wwwroot/devicewall
 WORKDIR /wwwroot/devicewall
