@@ -1,7 +1,7 @@
 FROM sc5io/ubuntu:14.04
 
 # Dirs
-RUN mkdir /wwwroot/devicewall
+RUN mkdir -p /wwwroot/devicewall
 WORKDIR /wwwroot/devicewall
 RUN chmod 777 .
 
