@@ -1,16 +1,15 @@
 FROM sc5io/ubuntu:14.04
 
 # Dirs
-RUN mkdir /root/devicewall
-WORKDIR /root/devicewall
+RUN mkdir /wwwroot/devicewall
+WORKDIR /wwwroot/devicewall
+RUN chmod 777 .
 
 # Install dependencies
 RUN npm install -g gulp
-RUN apt-get install -y rbenv
-RUN gem install sass compass
 
 # Setup app
-ADD . /root/devicewall
+ADD . /wwwroot/devicewall
 RUN npm install
 RUN npm build
 
