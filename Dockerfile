@@ -5,14 +5,17 @@ RUN rm $HOME/.npmrc
 # Dirs
 RUN mkdir -p /wwwroot/devicewall
 WORKDIR /wwwroot/devicewall
-RUN chmod 777 .
 
 # Install dependencies
 RUN npm install -g gulp
 
-# Setup app
+# Install modules
+ADD package.json /tmp/package.json
+RUN cd /tmp; npm install
+RUN cp -a /tmp/node_modules /wwwroot/devicewall/
+
+# Build app
 ADD . /wwwroot/devicewall
-RUN npm install
 RUN npm build
 
 # Start
