@@ -10,9 +10,8 @@ WORKDIR /wwwroot/devicewall
 RUN npm install -g gulp
 
 # Install modules
-ADD package.json /tmp/package.json
-RUN cd /tmp; npm install
-RUN cp -a /tmp/node_modules /wwwroot/devicewall/
+ADD package.json package.json
+RUN npm install --development
 
 # Build app
 ADD . /wwwroot/devicewall
