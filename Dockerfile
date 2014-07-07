@@ -11,7 +11,7 @@ RUN npm install -g gulp
 
 # Install modules
 ADD package.json /wwwroot/devicewall/package.json
-RUN npm install --development
+RUN npm install --dev
 
 # Build app
 ADD . /wwwroot/devicewall
