@@ -1,21 +1,17 @@
 FROM sc5io/ubuntu:14.04
 
-RUN rm $HOME/.npmrc
-
-# Dirs
-RUN mkdir -p /wwwroot/devicewall
-WORKDIR /wwwroot/devicewall
+RUN mkdir /app
+WORKDIR /app
 
 # Install dependencies
-RUN npm install -g gulp
+ADD package.json /app/package.json
+RUN npm install
 
-# Install modules
-ADD package.json /wwwroot/devicewall/package.json
-RUN npm install --dev
-
-# Build app
-ADD . /wwwroot/devicewall
-RUN npm build
+# Copy files
+ADD devices.json /app/devices.json
+ADD instances.json /app/instances.json
+ADD server.js /app/server.js
+ADD dist /app/dist
 
 # Start
 EXPOSE 80
