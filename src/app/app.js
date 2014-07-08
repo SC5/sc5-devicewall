@@ -87,11 +87,11 @@ function select(event) {
 				'<td contenteditable data-key="owner" title="Edit">' + (value.owner || '') + '</td>'
 			);
 
-			if (user == value.user) {
+			if (user && user == value.user) {
 
 				var 
 					cellElement = $('<td class="emphasize" title="Remove"></td>'),
-					spanElement = $('<span>' + (value.user || '-') + '</span>');
+					spanElement = $('<span>' + (value.user || '') + '</span>');
 
 				cellElement.click(function(event) {
 
