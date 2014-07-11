@@ -21,7 +21,7 @@ function start() {
 
 	} else {
 
-		$('#buttons').show();
+		$('#device-type').show();
 		$('#pc').click(select);
 		$('#mobile').click(identify);
 
@@ -41,7 +41,7 @@ function select(event) {
 
 	$('#devices-form').submit(selectSubmit);
 
-	$('#buttons').hide();
+	$('#device-type').hide();
 
 	$('#content').addClass('devices');
 
@@ -199,7 +199,7 @@ function identify(event) {
 
 	$('#identify-form').submit(identifySubmit);
 
-	$('#buttons').hide();
+	$('#device-type').hide();
 	$('#identify').show();
 
 	var label = localStorage.getItem('label');
