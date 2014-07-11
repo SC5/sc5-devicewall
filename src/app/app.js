@@ -1,5 +1,6 @@
 var app = require('./app.js'),
-    $ = require('jquery');
+    $ = require('jquery'),
+    user;
 
 
 
@@ -22,8 +23,22 @@ function start() {
 	} else {
 
 		$('#device-type').show();
-		$('#pc').click(select);
-		$('#mobile').click(identify);
+
+		function setDeviceType(device, cb) {
+			$('#device-type').hide();
+			localStorage.setItem('device', device);
+			cb();
+		}
+
+		$('#pc').click(function() {
+			setDeviceType(1, select);
+			return false;
+		});
+
+		$('#mobile').click(function() {
+			setDeviceType(2, identify);
+			return false;
+		});
 
 	}
 
@@ -33,17 +48,55 @@ function start() {
 
 
 
-function select(event) {
+function initializeUser(cb) {
 
-	localStorage.setItem('device', 1);
+	login();
+	return;
+
+	$.getJSON('/user', function(res) {
+
+		if (res.user) {
+
+			user = res.user;
+
+			cb();
+
+		} else {
+
+			login();
+
+		}
+
+	});
+
+}
+
+
+
+
+
+function login() {
+
+	$('#login').show();
+
+}
+
+
+
+
+
+
+function select() {
+
+	if (!user) {
+		initializeUser(this);
+		return;
+	}
 
 	$('#content').addClass('pc');
+	$('#content').addClass('devices');
 
 	$('#devices-form').submit(selectSubmit);
-
-	$('#device-type').hide();
-
-	$('#content').addClass('devices');
 
 	$('#address').focus(function(event) {
 		if (!event.target.value) {
@@ -191,15 +244,12 @@ function selectSubmit(event) {
 
 
 
-function identify(event) {
-
-	localStorage.setItem('device', 2);
+function identify() {
 
 	$('#content').addClass('mobile');
 
 	$('#identify-form').submit(identifySubmit);
 
-	$('#device-type').hide();
 	$('#identify').show();
 
 	var label = localStorage.getItem('label');
