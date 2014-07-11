@@ -32,6 +32,18 @@ app.on('update-instances', function() {
 
 
 
+app.get('/user', function(req, res) {
+
+	res.type('application/json');
+	res.set('Cache-Control', 'no-cache');
+  	res.json({user: null});
+
+});
+
+
+
+
+
 app.get('/devices', function(req, res) {
 
 	devices.sort(function(a, b) {

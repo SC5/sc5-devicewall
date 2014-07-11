@@ -57,7 +57,7 @@ body {
 			text-align: center;
 			font-size: 1rem;
 
-			#device-type {
+			.buttons {
 				padding: 20px 0;
 			}
 
@@ -218,6 +218,12 @@ button {
 
 	@include box-sizing(content-box);
 
+	@include linear-gradient(#fff, #ddd);
+
+	&:active {
+		@include linear-gradient(#ddd, #fff);
+	}
+
 	overflow: hidden;
 	white-space: nowrap;
 	-webkit-appearance: none;
@@ -233,8 +239,6 @@ button {
 	line-height: 38px;
 	font-size: 1.2rem;
 	vertical-align: middle;
-
-	@include linear-gradient(#fff, #ddd);
 
 	text-shadow: 0 1px #fff;
 	color: #333;
