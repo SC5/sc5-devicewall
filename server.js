@@ -47,11 +47,11 @@ app.on('update-instances', function() {
 
 
 passport.serializeUser(function(user, done) {
-  done(null, user);
+	done(null, user.id);
 });
 
-passport.deserializeUser(function(user, done) {
-  done(null, user);
+passport.deserializeUser(function(id, done) {
+	done(null, users[id]);
 });
 
 passport.use(new GoogleStrategy(
@@ -61,12 +61,13 @@ passport.use(new GoogleStrategy(
     	callbackURL: 'http://devicewall.sc5.io:8888/auth/google/callback'
 	},
 	function(accessToken, refreshToken, profile, done) {
-		users[profile.id] = {
+		var user = {
 			id: profile.id,
 			displayName: profile.displayName,
 			emails: profile.emails
 		};
-		return done(null, true);
+		users[profile.id] = user;
+		return done(null, user);
 	}
 ));
 
@@ -79,7 +80,6 @@ app.get('/auth/google', passport.authenticate('google', {scope: 'openid profile 
 app.get('/auth/google/callback',
 	passport.authenticate('google', {failureRedirect: '/'}),
 	function(req, res) {
-		console.log(req);
 		res.redirect('/');
 	}
 );
@@ -88,21 +88,9 @@ app.get('/auth/google/callback',
 
 
 
-app.get('/profile', function(req, res) {
+app.get('/user', function(req, res) {
 	res.set('Cache-Control', 'no-cache');
-  	res.json({profile: req.session.profile});
-});
-
-
-
-
-
-app.get('/login', function(req, res) {
-
-	res.type('application/json');
-	res.set('Cache-Control', 'no-cache');
-  	res.json({user: null});
-
+  	res.json({user: req.user});
 });
 
 
@@ -126,8 +114,6 @@ app.get('/devices', function(req, res) {
 		return 0;
 	});
 
-
-	res.type('application/json');
 	res.set('Cache-Control', 'no-cache');
   	res.json(devices);
 
@@ -166,7 +152,6 @@ app.post('/identify', function(req, res) {
 
 	app.emit('update-devices');
 
-	res.type('application/json');
 	res.json({message: 'Identified succesfully.'});
 
 });
@@ -179,7 +164,7 @@ app.get('/ping', function(req, res) {
 
 	var 
 		label = req.query.label,
-		user = req.query.user,
+		userId = req.query.user_id,
 		message = {};
 
 	instances.forEach(function(instance, index) {
@@ -187,14 +172,13 @@ app.get('/ping', function(req, res) {
 			if (instance.labels.indexOf(label) >= 0 && instance.browserSync && instance.updated + 10000 > (+new Date())) {
 				message.address = instance.browserSync;
 			}
-		} else if (user) {
-			if (instance.user == user && instance.browserSync) {
+		} else if (userId) {
+			if (instance.userId == userId && instance.browserSync) {
 				message.address = instance.browserSync;
 			}
 		}
 	});
 
-	res.type('application/json');
   	res.json(message);
 
 });
@@ -206,19 +190,21 @@ app.get('/ping', function(req, res) {
 app.post('/start', function(req, res) {
 
 	var 
-		user = req.body.user,
+		userId = req.body.user_id,
+		userName = req.body.username,
 		address = req.body.address,
 		labels = req.body.labels || [];
 
-	console.log(user, address, labels);
+	console.log(userId, userName, address, labels);
 
 	// Updating devices
 
 	devices.forEach(function(device, deviceIndex) {
 		labels.forEach(function(label, labelIndex) {
 			if (device.label == label) {
-				device.user = user;
-				device.last_used = +new Date();
+				device.userId = userId;
+				device.userName = userName;
+				device.lastUsed = +new Date();
 			}
 		});
 	});
@@ -230,7 +216,7 @@ app.post('/start', function(req, res) {
 	var updated = false;
 
 	instances.forEach(function(instance, index) {
-		if (instance.user == user) {
+		if (instance.userId == userId) {
 			updated = true;
 			instance.address = address;
 			instance.labels = labels;
@@ -241,7 +227,7 @@ app.post('/start', function(req, res) {
 
 	if (!updated) {
 		instances.push({
-			user: user,
+			userId: userId,
 			address: address,
 			labels: labels,
 			browserSync: null,
@@ -261,7 +247,7 @@ app.post('/start', function(req, res) {
 	bs.events.on('init', function(api) {
 
 		instances.forEach(function(instance, index) {
-			if (instance.user == user) {
+			if (instance.userId == userId) {
 				instance.browserSync = api.options.url + '/';
 				instance.updated = +new Date();
 			}
@@ -271,7 +257,6 @@ app.post('/start', function(req, res) {
 
 	});
 
-	res.type('application/json');
 	res.json({message: 'Started Browser Sync'});
 
 });
@@ -288,13 +273,13 @@ app.post('/stop', function(req, res) {
 
 	devices.forEach(function(device, index) {
 		if (device.label == label) {
-			device.user = null;
+			device.userId = null;
+			device.userName = null;
 		}
 	});
 
 	app.emit('update-devices');
 
-	res.type('application/json');
 	res.json({message: 'Removed tester'});
 
 });
@@ -321,7 +306,6 @@ app.post('/save', function(req, res) {
 
 	app.emit('update-devices');
 
-	res.type('application/json');
 	res.json({message: 'Saved value'});
 
 });

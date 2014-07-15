@@ -1,6 +1,6 @@
 var app = require('./app.js'),
     $ = require('jquery'),
-    profile;
+    user;
 
 
 
@@ -46,26 +46,15 @@ function start() {
 
 
 
-function initializeprofile(cb) {
-
-	$.getJSON('/profile', function(res) {
-
-		console.log(res);
-
-		if (res.profile) {
-
-			profile = res.profile;
-
+function initializeUser(cb) {
+	$.getJSON('/user', function(res) {
+		if (res.user) {
+			user = res.user;
 			cb();
-
 		} else {
-
 			login();
-
 		}
-
 	});
-
 }
 
 
@@ -88,8 +77,8 @@ function login() {
 
 function select() {
 
-	if (!profile) {
-		initializeprofile(this);
+	if (!user) {
+		initializeUser(select);
 		return;
 	}
 
@@ -108,13 +97,11 @@ function select() {
 		$('#container').removeClass('centerized');
 	}, 300);
 
-	var 
-		profile = localStorage.getItem('profile'),
-		address = localStorage.getItem('address');
 
-	if (profile) {
-		$('#profile').val(profile);
-	}
+	$('#user-id').val(user.id);
+	$('#username').val(user.displayName);
+
+	var address = localStorage.getItem('address');
 
 	if (address) {
 		$('#address').val(address);
@@ -139,11 +126,11 @@ function select() {
 				'<td contenteditable data-key="owner" title="Edit">' + (value.owner || '') + '</td>'
 			);
 
-			if (profile && profile == value.profile) {
+			if (user.id == value.userId) {
 
 				var 
 					cellElement = $('<td class="emphasize" title="Remove"></td>'),
-					spanElement = $('<span>' + (value.profile || '') + '</span>');
+					spanElement = $('<span>' + (value.userName || '') + '</span>');
 
 				cellElement.click(function(event) {
 
@@ -160,11 +147,11 @@ function select() {
 				rowElement.append(cellElement);
 
 			} else {
-				rowElement.append('<td>' + (value.profile || '') + '</td>');
+				rowElement.append('<td>' + (value.userName || '') + '</td>');
 			}
 
 			rowElement.append(
-				'<td><time>' + (value.last_used ? moment(new Date(value.last_used)).format('YYYY-MM-DD HH:mm:ss') : '') + '</time></td>' +
+				'<td><time>' + (value.lastUsed ? moment(new Date(value.lastUsed)).format('YYYY-MM-DD HH:mm:ss') : '') + '</time></td>' +
 				'<td><input type="checkbox" name="labels[]" value="' + value.label + '"></td>'
     		);
 
@@ -201,17 +188,14 @@ function select() {
 
 function selectSubmit(event) {
 
-	var 
-		profile = $('#profile').val(),
-		address = $('#address').val();
+	var address = $('#address').val();
 
-	localStorage.setItem('profile', profile);
 	localStorage.setItem('address', address);
 
 	$.post('/start', $('#devices-form').serialize());
 
 	var interval = setInterval(function() {
-		$.getJSON('/ping', {profile: profile}, function(data) {
+		$.getJSON('/ping', {user_id: user.id}, function(data) {
 			if (data.address) {
 				clearInterval(interval);
 				setTimeout(function() {
