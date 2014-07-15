@@ -13,7 +13,8 @@ var express = require('express'),
 
 var
 	GOOGLE_CLIENT_ID = '1020013470882-3u5sumpg19k4t4hm8kcltju0prl8fgud.apps.googleusercontent.com',
-	GOOGLE_CLIENT_SECRET = '4-kV0DljkbtvpV4GlPIR9S3j';
+	GOOGLE_CLIENT_SECRET = '4-kV0DljkbtvpV4GlPIR9S3j',
+	GOOGLE_CALLBACK_URL = 'http://devicewall.sc5.io:8888/auth/google/callback';
 
 
 
@@ -58,15 +59,17 @@ passport.use(new GoogleStrategy(
 	{
 		clientID: GOOGLE_CLIENT_ID,
     	clientSecret: GOOGLE_CLIENT_SECRET,
-    	callbackURL: 'http://devicewall.sc5.io:8888/auth/google/callback'
+    	callbackURL: GOOGLE_CALLBACK_URL
 	},
 	function(accessToken, refreshToken, profile, done) {
-		var user = {
-			id: profile.id,
-			displayName: profile.displayName,
-			emails: profile.emails
-		};
-		users[profile.id] = user;
+		var 
+			userId = profile.id,
+			user = {
+				id: userId,
+				displayName: profile.displayName,
+				emails: profile.emails
+			};
+		users[userId] = user;
 		return done(null, user);
 	}
 ));
@@ -190,20 +193,17 @@ app.get('/ping', function(req, res) {
 app.post('/start', function(req, res) {
 
 	var 
-		userId = req.body.user_id,
-		userName = req.body.username,
+		user = req.user,
 		address = req.body.address,
 		labels = req.body.labels || [];
-
-	console.log(userId, userName, address, labels);
 
 	// Updating devices
 
 	devices.forEach(function(device, deviceIndex) {
 		labels.forEach(function(label, labelIndex) {
 			if (device.label == label) {
-				device.userId = userId;
-				device.userName = userName;
+				device.userId = user.id;
+				device.userName = user.displayName;
 				device.lastUsed = +new Date();
 			}
 		});
@@ -216,7 +216,7 @@ app.post('/start', function(req, res) {
 	var updated = false;
 
 	instances.forEach(function(instance, index) {
-		if (instance.userId == userId) {
+		if (instance.userId == user.id) {
 			updated = true;
 			instance.address = address;
 			instance.labels = labels;
@@ -227,7 +227,7 @@ app.post('/start', function(req, res) {
 
 	if (!updated) {
 		instances.push({
-			userId: userId,
+			userId: user.id,
 			address: address,
 			labels: labels,
 			browserSync: null,
@@ -247,7 +247,7 @@ app.post('/start', function(req, res) {
 	bs.events.on('init', function(api) {
 
 		instances.forEach(function(instance, index) {
-			if (instance.userId == userId) {
+			if (instance.userId == user.id) {
 				instance.browserSync = api.options.url + '/';
 				instance.updated = +new Date();
 			}

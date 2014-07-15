@@ -97,10 +97,6 @@ function select() {
 		$('#container').removeClass('centerized');
 	}, 300);
 
-
-	$('#user-id').val(user.id);
-	$('#username').val(user.displayName);
-
 	var address = localStorage.getItem('address');
 
 	if (address) {
