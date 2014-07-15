@@ -1,16 +1,30 @@
 var express = require('express'),
+	cookieParser = require('cookie-parser'),
 	bodyParser = require('body-parser'),
+	expressSession = require('express-session'),
 	fs = require('fs'),
 	browserSync = require('browser-sync'),
+	passport = require('passport'),
+	GoogleStrategy = require('passport-google-oauth').OAuth2Strategy,
 	devices = require('./devices.json'),
 	instances = require('./instances.json'),
-	app = express();
+	app = express(),
+	users = {};
+
+var
+	GOOGLE_CLIENT_ID = '1020013470882-3u5sumpg19k4t4hm8kcltju0prl8fgud.apps.googleusercontent.com',
+	GOOGLE_CLIENT_SECRET = '4-kV0DljkbtvpV4GlPIR9S3j';
 
 
 
 
 
+app.use(cookieParser());
+app.use(expressSession({secret:'devicewall12345', resave: true, saveUninitialized: true}));
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(passport.initialize());
+app.use(passport.session());
+
 
 
 
@@ -32,7 +46,58 @@ app.on('update-instances', function() {
 
 
 
-app.get('/user', function(req, res) {
+passport.serializeUser(function(user, done) {
+  done(null, user);
+});
+
+passport.deserializeUser(function(user, done) {
+  done(null, user);
+});
+
+passport.use(new GoogleStrategy(
+	{
+		clientID: GOOGLE_CLIENT_ID,
+    	clientSecret: GOOGLE_CLIENT_SECRET,
+    	callbackURL: 'http://devicewall.sc5.io:8888/auth/google/callback'
+	},
+	function(accessToken, refreshToken, profile, done) {
+		users[profile.id] = {
+			id: profile.id,
+			displayName: profile.displayName,
+			emails: profile.emails
+		};
+		return done(null, true);
+	}
+));
+
+
+
+
+
+app.get('/auth/google', passport.authenticate('google', {scope: 'openid profile email'}));
+
+app.get('/auth/google/callback',
+	passport.authenticate('google', {failureRedirect: '/'}),
+	function(req, res) {
+		console.log(req);
+		res.redirect('/');
+	}
+);
+
+
+
+
+
+app.get('/profile', function(req, res) {
+	res.set('Cache-Control', 'no-cache');
+  	res.json({profile: req.session.profile});
+});
+
+
+
+
+
+app.get('/login', function(req, res) {
 
 	res.type('application/json');
 	res.set('Cache-Control', 'no-cache');

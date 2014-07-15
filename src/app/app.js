@@ -1,6 +1,6 @@
 var app = require('./app.js'),
     $ = require('jquery'),
-    USER;
+    profile;
 
 
 
@@ -46,13 +46,15 @@ function start() {
 
 
 
-function initializeUser(cb) {
+function initializeprofile(cb) {
 
-	$.getJSON('/user', function(res) {
+	$.getJSON('/profile', function(res) {
 
-		if (res.user) {
+		console.log(res);
 
-			USER = res.user;
+		if (res.profile) {
+
+			profile = res.profile;
 
 			cb();
 
@@ -73,6 +75,9 @@ function initializeUser(cb) {
 function login() {
 
 	$('#login').show();
+	$('#login-button').click(function() {
+		location = '/auth/google';
+	});
 
 }
 
@@ -83,8 +88,8 @@ function login() {
 
 function select() {
 
-	if (!USER) {
-		initializeUser(this);
+	if (!profile) {
+		initializeprofile(this);
 		return;
 	}
 
@@ -104,11 +109,11 @@ function select() {
 	}, 300);
 
 	var 
-		user = localStorage.getItem('user'),
+		profile = localStorage.getItem('profile'),
 		address = localStorage.getItem('address');
 
-	if (user) {
-		$('#user').val(user);
+	if (profile) {
+		$('#profile').val(profile);
 	}
 
 	if (address) {
@@ -134,11 +139,11 @@ function select() {
 				'<td contenteditable data-key="owner" title="Edit">' + (value.owner || '') + '</td>'
 			);
 
-			if (user && user == value.user) {
+			if (profile && profile == value.profile) {
 
 				var 
 					cellElement = $('<td class="emphasize" title="Remove"></td>'),
-					spanElement = $('<span>' + (value.user || '') + '</span>');
+					spanElement = $('<span>' + (value.profile || '') + '</span>');
 
 				cellElement.click(function(event) {
 
@@ -155,7 +160,7 @@ function select() {
 				rowElement.append(cellElement);
 
 			} else {
-				rowElement.append('<td>' + (value.user || '') + '</td>');
+				rowElement.append('<td>' + (value.profile || '') + '</td>');
 			}
 
 			rowElement.append(
@@ -197,16 +202,16 @@ function select() {
 function selectSubmit(event) {
 
 	var 
-		user = $('#user').val(),
+		profile = $('#profile').val(),
 		address = $('#address').val();
 
-	localStorage.setItem('user', user);
+	localStorage.setItem('profile', profile);
 	localStorage.setItem('address', address);
 
 	$.post('/start', $('#devices-form').serialize());
 
 	var interval = setInterval(function() {
-		$.getJSON('/ping', {user: user}, function(data) {
+		$.getJSON('/ping', {profile: profile}, function(data) {
 			if (data.address) {
 				clearInterval(interval);
 				setTimeout(function() {
