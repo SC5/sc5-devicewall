@@ -147,7 +147,7 @@ function select() {
 			}
 
 			rowElement.append(
-				'<td><time>' + (value.lastUsed ? moment(new Date(value.lastUsed)).format('YYYY-MM-DD HH:mm:ss') : '') + '</time></td>' +
+				'<td><time>' + (value.lastUsed ? moment(new Date(value.lastUsed)).fromNow() : '') + '</time></td>' +
 				'<td><input type="checkbox" name="labels[]" value="' + value.label + '"></td>'
     		);
 
