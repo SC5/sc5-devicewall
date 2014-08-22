@@ -7,39 +7,8 @@ var app = require('./app.js'),
 
 
 function start() {
-
 	// Start the app here
-
-	var device = localStorage.getItem('device');
-
-	if (device == 1) {
-
-		select();
-
-	} else if (device == 2) {
-
-		identify();
-
-	} else {
-
-		$('#device-type').show();
-
-		$('#pc').click(function() {
-			$('#device-type').hide();
-			localStorage.setItem('device', 1);
-			select();
-			return false;
-		});
-
-		$('#mobile').click(function() {
-			$('#device-type').hide();
-			localStorage.setItem('device', 2);
-			identify();
-			return false;
-		});
-
-	}
-
+	select();
 }
 
 
@@ -214,56 +183,6 @@ function selectSubmit(event) {
 
 	}, 0);
 
-
-	return false;
-
-}
-
-
-
-
-
-function identify() {
-
-	$('#content').addClass('mobile');
-
-	$('#identify-form').submit(identifySubmit);
-
-	$('#identify').show();
-
-	var label = localStorage.getItem('label');
-
-	$('#label').val(label);
-
-	return false;
-
-}
-
-
-
-
-
-function identifySubmit(event) {
-
-	var label = $('#label').val();
-
-	localStorage.setItem('label', label);
-
-	$.post('/identify', {label: label});
-
-	$('#identify').hide();
-	$('#wait').show();
-
-	var interval = setInterval(function() {
-		$.getJSON('/ping', {label: label}, function(data) {
-			if (data.address) {
-				clearInterval(interval);
-				setTimeout(function() {
-					location = data.address;
-				}, 1000);
-			}
-		});
-	}, 1000);
 
 	return false;
 
