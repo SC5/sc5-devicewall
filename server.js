@@ -6,10 +6,18 @@ var express = require('express'),
 	browserSync = require('browser-sync'),
 	passport = require('passport'),
 	GoogleStrategy = require('passport-google-oauth').OAuth2Strategy,
-	devices = require('./devices.json'),
-	instances = require('./instances.json'),
 	app = express(),
-	users = {};
+	users = {},
+	devices = [],
+	instances = [];
+
+if (fs.existsSync('./data/devices.json')) {
+  devices = require('./data/devices.json');
+}
+
+if (fs.existsSync('./data/instances.json')) {
+  instances = require('./data/instances.json');
+}
 
 var
 	GOOGLE_CLIENT_ID = '1020013470882-3u5sumpg19k4t4hm8kcltju0prl8fgud.apps.googleusercontent.com',
@@ -32,13 +40,13 @@ app.use(passport.session());
 
 
 app.on('update-devices', function() {
-	fs.writeFileSync('./devices.json', JSON.stringify(devices));
+	fs.writeFileSync('./data/devices.json', JSON.stringify(devices));
 	console.log('Updated devices.json');
 	console.log(devices);
 });
 
 app.on('update-instances', function() {
-	fs.writeFileSync('./instances.json', JSON.stringify(instances));
+	fs.writeFileSync('./data/instances.json', JSON.stringify(instances));
 	console.log('Updated instances.json');
 	console.log(instances);
 });
@@ -245,10 +253,9 @@ app.post('/start', function(req, res) {
 	});
 
 	bs.events.on('init', function(api) {
-
 		instances.forEach(function(instance, index) {
 			if (instance.userId == user.id) {
-				instance.browserSync = api.options.url + '/';
+				instance.browserSync = api.options.urls.external;
 				instance.updated = +new Date();
 			}
 		});

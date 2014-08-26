@@ -8,10 +8,12 @@ ADD package.json /app/package.json
 RUN npm install
 
 # Copy files
-ADD devices.json /app/devices.json
-ADD instances.json /app/instances.json
+ADD data/devices.json /data/devices.json
+ADD data/instances.json /data/instances.json
 ADD server.js /app/server.js
 ADD dist /app/dist
+
+RUN ln -sf /data /app/data
 
 # Start
 EXPOSE 80
