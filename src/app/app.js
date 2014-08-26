@@ -9,6 +9,14 @@ var app = require('./app.js'),
 function start() {
 	// Start the app here
 	select();
+	$(window).on("pageshow", function() {
+    if (user) {
+      $('#wait').hide();
+      $('#content').addClass('devices');
+      $('#container').removeClass('centerized');
+      $('#devices').show();
+    }
+  });
 }
 
 
@@ -80,20 +88,20 @@ function select() {
 
     		var rowElement = $('<tr class="device" data-label="' + value.label + '"></tr>');
 
-			rowElement.append(    		
-				'<td>' + value.label + '</td>' + 
-				'<td contenteditable data-key="name" title="Edit">' + (value.name || '') + '</td>' + 
-				'<td contenteditable data-key="model" title="Edit">' + (value.model || '') + '</td>' + 
-				'<td contenteditable data-key="os" title="Edit">' + (value.os || '') + '</td>' + 
-				'<td contenteditable data-key="serial" title="Edit">' + (value.serial || '') + '</td>' + 
-				'<td contenteditable data-key="imei" title="Edit">' + (value.imei || '') + '</td>' + 
-				'<td contenteditable data-key="location" title="Edit">' + (value.location || '') + '</td>' + 
+			rowElement.append(
+				'<td>' + value.label + '</td>' +
+				'<td contenteditable data-key="name" title="Edit">' + (value.name || '') + '</td>' +
+				'<td contenteditable data-key="model" title="Edit">' + (value.model || '') + '</td>' +
+				'<td contenteditable data-key="os" title="Edit">' + (value.os || '') + '</td>' +
+				'<td contenteditable data-key="serial" title="Edit">' + (value.serial || '') + '</td>' +
+				'<td contenteditable data-key="imei" title="Edit">' + (value.imei || '') + '</td>' +
+				'<td contenteditable data-key="location" title="Edit">' + (value.location || '') + '</td>' +
 				'<td contenteditable data-key="owner" title="Edit">' + (value.owner || '') + '</td>'
 			);
 
 			if (user.id == value.userId) {
 
-				var 
+				var
 					cellElement = $('<td class="emphasize" title="Remove"></td>'),
 					spanElement = $('<span>' + (value.userName || '') + '</span>');
 
