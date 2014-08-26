@@ -6,3 +6,4 @@ src/.sass-cache
 phantomjs.log
 devices.json
 instances.json
+.project
