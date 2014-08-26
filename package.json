@@ -14,7 +14,8 @@
     "express-session": "^1.6.5",
     "forever": "^0.11.1",
     "passport": "^0.2.0",
-    "passport-google-oauth": "^0.1.5"
+    "passport-google-oauth": "^0.1.5",
+    "socket.io": "^1.0.6"
   },
   "devDependencies": {
     "find": "^0.1.5",
