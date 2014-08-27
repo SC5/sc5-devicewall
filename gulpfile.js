@@ -3,7 +3,8 @@ var path = require('path'),
     gulp = require('gulp'),
     browsersync = require('browser-sync'),
     $ = require('gulp-load-plugins')(),
-    package = require('./package.json');
+    package = require('./package.json'),
+    fs = require('fs');
 
 /* Configurations. Note that most of the configuration is stored in
 the task context. These are mainly for repeating configuration items */
@@ -21,6 +22,9 @@ gulp.task('install', function() {
   $.bower();
   // Downloads the Selenium webdriver
   $.protractor.webdriver_update(function() {});
+  if (!fs.existsSync('./config.json')) {
+    fs.writeFileSync('./config.json', fs.readFileSync('./config.json.template'));
+  }
 });
 
 /* Bump version number for package.json & bower.json */
@@ -89,7 +93,7 @@ gulp.task('stylesheets', function() {
   // The non-MD5fied prefix, so that we know which version we are actually
   // referring to in case of fixing bugs
   var bundleName = util.format('styles-%s.css', config.version);
-  
+
   return gulp.src('src/css/styles.scss')
     .pipe($.plumber())
     // Compile
@@ -128,18 +132,18 @@ gulp.task('integrate', ['javascript', 'stylesheets', 'assets'], function() {
 var dependencies = (config.browsersync) ? ['integrate', 'test', 'browsersync'] : ['integrate', 'test', 'serve', 'livereload'];
 
 gulp.task('watch', dependencies, function() {
-  
+
   // Watch the actual resources; Currently trigger a full rebuild
   gulp.watch([
-    'src/css/**/*.scss', 
-    'src/app/**/*.js', 
-    'src/app/**/*.hbs', 
+    'src/css/**/*.scss',
+    'src/app/**/*.js',
+    'src/app/**/*.hbs',
     'src/*.html',
     'tests/**/*.js'
   ], ['integrate', 'test']);
 
 });
-  
+
 gulp.task('livereload', function() {
 
   // Only livereload if the HTML (or other static assets) are changed, because
@@ -169,7 +173,7 @@ gulp.task('webdriver', function(cb) {
 
     var phantom = require('phantomjs-server'),
         webdriver = require('selenium-webdriver');
- 
+
     // Start PhantomJS
     phantom.start().done(function() {
       var driver = new webdriver.Builder()
@@ -194,7 +198,7 @@ gulp.task('test', ['webdriver'], function() {
     var args = ['--seleniumAddress', 'http://localhost:4444/'];
   }
 
-  // Set baseUrl 
+  // Set baseUrl
   args = args.concat(['--baseUrl', 'http://localhost:' + ((config.browsersync) ? 3002 : 8080) + '/']);
 
   // Run tests
@@ -202,7 +206,7 @@ gulp.task('test', ['webdriver'], function() {
     .pipe($.protractor.protractor({
       configFile: 'protractor.config.js',
       args: args
-    }))    
+    }))
     .on('error', function(e) { throw e; });
 
 });

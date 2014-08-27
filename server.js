@@ -9,7 +9,8 @@ var express = require('express'),
 	app = express(),
 	users = {},
 	devices = [],
-	instances = [];
+	instances = [],
+	config = require('./config.json');
 
 if (fs.existsSync('./data/devices.json')) {
   devices = require('./data/devices.json');
@@ -19,17 +20,8 @@ if (fs.existsSync('./data/instances.json')) {
   instances = require('./data/instances.json');
 }
 
-var
-	GOOGLE_CLIENT_ID = '1020013470882-3u5sumpg19k4t4hm8kcltju0prl8fgud.apps.googleusercontent.com',
-	GOOGLE_CLIENT_SECRET = '4-kV0DljkbtvpV4GlPIR9S3j',
-	GOOGLE_CALLBACK_URL = 'http://devicewall.sc5.io:8888/auth/google/callback';
-
-
-
-
-
 app.use(cookieParser());
-app.use(expressSession({secret:'devicewall12345', resave: true, saveUninitialized: true}));
+app.use(expressSession({secret: config.sessionKey, resave: true, saveUninitialized: true}));
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -65,9 +57,9 @@ passport.deserializeUser(function(id, done) {
 
 passport.use(new GoogleStrategy(
 	{
-		clientID: GOOGLE_CLIENT_ID,
-    	clientSecret: GOOGLE_CLIENT_SECRET,
-    	callbackURL: GOOGLE_CALLBACK_URL
+    clientID: config.GOOGLE_CLIENT_ID,
+    clientSecret: config.GOOGLE_CLIENT_SECRET,
+    callbackURL:config.GOOGLE_CALLBACK_URL
 	},
 	function(accessToken, refreshToken, profile, done) {
 		var
