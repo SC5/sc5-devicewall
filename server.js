@@ -13,11 +13,11 @@ var express = require('express'),
 	config = require('./config.json');
 
 if (fs.existsSync('./data/devices.json')) {
-  devices = require('./data/devices.json');
+	devices = require('./data/devices.json');
 }
 
 if (fs.existsSync('./data/instances.json')) {
-  instances = require('./data/instances.json');
+	instances = require('./data/instances.json');
 }
 
 app.use(cookieParser());
@@ -57,9 +57,9 @@ passport.deserializeUser(function(id, done) {
 
 passport.use(new GoogleStrategy(
 	{
-    clientID: config.GOOGLE_CLIENT_ID,
-    clientSecret: config.GOOGLE_CLIENT_SECRET,
-    callbackURL:config.GOOGLE_CALLBACK_URL
+    	clientID: config.GOOGLE_CLIENT_ID,
+    	clientSecret: config.GOOGLE_CLIENT_SECRET,
+    	callbackURL:config.GOOGLE_CALLBACK_URL
 	},
 	function(accessToken, refreshToken, profile, done) {
 		var
@@ -201,7 +201,7 @@ app.post('/start', function(req, res) {
 
 	devices.forEach(function(device, deviceIndex) {
 		labels.forEach(function(label, labelIndex) {
-		  // Check that there's no user or same user tries to use device
+			// Check that there's no user or same user tries to use device
 			if (device.label === label && (!device.userId || device.userId === user.id)) {
 				device.userId = user.id;
 				device.userName = user.displayName;
@@ -243,12 +243,12 @@ app.post('/start', function(req, res) {
 	var bs = browserSync.init(null, {
 		proxy: address,
 		browser: 'disable',
-    ghostMode: {
-        clicks: true,
-        location: true,
-        forms: true,
-        scroll: true
-    }
+	    ghostMode: {
+	        clicks: true,
+	        location: true,
+	        forms: true,
+	        scroll: true
+	    }
 	});
 
 	bs.events.on('init', function(api) {
@@ -273,7 +273,8 @@ app.post('/start', function(req, res) {
 
 app.post('/stop', function(req, res) {
 
-	var label = req.body.label,
+	var 
+		label = req.body.label,
 	    userId = req.body.userId;
 
 	// Update device
