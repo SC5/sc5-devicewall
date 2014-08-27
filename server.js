@@ -31,13 +31,13 @@ app.use(passport.session());
 
 
 
-app.on('update-devices', function() {
+app.on('update-devices', function () {
 	fs.writeFileSync('./data/devices.json', JSON.stringify(devices));
 	console.log('Updated devices.json');
 	console.log(devices);
 });
 
-app.on('update-instances', function() {
+app.on('update-instances', function () {
 	fs.writeFileSync('./data/instances.json', JSON.stringify(instances));
 	console.log('Updated instances.json');
 	console.log(instances);
@@ -47,11 +47,11 @@ app.on('update-instances', function() {
 
 
 
-passport.serializeUser(function(user, done) {
+passport.serializeUser(function (user, done) {
 	done(null, user.id);
 });
 
-passport.deserializeUser(function(id, done) {
+passport.deserializeUser(function (id, done) {
 	done(null, users[id]);
 });
 
@@ -61,7 +61,7 @@ passport.use(new GoogleStrategy(
     	clientSecret: config.GOOGLE_CLIENT_SECRET,
     	callbackURL:config.GOOGLE_CALLBACK_URL
 	},
-	function(accessToken, refreshToken, profile, done) {
+	function (accessToken, refreshToken, profile, done) {
 		var
 			userId = profile.id,
 			user = {
@@ -82,7 +82,7 @@ app.get('/auth/google', passport.authenticate('google', {scope: 'openid profile 
 
 app.get('/auth/google/callback',
 	passport.authenticate('google', {failureRedirect: '/'}),
-	function(req, res) {
+	function (req, res) {
 		res.redirect('/');
 	}
 );
@@ -91,7 +91,7 @@ app.get('/auth/google/callback',
 
 
 
-app.get('/user', function(req, res) {
+app.get('/user', function (req, res) {
 	res.set('Cache-Control', 'no-cache');
   	res.json({user: req.user});
 });
@@ -100,9 +100,9 @@ app.get('/user', function(req, res) {
 
 
 
-app.get('/devices', function(req, res) {
+app.get('/devices', function (req, res) {
 
-	devices.sort(function(a, b) {
+	devices.sort(function (a, b) {
 		if (a.location > b.location) {
 			return 1;
 		} else if (a.location < b.location) {
@@ -126,7 +126,7 @@ app.get('/devices', function(req, res) {
 
 
 
-app.post('/identify', function(req, res) {
+app.post('/identify', function (req, res) {
 
 	var label = req.body.label;
 
@@ -137,7 +137,7 @@ app.post('/identify', function(req, res) {
 
 	var updated = false;
 
-	devices.forEach(function(device, index) {
+	devices.forEach(function (device, index) {
 
 		if (device.label == label) {
 			device.updated = +new Date();
@@ -163,14 +163,14 @@ app.post('/identify', function(req, res) {
 
 
 
-app.get('/ping', function(req, res) {
+app.get('/ping', function (req, res) {
 
 	var
 		label = req.query.label,
 		userId = req.query.user_id,
 		message = {};
 
-	instances.forEach(function(instance, index) {
+	instances.forEach(function (instance, index) {
 		if (label) {
 			if (instance.labels.indexOf(label) >= 0 && instance.browserSync && instance.updated + 10000 > (+new Date())) {
 				message.address = instance.browserSync;
@@ -190,7 +190,7 @@ app.get('/ping', function(req, res) {
 
 
 
-app.post('/start', function(req, res) {
+app.post('/start', function (req, res) {
 
 	var
 		user = req.user,
@@ -199,8 +199,8 @@ app.post('/start', function(req, res) {
 
 	// Updating devices
 
-	devices.forEach(function(device, deviceIndex) {
-		labels.forEach(function(label, labelIndex) {
+	devices.forEach(function (device, deviceIndex) {
+		labels.forEach(function (label, labelIndex) {
 			// Check that there's no user or same user tries to use device
 			if (device.label === label && (!device.userId || device.userId === user.id)) {
 				device.userId = user.id;
@@ -216,7 +216,7 @@ app.post('/start', function(req, res) {
 
 	var updated = false;
 
-	instances.forEach(function(instance, index) {
+	instances.forEach(function (instance, index) {
 		if (instance.userId == user.id) {
 			updated = true;
 			instance.address = address;
@@ -251,8 +251,8 @@ app.post('/start', function(req, res) {
 	    }
 	});
 
-	bs.events.on('init', function(api) {
-		instances.forEach(function(instance, index) {
+	bs.events.on('init', function (api) {
+		instances.forEach(function (instance, index) {
 			if (instance.userId == user.id) {
 				instance.browserSync = api.options.urls.external;
 				instance.updated = +new Date();
@@ -271,7 +271,7 @@ app.post('/start', function(req, res) {
 
 
 
-app.post('/stop', function(req, res) {
+app.post('/stop', function (req, res) {
 
 	var 
 		label = req.body.label,
@@ -279,7 +279,7 @@ app.post('/stop', function(req, res) {
 
 	// Update device
 
-	devices.forEach(function(device, index) {
+	devices.forEach(function (device, index) {
 		if (device.label === label || device.userId === userId) {
 			device.userId = null;
 			device.userName = null;
@@ -295,7 +295,7 @@ app.post('/stop', function(req, res) {
 
 
 
-app.post('/save', function(req, res) {
+app.post('/save', function (req, res) {
 
 	var
 		label = req.body.label,
@@ -304,7 +304,7 @@ app.post('/save', function(req, res) {
 
 	// Update device
 
-	devices.forEach(function(device, index) {
+	devices.forEach(function (device, index) {
 		if (device.label == label) {
 			device[key] = value;
 		}
@@ -322,7 +322,7 @@ app.post('/save', function(req, res) {
 
 app.use(express.static(__dirname + '/dist'));
 
-var server = app.listen(process.argv[2] || 80, function() {
+var server = app.listen(process.argv[2] || 80, function () {
 	console.log('Express server listening on port %d', server.address().port);
 });
 
@@ -334,9 +334,9 @@ var server = app.listen(process.argv[2] || 80, function() {
 
 var io = require('socket.io')();
 
-io.on('connection', function(socket) {
+io.on('connect', function (socket) {
 
-	console.log('Devicewall client connected!');
+	console.log('DeviceWall client connected!');
 
 	socket.on('ferret', function (data, fn) {
 		console.log('UUID: ' + data.uuid + '\nUserAgent: ' + data.userAgent);
@@ -346,8 +346,8 @@ io.on('connection', function(socket) {
 
 });
 
-io.on('disconnect', function() {
-	console.log('Devicewall connection dropped.');
+io.on('disconnect', function () {
+	console.log('DeviceWall connection dropped.');
 });
 
 

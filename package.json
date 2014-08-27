@@ -15,7 +15,8 @@
     "forever": "^0.11.1",
     "passport": "^0.2.0",
     "passport-google-oauth": "^0.1.5",
-    "socket.io": "^1.0.6"
+    "socket.io": "^1.0.6",
+    "socket.io-client": "^1.0.6"
   },
   "devDependencies": {
     "find": "^0.1.5",

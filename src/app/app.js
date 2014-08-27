@@ -1,22 +1,38 @@
 var app = require('./app.js'),
-    $ = require('jquery'),
-    user;
+	$ = require('jquery'),
+	socket = require('socket.io-client')('http://localhost:3000'),
+	user;
 
 
+socket.on('connect', function () {
+
+	socket.on('event', function (data) {
+
+	});
+
+	socket.on('disconnect', function () {
+
+	});
+
+});
 
 
 
 function start() {
+
 	// Start the app here
+
 	select();
-	$(window).on("pageshow", function() {
-    if (user) {
-      $('#wait').hide();
-      $('#content').addClass('devices');
-      $('#container').removeClass('centerized');
-      $('#devices').show();
-    }
-  });
+
+	$(window).on('pageshow', function () {
+		if (user) {
+			$('#wait').hide();
+			$('#content').addClass('devices');
+			$('#container').removeClass('centerized');
+			$('#devices').show();
+		}
+	});
+
 }
 
 
@@ -24,7 +40,7 @@ function start() {
 
 
 function initializeUser(cb) {
-	$.getJSON('/user', function(res) {
+	$.getJSON('/user', function (res) {
 		if (res.user) {
 			user = res.user;
 			cb();
@@ -41,18 +57,26 @@ function initializeUser(cb) {
 function login() {
 
 	$('#login').show();
-	$('#login-button').click(function() {
+	$('#login-button').click(function () {
 		location = '/auth/google';
 	});
 
 }
 
+
+
+
+
 function selectAll() {
-  $('input[name="labels[]"]').not(':disabled').prop('checked', true);
+	$('input[name="labels[]"]').not(':disabled').prop('checked', true);
 }
 
+
+
+
+
 function selectNone() {
-  $('input[name="labels[]"]').not(':disabled').removeAttr('checked');
+	$('input[name="labels[]"]').not(':disabled').removeAttr('checked');
 }
 
 
@@ -68,13 +92,13 @@ function select() {
 
 	$('#devices-form').submit(selectSubmit);
 
-	$('#address').focus(function(event) {
+	$('#address').focus(function (event) {
 		if (!event.target.value) {
 			event.target.value = 'http://www.';
 		}
 	});
 
-	setTimeout(function() {
+	setTimeout(function () {
 		$('#devices').show();
 		$('#container').removeClass('centerized');
 	}, 300);
@@ -85,17 +109,17 @@ function select() {
 		$('#address').val(address);
 	}
 
-  $('#select-all').click(selectAll);
-  $('#select-none').click(selectNone);
+	$('#select-all').click(selectAll);
+	$('#select-none').click(selectNone);
 
-  $('#stop-testing').click(stopTesting);
+	$('#stop-testing').click(stopTesting);
 
 	var devicesList = $('#devices-list');
-	$.getJSON('/devices', function(data) {
+	$.getJSON('/devices', function (data) {
 
-		$.each(data, function(key, value) {
+		$.each(data, function (key, value) {
 
-    		var rowElement = $('<tr class="device" data-label="' + value.label + '"></tr>');
+			var rowElement = $('<tr class="device" data-label="' + value.label + '"></tr>');
 
 			rowElement.append(
 				'<td>' + value.label + '</td>' +
@@ -114,13 +138,13 @@ function select() {
 					cellElement = $('<td class="emphasize" title="Remove"></td>'),
 					spanElement = $('<span>' + (value.userName || '') + '</span>');
 
-				cellElement.click(function(event) {
+				cellElement.click(function (event) {
 
 					$.post('/stop', {label: value.label});
 
 					spanElement.remove();
 					cellElement.removeClass('emphasize');
-          $('input[type="checkbox"][value="' + value.label + '"]').removeAttr('disabled');
+					$('input[type="checkbox"][value="' + value.label + '"]').removeAttr('disabled');
 					return false;
 
 				});
@@ -135,13 +159,13 @@ function select() {
 			rowElement.append(
 				'<td><time>' + (value.lastUsed ? moment(new Date(value.lastUsed)).fromNow() : '') + '</time></td>' +
 				'<td><input type="checkbox" name="labels[]" value="' + value.label + '" ' + (value.userId ? 'disabled' : '') + '></td>'
-    		);
+			);
 
-	    	devicesList.append(rowElement);
+			devicesList.append(rowElement);
 
 		});
 
-		$('#devices-list [contenteditable]').blur(function(event) {
+		$('#devices-list [contenteditable]').blur(function (event) {
 
 			var
 				element = $(event.target),
@@ -153,7 +177,7 @@ function select() {
 
 		});
 
-		$('#devices-list [contenteditable]').keypress(function(event) {
+		$('#devices-list [contenteditable]').keypress(function (event) {
 			if (event.which == 13) {
 				event.target.blur();
 				return false;
@@ -176,11 +200,11 @@ function selectSubmit(event) {
 
 	$.post('/start', $('#devices-form').serialize());
 
-	var interval = setInterval(function() {
-		$.getJSON('/ping', {user_id: user.id}, function(data) {
+	var interval = setInterval(function () {
+		$.getJSON('/ping', {user_id: user.id}, function (data) {
 			if (data.address) {
 				clearInterval(interval);
-				setTimeout(function() {
+				setTimeout(function () {
 					location = data.address;
 				}, 1000);
 			}
@@ -191,32 +215,31 @@ function selectSubmit(event) {
 	$('#stop-testing').show();
 	$('#go').hide();
 
-	setTimeout(function() {
+	setTimeout(function () {
 
 		$('#devices').hide();
 		$('#content').removeClass('devices');
 
-		setTimeout(function() {
+		setTimeout(function () {
 			$('#wait').show();
 		}, 300);
 
 	}, 0);
-
 
 	return false;
 
 }
 
 function stopTesting() {
-  $.post('/stop', {userId: user.id}, function() {
-    $('#stop-testing').hide();
-    $('#go').show();
-  });
+	$.post('/stop', {userId: user.id}, function () {
+		$('#stop-testing').hide();
+		$('#go').show();
+	});
 }
 
 
 
 
 exports = module.exports = {
-  start: start
+	start: start
 };
