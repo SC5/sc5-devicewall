@@ -201,7 +201,8 @@ app.post('/start', function(req, res) {
 
 	devices.forEach(function(device, deviceIndex) {
 		labels.forEach(function(label, labelIndex) {
-			if (device.label == label) {
+		  // Check that there's no user or same user tries to use device
+			if (device.label === label && (!device.userId || device.userId === user.id)) {
 				device.userId = user.id;
 				device.userName = user.displayName;
 				device.lastUsed = +new Date();
