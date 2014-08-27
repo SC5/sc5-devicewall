@@ -330,5 +330,36 @@ app.post('/save', function(req, res) {
 app.use(express.static(__dirname + '/dist'));
 
 var server = app.listen(process.argv[2] || 80, function() {
-	console.log('Listening on port %d', server.address().port);
+	console.log('Express server listening on port %d', server.address().port);
 });
+
+
+
+// Socket.io server
+
+var io = require('socket.io')();
+
+io.on('connection', function(socket) {
+
+  console.log('Devicewall client connected!');
+
+  socket.on('ferret', function (data, fn) {
+		console.log("UUID: " + data.uuid + "\nUserAgent: " + data.userAgent);
+		fn({url: 'http://localhost', user: 'Thomson'});
+		//socket.send()
+  });
+
+});
+
+io.on('disconnect', function() {
+    console.log('Devicewall connection dropped.');
+});
+
+
+function send(message, data) {
+	io.emit('messages', {message: message, data: data});
+	console.log('Message sent.');
+}
+
+io.listen(2000);
+console.log('Socket.io server listening on port 2000');
