@@ -280,12 +280,13 @@ app.post('/start', function(req, res) {
 
 app.post('/stop', function(req, res) {
 
-	var label = req.body.label;
+	var label = req.body.label,
+	    userId = req.body.userId;
 
 	// Update device
 
 	devices.forEach(function(device, index) {
-		if (device.label == label) {
+		if (device.label === label || device.userId === userId) {
 			device.userId = null;
 			device.userName = null;
 		}
@@ -296,8 +297,6 @@ app.post('/stop', function(req, res) {
 	res.json({message: 'Removed tester'});
 
 });
-
-
 
 
 

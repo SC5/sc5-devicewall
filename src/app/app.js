@@ -88,6 +88,8 @@ function select() {
   $('#select-all').click(selectAll);
   $('#select-none').click(selectNone);
 
+  $('#stop-testing').click(stopTesting);
+
 	var devicesList = $('#devices-list');
 	$.getJSON('/devices', function(data) {
 
@@ -186,6 +188,8 @@ function selectSubmit(event) {
 	}, 1000);
 
 	$('#container').addClass('centerized');
+	$('#stop-testing').show();
+	$('#go').hide();
 
 	setTimeout(function() {
 
@@ -203,6 +207,12 @@ function selectSubmit(event) {
 
 }
 
+function stopTesting() {
+  $.post('/stop', {userId: user.id}, function() {
+    $('#stop-testing').hide();
+    $('#go').show();
+  });
+}
 
 
 
