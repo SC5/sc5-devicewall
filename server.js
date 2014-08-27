@@ -327,24 +327,26 @@ var server = app.listen(process.argv[2] || 80, function() {
 
 
 
+
+
 // Socket.io server
 
 var io = require('socket.io')();
 
 io.on('connection', function(socket) {
 
-  console.log('Devicewall client connected!');
+	console.log('Devicewall client connected!');
 
-  socket.on('ferret', function (data, fn) {
-		console.log("UUID: " + data.uuid + "\nUserAgent: " + data.userAgent);
+	socket.on('ferret', function (data, fn) {
+		console.log('UUID: ' + data.uuid + '\nUserAgent: ' + data.userAgent);
 		fn({url: 'http://localhost', user: 'Thomson'});
 		//socket.send()
-  });
+	});
 
 });
 
 io.on('disconnect', function() {
-    console.log('Devicewall connection dropped.');
+	console.log('Devicewall connection dropped.');
 });
 
 
@@ -353,5 +355,5 @@ function send(message, data) {
 	console.log('Message sent.');
 }
 
-io.listen(2000);
-console.log('Socket.io server listening on port 2000');
+io.listen(3000);
+console.log('Socket.io server listening on port 3000');
