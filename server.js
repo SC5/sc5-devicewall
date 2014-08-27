@@ -70,7 +70,7 @@ passport.use(new GoogleStrategy(
     	callbackURL: GOOGLE_CALLBACK_URL
 	},
 	function(accessToken, refreshToken, profile, done) {
-		var 
+		var
 			userId = profile.id,
 			user = {
 				id: userId,
@@ -173,7 +173,7 @@ app.post('/identify', function(req, res) {
 
 app.get('/ping', function(req, res) {
 
-	var 
+	var
 		label = req.query.label,
 		userId = req.query.user_id,
 		message = {};
@@ -200,7 +200,7 @@ app.get('/ping', function(req, res) {
 
 app.post('/start', function(req, res) {
 
-	var 
+	var
 		user = req.user,
 		address = req.body.address,
 		labels = req.body.labels || [];
@@ -249,7 +249,13 @@ app.post('/start', function(req, res) {
 
 	var bs = browserSync.init(null, {
 		proxy: address,
-		browser: 'disable'
+		browser: 'disable',
+    ghostMode: {
+        clicks: true,
+        location: true,
+        forms: true,
+        scroll: true
+    }
 	});
 
 	bs.events.on('init', function(api) {
@@ -298,7 +304,7 @@ app.post('/stop', function(req, res) {
 
 app.post('/save', function(req, res) {
 
-	var 
+	var
 		label = req.body.label,
 		key = req.body.key,
 		value = req.body.value;
