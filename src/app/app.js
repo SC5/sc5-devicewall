@@ -47,8 +47,13 @@ function login() {
 
 }
 
+function selectAll() {
+  $('input[name="labels[]"]').not(':disabled').prop('checked', true);
+}
 
-
+function selectNone() {
+  $('input[name="labels[]"]').not(':disabled').removeAttr('checked');
+}
 
 
 
@@ -80,8 +85,11 @@ function select() {
 		$('#address').val(address);
 	}
 
-	var devicesList = $('#devices-list');
+  $('#select-all').click(selectAll);
+  $('#select-none').click(selectNone);
 
+	var devicesList = $('#devices-list');
+  console.log(user.id);
 	$.getJSON('/devices', function(data) {
 
 		$.each(data, function(key, value) {
@@ -111,7 +119,7 @@ function select() {
 
 					spanElement.remove();
 					cellElement.removeClass('emphasize');
-
+          $('input[type="checkbox"][value="' + value.label + '"]').removeAttr('disabled');
 					return false;
 
 				});
@@ -125,7 +133,7 @@ function select() {
 
 			rowElement.append(
 				'<td><time>' + (value.lastUsed ? moment(new Date(value.lastUsed)).fromNow() : '') + '</time></td>' +
-				'<td><input type="checkbox" name="labels[]" value="' + value.label + '"></td>'
+				'<td><input type="checkbox" name="labels[]" value="' + value.label + '" ' + (value.userId ? 'disabled' : '') + '></td>'
     		);
 
 	    	devicesList.append(rowElement);
