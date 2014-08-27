@@ -89,7 +89,6 @@ function select() {
   $('#select-none').click(selectNone);
 
 	var devicesList = $('#devices-list');
-  console.log(user.id);
 	$.getJSON('/devices', function(data) {
 
 		$.each(data, function(key, value) {
