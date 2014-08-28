@@ -1,13 +1,17 @@
 var app = require('./app.js'),
   $ = require('jquery'),
   socket,
-  user;
+  user,
+  devices = [];
 
 function initializeSocket() {
   socket = io('http://devicewall.sc5.io:3000/devicewall');
   socket.on('update', function(data) {
-    // TODO
+    devices = data;
+    drawDevices(data);
   });
+  // TODO: Open new browser for testing?
+  socket.on('start', function(data) {});
 }
 
 function start() {
@@ -59,32 +63,8 @@ function drawDevices(data) {
     rowElement.append(
       '<td>' + value.uuid + '</td>' +
       '<td data-key="model" title="Edit">' + (value.model || '') + '</td>' +
-      '<td data-key="batteryStatus.value" title="Edit">' + (value.batteryStatus.value || '') + '</td>'
-    );
-
-    if (user.id == value.userId) {
-      var
-        cellElement = $('<td class="emphasize" title="Remove"></td>'),
-        spanElement = $('<span>' + (value.userName || '') + '</span>');
-
-      cellElement.click(function (event) {
-        $.post('/stop', {label: value.label});
-
-        spanElement.remove();
-        cellElement.removeClass('emphasize');
-        $('input[type="checkbox"][value="' + value.label + '"]').removeAttr('disabled');
-        return false;
-
-      });
-
-      cellElement.append(spanElement);
-      rowElement.append(cellElement);
-
-    } else {
-      rowElement.append('<td>' + (value.userName || '') + '</td>');
-    }
-
-    rowElement.append(
+      '<td data-key="batteryStatus.value" title="Edit">' + (value.batteryStatus.value || '') + '</td>' +
+      '<td>' + (value.userName || '') + '</td>' +
       '<td><time>' + (value.lastUsed ? moment(new Date(value.lastUsed)).fromNow() : '') + '</time></td>' +
       '<td><input type="checkbox" name="uuids[]" value="' + value.uuid + '" ' + (value.userId ? 'disabled' : '') + '></td>'
     );
@@ -125,6 +105,7 @@ function select() {
   $('#stop-testing').click(stopTesting);
 
   $.getJSON('/devices', function (data) {
+    devices = data;
     drawDevices(data);
   });
 }
@@ -135,24 +116,13 @@ function selectSubmit(event) {
 
   localStorage.setItem('url', url);
 
-  $.post('/start', formData);
   socket.emit('start', formData);
-
-  var interval = setInterval(function () {
-    $.getJSON('/ping', {user_id: user.id}, function (data) {
-      if (data.address) {
-        clearInterval(interval);
-        setTimeout(function () {
-          location = data.address;
-        }, 1000);
-      }
-    });
-  }, 1000);
 
   $('#container').addClass('centerized');
   $('#stop-testing').show();
   $('#go').hide();
 
+  /*
   setTimeout(function () {
     $('#devices').hide();
     $('#content').removeClass('devices');
@@ -161,16 +131,27 @@ function selectSubmit(event) {
       $('#wait').show();
     }, 300);
   }, 0);
-
+  */
   return false;
 }
 
+function getUserDevices() {
+  var i,
+      devicesLength = devices.length,
+      userDevices = [];
+
+  for (i = 0; i < devicesLength; i++) {
+    if (devices[i].userId === user.id) {
+      userDevices.push(devices[i].uuid);
+    }
+  }
+  return userDevices;
+}
+
 function stopTesting() {
-  $.post('/stop', {userId: user.id}, function () {
-    $('#stop-testing').hide();
-    $('#go').show();
-  });
-  socket.emit('stop');
+  socket.emit('stop', {uuids: getUserDevices()});
+  $('#stop-testing').hide();
+  $('#go').show();
 }
 
 exports = module.exports = {
