@@ -1,18 +1,18 @@
 var app = require('./app.js'),
-	$ = require('jquery'),
-	socket = require('socket.io-client')(3000),
-	user;
+  $ = require('jquery'),
+  socket = require('socket.io-client')(3000),
+  user;
 
 
 socket.on('connect', function () {
 
-	socket.on('event', function (data) {
+  socket.on('event', function (data) {
 
-	});
+  });
 
-	socket.on('disconnect', function () {
+  socket.on('disconnect', function () {
 
-	});
+  });
 
 });
 
@@ -20,18 +20,18 @@ socket.on('connect', function () {
 
 function start() {
 
-	// Start the app here
+  // Start the app here
 
-	select();
+  select();
 
-	$(window).on('pageshow', function () {
-		if (user) {
-			$('#wait').hide();
-			$('#content').addClass('devices');
-			$('#container').removeClass('centerized');
-			$('#devices').show();
-		}
-	});
+  $(window).on('pageshow', function () {
+    if (user) {
+      $('#wait').hide();
+      $('#content').addClass('devices');
+      $('#container').removeClass('centerized');
+      $('#devices').show();
+    }
+  });
 
 }
 
@@ -40,14 +40,14 @@ function start() {
 
 
 function initializeUser(cb) {
-	$.getJSON('/user', function (res) {
-		if (res.user) {
-			user = res.user;
-			cb();
-		} else {
-			login();
-		}
-	});
+  $.getJSON('/user', function (res) {
+    if (res.user) {
+      user = res.user;
+      cb();
+    } else {
+      login();
+    }
+  });
 }
 
 
@@ -56,10 +56,10 @@ function initializeUser(cb) {
 
 function login() {
 
-	$('#login').show();
-	$('#login-button').click(function () {
-		location = '/auth/google';
-	});
+  $('#login').show();
+  $('#login-button').click(function () {
+    location = '/auth/google';
+  });
 
 }
 
@@ -68,7 +68,7 @@ function login() {
 
 
 function selectAll() {
-	$('input[name="labels[]"]').not(':disabled').prop('checked', true);
+  $('input[name="labels[]"]').not(':disabled').prop('checked', true);
 }
 
 
@@ -76,115 +76,115 @@ function selectAll() {
 
 
 function selectNone() {
-	$('input[name="labels[]"]').not(':disabled').removeAttr('checked');
+  $('input[name="labels[]"]').not(':disabled').removeAttr('checked');
 }
 
 
 
 function select() {
 
-	if (!user) {
-		initializeUser(select);
-		return;
-	}
+  if (!user) {
+    initializeUser(select);
+    return;
+  }
 
-	$('#content').addClass('devices');
+  $('#content').addClass('devices');
 
-	$('#devices-form').submit(selectSubmit);
+  $('#devices-form').submit(selectSubmit);
 
-	$('#address').focus(function (event) {
-		if (!event.target.value) {
-			event.target.value = 'http://www.';
-		}
-	});
+  $('#address').focus(function (event) {
+    if (!event.target.value) {
+      event.target.value = 'http://www.';
+    }
+  });
 
-	setTimeout(function () {
-		$('#devices').show();
-		$('#container').removeClass('centerized');
-	}, 300);
+  setTimeout(function () {
+    $('#devices').show();
+    $('#container').removeClass('centerized');
+  }, 300);
 
-	var address = localStorage.getItem('address');
+  var address = localStorage.getItem('address');
 
-	if (address) {
-		$('#address').val(address);
-	}
+  if (address) {
+    $('#address').val(address);
+  }
 
-	$('#select-all').click(selectAll);
-	$('#select-none').click(selectNone);
+  $('#select-all').click(selectAll);
+  $('#select-none').click(selectNone);
 
-	$('#stop-testing').click(stopTesting);
+  $('#stop-testing').click(stopTesting);
 
-	var devicesList = $('#devices-list');
-	$.getJSON('/devices', function (data) {
+  var devicesList = $('#devices-list');
+  $.getJSON('/devices', function (data) {
 
-		$.each(data, function (key, value) {
+    $.each(data, function (key, value) {
 
-			var rowElement = $('<tr class="device" data-label="' + value.label + '"></tr>');
+      var rowElement = $('<tr class="device" data-label="' + value.label + '"></tr>');
 
-			rowElement.append(
-				'<td>' + value.label + '</td>' +
-				'<td contenteditable data-key="name" title="Edit">' + (value.name || '') + '</td>' +
-				'<td contenteditable data-key="model" title="Edit">' + (value.model || '') + '</td>' +
-				'<td contenteditable data-key="os" title="Edit">' + (value.os || '') + '</td>' +
-				'<td contenteditable data-key="serial" title="Edit">' + (value.serial || '') + '</td>' +
-				'<td contenteditable data-key="imei" title="Edit">' + (value.imei || '') + '</td>' +
-				'<td contenteditable data-key="location" title="Edit">' + (value.location || '') + '</td>' +
-				'<td contenteditable data-key="owner" title="Edit">' + (value.owner || '') + '</td>'
-			);
+      rowElement.append(
+        '<td>' + value.label + '</td>' +
+        '<td contenteditable data-key="name" title="Edit">' + (value.name || '') + '</td>' +
+        '<td contenteditable data-key="model" title="Edit">' + (value.model || '') + '</td>' +
+        '<td contenteditable data-key="os" title="Edit">' + (value.os || '') + '</td>' +
+        '<td contenteditable data-key="serial" title="Edit">' + (value.serial || '') + '</td>' +
+        '<td contenteditable data-key="imei" title="Edit">' + (value.imei || '') + '</td>' +
+        '<td contenteditable data-key="location" title="Edit">' + (value.location || '') + '</td>' +
+        '<td contenteditable data-key="owner" title="Edit">' + (value.owner || '') + '</td>'
+      );
 
-			if (user.id == value.userId) {
+      if (user.id == value.userId) {
 
-				var
-					cellElement = $('<td class="emphasize" title="Remove"></td>'),
-					spanElement = $('<span>' + (value.userName || '') + '</span>');
+        var
+          cellElement = $('<td class="emphasize" title="Remove"></td>'),
+          spanElement = $('<span>' + (value.userName || '') + '</span>');
 
-				cellElement.click(function (event) {
+        cellElement.click(function (event) {
 
-					$.post('/stop', {label: value.label});
+          $.post('/stop', {label: value.label});
 
-					spanElement.remove();
-					cellElement.removeClass('emphasize');
-					$('input[type="checkbox"][value="' + value.label + '"]').removeAttr('disabled');
-					return false;
+          spanElement.remove();
+          cellElement.removeClass('emphasize');
+          $('input[type="checkbox"][value="' + value.label + '"]').removeAttr('disabled');
+          return false;
 
-				});
+        });
 
-				cellElement.append(spanElement);
-				rowElement.append(cellElement);
+        cellElement.append(spanElement);
+        rowElement.append(cellElement);
 
-			} else {
-				rowElement.append('<td>' + (value.userName || '') + '</td>');
-			}
+      } else {
+        rowElement.append('<td>' + (value.userName || '') + '</td>');
+      }
 
-			rowElement.append(
-				'<td><time>' + (value.lastUsed ? moment(new Date(value.lastUsed)).fromNow() : '') + '</time></td>' +
-				'<td><input type="checkbox" name="labels[]" value="' + value.label + '" ' + (value.userId ? 'disabled' : '') + '></td>'
-			);
+      rowElement.append(
+        '<td><time>' + (value.lastUsed ? moment(new Date(value.lastUsed)).fromNow() : '') + '</time></td>' +
+        '<td><input type="checkbox" name="labels[]" value="' + value.label + '" ' + (value.userId ? 'disabled' : '') + '></td>'
+      );
 
-			devicesList.append(rowElement);
+      devicesList.append(rowElement);
 
-		});
+    });
 
-		$('#devices-list [contenteditable]').blur(function (event) {
+    $('#devices-list [contenteditable]').blur(function (event) {
 
-			var
-				element = $(event.target),
-				label = element.parent().attr('data-label'),
-				key = element.attr('data-key'),
-				value = element.text();
+      var
+        element = $(event.target),
+        label = element.parent().attr('data-label'),
+        key = element.attr('data-key'),
+        value = element.text();
 
-			$.post('/save', {label: label, key: key, value: value});
+      $.post('/save', {label: label, key: key, value: value});
 
-		});
+    });
 
-		$('#devices-list [contenteditable]').keypress(function (event) {
-			if (event.which == 13) {
-				event.target.blur();
-				return false;
-			}
-		});
+    $('#devices-list [contenteditable]').keypress(function (event) {
+      if (event.which == 13) {
+        event.target.blur();
+        return false;
+      }
+    });
 
-	});
+  });
 
 }
 
@@ -194,52 +194,52 @@ function select() {
 
 function selectSubmit(event) {
 
-	var address = $('#address').val();
+  var address = $('#address').val();
 
-	localStorage.setItem('address', address);
+  localStorage.setItem('address', address);
 
-	$.post('/start', $('#devices-form').serialize());
+  $.post('/start', $('#devices-form').serialize());
 
-	var interval = setInterval(function () {
-		$.getJSON('/ping', {user_id: user.id}, function (data) {
-			if (data.address) {
-				clearInterval(interval);
-				setTimeout(function () {
-					location = data.address;
-				}, 1000);
-			}
-		});
-	}, 1000);
+  var interval = setInterval(function () {
+    $.getJSON('/ping', {user_id: user.id}, function (data) {
+      if (data.address) {
+        clearInterval(interval);
+        setTimeout(function () {
+          location = data.address;
+        }, 1000);
+      }
+    });
+  }, 1000);
 
-	$('#container').addClass('centerized');
-	$('#stop-testing').show();
-	$('#go').hide();
+  $('#container').addClass('centerized');
+  $('#stop-testing').show();
+  $('#go').hide();
 
-	setTimeout(function () {
+  setTimeout(function () {
 
-		$('#devices').hide();
-		$('#content').removeClass('devices');
+    $('#devices').hide();
+    $('#content').removeClass('devices');
 
-		setTimeout(function () {
-			$('#wait').show();
-		}, 300);
+    setTimeout(function () {
+      $('#wait').show();
+    }, 300);
 
-	}, 0);
+  }, 0);
 
-	return false;
+  return false;
 
 }
 
 function stopTesting() {
-	$.post('/stop', {userId: user.id}, function () {
-		$('#stop-testing').hide();
-		$('#go').show();
-	});
+  $.post('/stop', {userId: user.id}, function () {
+    $('#stop-testing').hide();
+    $('#go').show();
+  });
 }
 
 
 
 
 exports = module.exports = {
-	start: start
+  start: start
 };
