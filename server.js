@@ -191,82 +191,6 @@ app.get('/ping', function (req, res) {
 
 
 
-app.post('/start', function (req, res) {
-
-  var
-    user = req.user,
-    address = req.body.address,
-    labels = req.body.labels || [];
-
-  // Updating devices
-
-  devices.forEach(function (device, deviceIndex) {
-    labels.forEach(function (label, labelIndex) {
-      // Check that there's no user or same user tries to use device
-      if (device.label === label && (!device.userId || device.userId === user.id)) {
-        device.userId = user.id;
-        device.userName = user.displayName;
-        device.lastUsed = +new Date();
-      }
-    });
-  });
-
-  app.emit('update-devices');
-
-  // Updating instances
-
-  var updated = false;
-
-  instances.forEach(function (instance, index) {
-    if (instance.userId == user.id) {
-      updated = true;
-      instance.address = address;
-      instance.labels = labels;
-      instance.browserSync = null;
-      instance.updated = +new Date();
-    }
-  });
-
-  if (!updated) {
-    instances.push({
-      userId: user.id,
-      address: address,
-      labels: labels,
-      browserSync: null,
-      updated: +new Date()
-    });
-  }
-
-  app.emit('update-instances');
-
-  // Start Browser Sync
-
-  var bs = browserSync.init(null, {
-    proxy: address,
-    browser: 'disable',
-      ghostMode: {
-          clicks: true,
-          location: true,
-          forms: true,
-          scroll: true
-      }
-  });
-
-  bs.events.on('init', function (api) {
-    instances.forEach(function (instance, index) {
-      if (instance.userId == user.id) {
-        instance.browserSync = api.options.urls.external;
-        instance.updated = +new Date();
-      }
-    });
-
-    app.emit('update-instances');
-
-  });
-
-  res.json({message: 'Started Browser Sync'});
-
-});
 
 
 
@@ -335,12 +259,18 @@ var server = app.listen(process.argv[2] || 80, function () {
 
 var 
   io = require('socket.io')(server),
-  ns = io.of('/devicewall'),
-  nsApp = io.of('/devicewallapp');
+  nsApp = io.of('/devicewallapp'),
+  ns = io.of('/devicewall');
 
-io.on('connect', function (socket) {
 
-  console.log('DeviceWall client connected!');
+
+
+
+// Namespace "devicewallapp"
+
+nsApp.on('connect', function (socket) {
+
+  console.log('DeviceWall device connected!');
 
   // Update device status
 
@@ -383,9 +313,109 @@ io.on('connect', function (socket) {
 
 });
 
-io.on('disconnect', function () {
-  console.log('DeviceWall connection dropped.');
+nsApp.on('disconnect', function () {
+  console.log('DeviceWall device disconnected.');
 });
+
+
+
+
+
+// Namespace "devicewall"
+
+ns.on('connect', function (socket) {
+
+  console.log('DeviceWall control panel connected!');
+
+  socket.on('start', function (data) {
+
+    var
+      user = data.user,
+      address = data.address,
+      uuids = data.uuids || [];
+
+    // Updating devices
+
+    devices.forEach(function (device, deviceIndex) {
+      uuids.forEach(function (uuid, uuidIndex) {
+        // Check that there's no user or same user tries to use device
+        if (device.uuid === uuid && (!device.userId || device.userId === user.id)) {
+          device.userId = user.id;
+          device.userName = user.displayName;
+          device.lastUsed = +new Date();
+        }
+      });
+    });
+
+    app.emit('update-devices');
+
+    // Updating instances
+
+    var updated = false;
+
+    instances.forEach(function (instance, index) {
+      if (instance.userId == user.id) {
+        updated = true;
+        instance.address = address;
+        instance.labels = labels;
+        instance.browserSync = null;
+        instance.updated = +new Date();
+      }
+    });
+
+    if (!updated) {
+      instances.push({
+        userId: user.id,
+        address: address,
+        labels: labels,
+        browserSync: null,
+        updated: +new Date()
+      });
+    }
+
+    app.emit('update-instances');
+
+    // Start Browser Sync
+
+    var bs = browserSync.init(null, {
+      proxy: address,
+      browser: 'disable',
+      ghostMode: {
+        clicks: true,
+        location: true,
+        forms: true,
+        scroll: true
+      }
+    });
+
+    // Update instances once BrowserSync is up and running, after that the page can be opened
+
+    bs.events.on('init', function (api) {
+
+      instances.forEach(function (instance, index) {
+        if (instance.userId == user.id) {
+          instance.browserSync = api.options.urls.external;
+          instance.updated = +new Date();
+        }
+      });
+
+      app.emit('update-instances');
+
+    });
+
+  });
+
+});
+
+ns.on('disconnect', function () {
+  console.log('DeviceWall control panel disconnected.');
+});
+
+
+
+
+
+// Start server
 
 io.listen(3000);
 console.log('Socket.io server listening on port 3000');
