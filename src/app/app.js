@@ -1,6 +1,6 @@
 var app = require('./app.js'),
 	$ = require('jquery'),
-	socket = require('socket.io-client')('http://localhost:3000'),
+	socket = require('socket.io-client')(3000),
 	user;
 
 
@@ -88,7 +88,7 @@ function select() {
 		return;
 	}
 
-	$('#content').addClass('pc devices');
+	$('#content').addClass('devices');
 
 	$('#devices-form').submit(selectSubmit);
 

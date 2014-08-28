@@ -332,7 +332,7 @@ var server = app.listen(process.argv[2] || 80, function () {
 
 // Socket.io server
 
-var io = require('socket.io')();
+var io = require('socket.io')(server);
 
 io.on('connect', function (socket) {
 
@@ -349,7 +349,6 @@ io.on('connect', function (socket) {
 io.on('disconnect', function () {
 	console.log('DeviceWall connection dropped.');
 });
-
 
 function send(message, data) {
 	io.emit('messages', {message: message, data: data});
