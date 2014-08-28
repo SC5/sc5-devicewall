@@ -6,6 +6,7 @@
   <title>DeviceWall</title>
   <!-- inject:css -->
   <!-- endinject -->
+  <script src="socket.io.js"></script>
 </head>
 <body>
 
@@ -24,14 +25,9 @@
           <h2>Available devices</h2>
           <table id="devices-list" spellcheck="false">
             <tr>
-              <th>Label</th>
-              <th>Name</th>
-              <th>Model code</th>
-              <th>OS</th>
-              <th>Serial number</th>
-              <th>IMEI code</th>
-              <th>Home</th>
-              <th>Owner</th>
+              <th>UUID</th>
+              <th>Model</th>
+              <th>Battery</th>
               <th>User</th>
               <th>Last used</th>
               <th>Select for testing</th>
@@ -44,7 +40,7 @@
 
           <h2><label for="address">Website to test</label></h2>
 
-          <input type="text" name="address" size="50" placeholder="http://www.sc5.io/" id="address">
+          <input type="text" name="url" size="50" placeholder="http://www.sc5.io/" id="url">
 
           <div class="buttons">
             <button type="submit" id="go" class="go">Go</button>
@@ -70,6 +66,5 @@
 
   <!-- inject:js -->
   <!-- endinject -->
-
 </body>
 </html>

@@ -73,9 +73,16 @@ gulp.task('javascript', ['preprocess'], function() {
           moment: {
             path: path.join(componentsPath, 'moment/moment.js'),
             exports: 'moment'
-          }
+          }/*,
+          'socket.io': {
+            path: path.join(componentsPath, 'socket.io-client/socket.io.js'),
+            exports: 'socket.io'
+          }*/
         }
       };
+
+  gulp.src(path.join(componentsPath, 'socket.io-client/socket.io.js'))
+      .pipe(gulp.dest('dist'));
 
   return gulp.src('src/app/main.js', { read: false })
     // Compile
