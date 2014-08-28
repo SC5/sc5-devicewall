@@ -332,16 +332,52 @@ var server = app.listen(process.argv[2] || 80, function () {
 
 // Socket.io server
 
-var io = require('socket.io')(server);
+var 
+	io = require('socket.io')(server),
+	ns = io.of('/devicewall'),
+	nsApp = io.of('/devicewallapp');
 
 io.on('connect', function (socket) {
 
 	console.log('DeviceWall client connected!');
 
-	socket.on('ferret', function (data, fn) {
-		console.log('UUID: ' + data.uuid + '\nUserAgent: ' + data.userAgent);
-		fn({url: 'http://localhost', user: 'Thomson'});
-		//socket.send()
+	// Update device status
+
+	socket.on('update', function (data) {
+
+		console.log(data);
+
+		var
+			uuid = data.uuid,
+			model = data.model,
+			batteryStatus = data.batteryStatus;
+
+		var updated = false;
+
+		devices.forEach(function (device, index) {
+
+			if (device.uuid == uuidl) {
+				device.model = model;
+				device.batteryStatus = batteryStatus;
+				device.updated = +new Date();
+				updated = true;
+			}
+
+		});
+
+		if (!updated) {
+			devices.push({
+				uuid: uuid,
+				model: model,
+				batteryStatus: batteryStatus,
+				updated: +new Date()
+			});
+		}
+
+		app.emit('update-devices');
+
+		ns.emit('update', data);
+
 	});
 
 });
@@ -349,11 +385,6 @@ io.on('connect', function (socket) {
 io.on('disconnect', function () {
 	console.log('DeviceWall connection dropped.');
 });
-
-function send(message, data) {
-	io.emit('messages', {message: message, data: data});
-	console.log('Message sent.');
-}
 
 io.listen(3000);
 console.log('Socket.io server listening on port 3000');
