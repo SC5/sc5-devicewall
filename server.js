@@ -376,7 +376,7 @@ io.on('connect', function (socket) {
 
 		app.emit('update-devices');
 
-		ns.emit('update', data);
+		ns.emit('update', devices);
 
 	});
 
