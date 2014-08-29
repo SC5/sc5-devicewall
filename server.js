@@ -119,7 +119,7 @@ app.get('/devices', function (req, res) {
   });
 
   res.set('Cache-Control', 'no-cache');
-    res.json(devices);
+  res.json(devices);
 
 });
 
@@ -400,7 +400,24 @@ ns.on('connect', function (socket) {
 	// List devices
 
 	socket.on('list', function (data, fn) {
+
+	  devices.sort(function (a, b) {
+	    if (a.location > b.location) {
+	      return 1;
+	    } else if (a.location < b.location) {
+	      return -1;
+	    } else {
+	      if (a.label > b.label) {
+	        return 1;
+	      } else if (a.label < b.label) {
+	        return -1;
+	      }
+	    }
+	    return 0;
+	  });
+
 		fn(devices);
+		
 	});
 
 });
