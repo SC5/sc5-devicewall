@@ -191,35 +191,6 @@ app.get('/ping', function (req, res) {
 
 
 
-
-
-
-
-
-app.post('/stop', function (req, res) {
-
-  var 
-    label = req.body.label,
-   userId = req.body.userId;
-
-  // Update device
-
-  devices.forEach(function (device, index) {
-    if (device.label === label || device.userId === userId) {
-      device.userId = null;
-      device.userName = null;
-    }
-  });
-
-  app.emit('update-devices');
-
-  res.json({message: 'Removed tester'});
-
-});
-
-
-
-
 app.post('/save', function (req, res) {
 
   var
@@ -327,6 +298,8 @@ ns.on('connect', function (socket) {
 
   console.log('DeviceWall control panel connected!');
 
+  // Start
+
   socket.on('start', function (data) {
 
     var
@@ -404,6 +377,25 @@ ns.on('connect', function (socket) {
     });
 
   });
+
+  // Stop
+
+	socket.on('stop', function (data) {
+
+	  var uuids = data.uuids;
+
+	  // Update device
+
+	  devices.forEach(function (device, index) {
+	    if (uuids.indexOf(device.uuid) > 0) {
+	      device.userId = null;
+	      device.userName = null;
+	    }
+	  });
+
+	  app.emit('update-devices');
+
+	});
 
 });
 
