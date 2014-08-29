@@ -48,11 +48,11 @@ function login() {
 }
 
 function selectAll() {
-  $('input[name="labels[]"]').not(':disabled').prop('checked', true);
+  $('input[name="uuids[]"]').not(':disabled').prop('checked', true);
 }
 
 function selectNone() {
-  $('input[name="labels[]"]').not(':disabled').removeAttr('checked');
+  $('input[name="uuids[]"]').not(':disabled').removeAttr('checked');
 }
 
 function drawDevices(data) {
