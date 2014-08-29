@@ -10,8 +10,11 @@ function initializeSocket() {
     devices = data;
     drawDevices(data);
   });
-  // TODO: Open new browser for testing?
-  socket.on('start', function(data) {});
+  socket.on('start', function(data) {
+    if ($('#open-url').is(':checked')) {
+      window.open(data.url, '_blank');
+    }
+  });
 }
 
 function start() {
