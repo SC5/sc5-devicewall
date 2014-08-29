@@ -1,4 +1,4 @@
-var 
+var
   express = require('express'),
   cookieParser = require('cookie-parser'),
   bodyParser = require('body-parser'),
@@ -228,7 +228,7 @@ var server = app.listen(process.argv[2] || 80, function () {
 
 // Socket.io server
 
-var 
+var
   io = require('socket.io')(server),
   nsApp = io.of('/devicewallapp'),
   ns = io.of('/devicewall');
@@ -304,7 +304,7 @@ ns.on('connect', function (socket) {
 
     var
       user = data.user,
-      address = data.address,
+      url = data.url,
       uuids = data.uuids || [];
 
     // Updating devices
@@ -329,8 +329,8 @@ ns.on('connect', function (socket) {
     instances.forEach(function (instance, index) {
       if (instance.userId == user.id) {
         updated = true;
-        instance.address = address;
-        instance.labels = labels;
+        instance.url = url;
+        instance.uuids = uuids;
         instance.browserSync = null;
         instance.updated = +new Date();
       }
@@ -339,8 +339,8 @@ ns.on('connect', function (socket) {
     if (!updated) {
       instances.push({
         userId: user.id,
-        address: address,
-        labels: labels,
+        url: url,
+        uuids: uuids,
         browserSync: null,
         updated: +new Date()
       });
@@ -351,7 +351,7 @@ ns.on('connect', function (socket) {
     // Start Browser Sync
 
     var bs = browserSync.init(null, {
-      proxy: address,
+      proxy: url,
       browser: 'disable',
       ghostMode: {
         clicks: true,

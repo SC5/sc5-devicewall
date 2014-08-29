@@ -115,7 +115,13 @@ function select() {
 
 function selectSubmit(event) {
   var url = $('#url').val(),
-      formData = $('#devices-form').serialize();
+      formData = {
+        "url": url,
+        "uuids": $('input[name="uuids[]"]:checked').map(function(){
+          return $(this).val();
+        }).get(),
+        "user": user
+      };
 
   localStorage.setItem('url', url);
 
@@ -125,16 +131,6 @@ function selectSubmit(event) {
   $('#stop-testing').show();
   $('#go').hide();
 
-  /*
-  setTimeout(function () {
-    $('#devices').hide();
-    $('#content').removeClass('devices');
-
-    setTimeout(function () {
-      $('#wait').show();
-    }, 300);
-  }, 0);
-  */
   return false;
 }
 
