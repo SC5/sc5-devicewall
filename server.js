@@ -397,6 +397,12 @@ ns.on('connect', function (socket) {
 
 	});
 
+	// List devices
+
+	socket.on('list', function (data, fn) {
+		fn(devices);
+	});
+
 });
 
 ns.on('disconnect', function () {
