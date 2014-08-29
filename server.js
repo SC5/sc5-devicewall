@@ -374,6 +374,9 @@ ns.on('connect', function (socket) {
 
       app.emit('update-instances');
 
+      ns.emit('open', data);
+      nsApp.emit('open', data);
+
     });
 
   });
