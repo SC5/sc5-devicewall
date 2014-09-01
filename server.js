@@ -242,7 +242,7 @@ nsApp.on('connection', function (socket) {
         updated = false;
 
     devices.forEach(function (device, index) {
-      if (device.uuid == uuidl) {
+      if (device.uuid === uuid) {
         device.model = model;
         device.batteryStatus = batteryStatus;
         device.updated = +new Date();
