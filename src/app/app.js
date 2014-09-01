@@ -1,11 +1,12 @@
 var app = require('./app.js'),
   $ = require('jquery'),
+  config = require('./config.js'),
   socket,
   user,
   devices = [];
 
 function initializeSocket() {
-  socket = io('http://devicewall.sc5.io:3000/devicewall');
+  socket = io(config.SOCKET_SERVER);
   socket.on('update', function(data) {
     console.log('update', data);
     devices = data;

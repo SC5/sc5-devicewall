@@ -25,6 +25,9 @@ gulp.task('install', function() {
   if (!fs.existsSync('./config.json')) {
     fs.writeFileSync('./config.json', fs.readFileSync('./config.json.template'));
   }
+  if (!fs.existsSync('./src/app/config.js')) {
+    fs.writeFileSync('./src/app/config.js', fs.readFileSync('./src/app/config.js.template'));
+  }
 });
 
 /* Bump version number for package.json & bower.json */
