@@ -1,3 +1,3 @@
-return {
+exports = module.exports = {
   "SOCKET_SERVER": "http://devicewall.sc5.io:3000/devicewall"
 };
