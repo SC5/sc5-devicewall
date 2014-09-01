@@ -7,6 +7,7 @@ var app = require('./app.js'),
 function initializeSocket() {
   socket = io('http://devicewall.sc5.io:3000/devicewall');
   socket.on('update', function(data) {
+    console.log('update', data);
     devices = data;
     drawDevices(data);
   });
@@ -60,6 +61,7 @@ function selectNone() {
 
 function drawDevices(data) {
   var devicesList = $('#devices-list');
+  devicesList.html('');
   $.each(data, function (key, value) {
     var rowElement = $('<tr class="device" data-uuid="' + value.uuid + '"></tr>');
 

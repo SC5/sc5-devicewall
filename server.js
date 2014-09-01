@@ -35,13 +35,11 @@ app.use(passport.session());
 app.on('update-devices', function () {
   fs.writeFileSync('./data/devices.json', JSON.stringify(devices));
   console.log('Updated devices.json');
-  console.log(devices);
 });
 
 app.on('update-instances', function () {
   fs.writeFileSync('./data/instances.json', JSON.stringify(instances));
   console.log('Updated instances.json');
-  console.log(instances);
 });
 
 
@@ -227,44 +225,29 @@ var server = app.listen(process.argv[2] || 80, function () {
 
 
 // Socket.io server
-
 var
   io = require('socket.io')(server),
   nsApp = io.of('/devicewallapp'),
   ns = io.of('/devicewall');
 
-
-
-
-
 // Namespace "devicewallapp"
-
-nsApp.on('connect', function (socket) {
-
+nsApp.on('connection', function (socket) {
   console.log('DeviceWall device connected!');
 
   // Update device status
-
   socket.on('update', function (data) {
-
-    console.log(data);
-
-    var
-      uuid = data.uuid,
-      model = data.model,
-      batteryStatus = data.batteryStatus;
-
-    var updated = false;
+    var uuid = data.uuid,
+        model = data.model,
+        batteryStatus = data.batteryStatus,
+        updated = false;
 
     devices.forEach(function (device, index) {
-
       if (device.uuid == uuidl) {
         device.model = model;
         device.batteryStatus = batteryStatus;
         device.updated = +new Date();
         updated = true;
       }
-
     });
 
     if (!updated) {
@@ -279,36 +262,26 @@ nsApp.on('connect', function (socket) {
     app.emit('update-devices');
 
     ns.emit('update', devices);
-
   });
 
+  socket.on('disconnect', function () {
+    console.log('DeviceWall device disconnected.');
+  });
 });
-
-nsApp.on('disconnect', function () {
-  console.log('DeviceWall device disconnected.');
-});
-
-
-
 
 
 // Namespace "devicewall"
-
-ns.on('connect', function (socket) {
-
+ns.on('connection', function (socket) {
   console.log('DeviceWall control panel connected!');
 
   // Start
-
   socket.on('start', function (data) {
-
-    var
-      user = data.user,
-      url = data.url,
-      uuids = data.uuids || [];
+    console.log('DeviceWall control panel start.');
+    var user = data.user,
+        url = data.url,
+        uuids = data.uuids || [];
 
     // Updating devices
-
     devices.forEach(function (device, deviceIndex) {
       uuids.forEach(function (uuid, uuidIndex) {
         // Check that there's no user or same user tries to use device
@@ -323,11 +296,10 @@ ns.on('connect', function (socket) {
     app.emit('update-devices');
 
     // Updating instances
-
     var updated = false;
 
     instances.forEach(function (instance, index) {
-      if (instance.userId == user.id) {
+      if (instance.userId === user.id) {
         updated = true;
         instance.url = url;
         instance.uuids = uuids;
@@ -349,7 +321,6 @@ ns.on('connect', function (socket) {
     app.emit('update-instances');
 
     // Start Browser Sync
-
     var bs = browserSync.init(null, {
       proxy: url,
       browser: 'disable',
@@ -361,49 +332,49 @@ ns.on('connect', function (socket) {
       }
     });
 
-    // Update instances once BrowserSync is up and running, after that the page can be opened
-
-    bs.events.on('init', function (api) {
-
+    function browserSyncInit(api) {
       instances.forEach(function (instance, index) {
-        if (instance.userId == user.id) {
+        if (instance.userId === user.id) {
           instance.browserSync = api.options.urls.external;
           instance.updated = +new Date();
         }
       });
+      data.url = api.options.urls.external;
 
       app.emit('update-instances');
 
+      ns.emit('update', devices);
       ns.emit('start', data);
       nsApp.emit('start', data);
+      bs.events.removeListener('init', browserSyncInit);
+    }
 
-    });
-
+    // Update instances once BrowserSync is up and running, after that the page can be opened
+    bs.events.on('init', browserSyncInit);
   });
 
   // Stop
-
 	socket.on('stop', function (data) {
-
+	  console.log('DeviceWall control panel stop.');
 	  var uuids = data.uuids;
 
 	  // Update device
-
 	  devices.forEach(function (device, index) {
-	    if (uuids.indexOf(device.uuid) > 0) {
-	      device.userId = null;
-	      device.userName = null;
-	    }
+	    uuids.forEach(function (uuid, index) {
+  	    if (device.uuid === uuid) {
+  	      device.userId = null;
+  	      device.userName = null;
+  	    }
+	    });
 	  });
 
 	  app.emit('update-devices');
-
+    ns.emit('update', devices);
 	});
 
 	// List devices
 
 	socket.on('list', function (data, fn) {
-
 	  devices.sort(function (a, b) {
 	    if (a.location > b.location) {
 	      return 1;
@@ -420,20 +391,13 @@ ns.on('connect', function (socket) {
 	  });
 
 		fn(devices);
-		
 	});
 
+  socket.on('disconnect', function () {
+    console.log('DeviceWall control panel disconnected.');
+  });
 });
-
-ns.on('disconnect', function () {
-  console.log('DeviceWall control panel disconnected.');
-});
-
-
-
-
 
 // Start server
-
 io.listen(3000);
 console.log('Socket.io server listening on port 3000');
