@@ -7,12 +7,13 @@ var app = require('./app.js'),
 function initializeSocket() {
   socket = io('http://devicewall.sc5.io:3000/devicewall');
   socket.on('update', function(data) {
-    console.log('update', data);
     devices = data;
     drawDevices(data);
   });
   socket.on('start', function(data) {
-    if ($('#open-url').is(':checked')) {
+    if ($('#open-url').is(':checked') && data.user.id === user.id) {
+      $('#go').hide();
+      $('#stop-testing').show();
       window.open(data.url, '_blank');
     }
   });
@@ -129,10 +130,6 @@ function selectSubmit(event) {
 
   socket.emit('start', formData);
 
-  $('#container').addClass('centerized');
-  $('#stop-testing').show();
-  $('#go').hide();
-
   return false;
 }
 
@@ -150,7 +147,7 @@ function getUserDevices() {
 }
 
 function stopTesting() {
-  socket.emit('stop', {uuids: getUserDevices()});
+  socket.emit('stop', {user: user, uuids: getUserDevices()});
   $('#stop-testing').hide();
   $('#go').show();
 }
