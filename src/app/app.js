@@ -67,7 +67,7 @@ function drawDevices(data) {
     var rowElement = $('<tr class="device" data-uuid="' + value.uuid + '"></tr>');
 
     rowElement.append(
-      '<td>' + value.uuid + '</td>' +
+      '<td>' + value.label + '</td>' +
       '<td data-key="model" title="Edit">' + (value.model || '') + '</td>' +
       '<td data-key="batteryStatus.value" title="Edit">' + (value.batteryStatus.value || '') + '</td>' +
       '<td>' + (value.userName || '') + '</td>' +
