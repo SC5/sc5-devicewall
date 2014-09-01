@@ -52,6 +52,7 @@ To update your package version, you eventually want to do one of the following:
 ## Configuration
 
 config.json.template has to be copied to config.json
+
 src/app/config.js.template has to be copied to src/app/config.js
 
 gulp copies these by default if destination file doesn't exist.
