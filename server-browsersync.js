@@ -1,9 +1,10 @@
 var browserSync = require('browser-sync'),
-    config = require('./config.json');
+    config = require('./config.json'),
+    bs;
 
- process.on('message', function(message) {
+process.on('message', function(message) {
   if (message.type === 'init') {
-    var bs = browserSync.init(null, {
+    bs = browserSync.init(null, {
       proxy: message.url,
       browser: 'disable',
       ghostMode: {
@@ -17,6 +18,8 @@ var browserSync = require('browser-sync'),
     bs.events.on('init', function(api) {
       process.send({type: 'browserSyncInit', browserSync: api.options.urls.external});
     });
+  } else if (message.type === 'location') {
+    bs.io.sockets.emit('location', {url: message.url});
   } else {
     browserSync.exit();
   }

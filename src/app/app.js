@@ -12,10 +12,12 @@ function initializeSocket() {
     drawDevices(data);
   });
   socket.on('start', function(data) {
-    if ($('#open-url').is(':checked') && data.user.id === user.id) {
+    if (data.user.id === user.id) {
       $('#go').hide();
       $('#stop-testing').show();
-      window.open(data.url, '_blank');
+      if ($('#open-url').is(':checked')) {
+        window.open(data.url, '_blank');
+      }
     }
   });
 }

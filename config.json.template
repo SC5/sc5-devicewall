@@ -2,5 +2,6 @@
   "GOOGLE_CLIENT_ID": "1020013470882-3u5sumpg19k4t4hm8kcltju0prl8fgud.apps.googleusercontent.com",
   "GOOGLE_CLIENT_SECRET": "4-kV0DljkbtvpV4GlPIR9S3j",
   "GOOGLE_CALLBACK_URL": "http://devicewall.sc5.io:8888/auth/google/callback",
-  "sessionKey": "devicewall12345"
+  "sessionKey": "devicewall12345",
+  "deviceWallAppURL": "http://devicewall.sc5.io:8080/"
 }

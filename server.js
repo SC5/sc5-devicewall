@@ -306,7 +306,7 @@ ns.on('connection', function (socket) {
       childProcesses[user.id].send({type: 'exit'});
       delete childProcesses[user.id];
     }
-    
+
     childProcesses[user.id] = fork('./server-browsersync');
     childProcesses[user.id].send({type: 'init', url: url});
     childProcesses[user.id].on('message', function(message) {
@@ -345,14 +345,14 @@ ns.on('connection', function (socket) {
 	    });
 	  });
 
-    if (user && childProcesses[user.id]) {
-      childProcesses[user.id].send('exit');
-      delete childProcesses[user.id];
-    }
-
 	  app.emit('update-devices');
     ns.emit('update', devices);
 
+    if (user && childProcesses[user.id]) {
+      childProcesses[user.id].send({type: 'location', url: config.deviceWallAppURL});
+      childProcesses[user.id].send({type: 'exit'});
+      delete childProcesses[user.id];
+    }
 	});
 
 	// List devices
