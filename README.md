@@ -1,22 +1,4 @@
-# Gulp BoBrSASS Boilerplate
-[![Build Status](https://travis-ci.org/SC5/gulp-bobrsass-boilerplate.png?branch=master)](https://travis-ci.org/SC5/gulp-bobrsass-boilerplate.png?branch=master)
-
-Gulp BoBrSASS Boilerplate is an evolutionary step from our earlier
-[Grunt BoReLESS Boilerplate](https://github.com/SC5/grunt-boreless-boilerplate?source=cc).
-It aims to cover the same needs, but at the same time remove some of the annoyances we have
-encountered:
-* Faster builds
-* Runs in background (watching changes), supports live reload
-* Supports source maps for both JavaScript and SASS
-* Scriptless, NPM driven deployments (to ease e.g. AWS OpsWorks & Windows deployments)
-* Browserify (or in future something else) for better web app packaging
-
-Rather than being fashionably opinionated, for some less significant things a democratic process
-works better (no matter how good or bad the opinions were). Therefore, the majority votes have
-been cast as follows:
-* Spaces instead of tabs
-* SASS & Compass instead of LESS
-* Jasmine instead of Karma
+# Device Wall
 
 ## Installation
 
@@ -25,7 +7,7 @@ If you don't already have node.js 0.10.x or later, fetch it from
 you may have.
 
     > npm install -g gulp
-    
+
 In addition, you will need [Ruby](https://www.ruby-lang.org/en/downloads/) to use
 Compass framework for compiling SASS stylesheets into CSS and sprite sheets:
 
@@ -55,7 +37,7 @@ To first cleanup your distribution directory and trigger **release** build
 To trigger **debug** build, run gulp with a debug flag
 
     > gulp --debug
-    
+
 To keep gulp running and watch for changes, use e.g.
 
     > gulp watch --debug
@@ -66,6 +48,14 @@ To update your package version, you eventually want to do one of the following:
     > gulp bump --minor
     > gulp bump --major
     > gulp bump # defaults to minor
+
+## Configuration
+
+config.json.template has to be copied to config.json
+
+src/app/config.js.template has to be copied to src/app/config.js
+
+gulp copies these by default if destination file doesn't exist.
 
 ## Running the Service
 

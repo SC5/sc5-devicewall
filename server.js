@@ -188,10 +188,12 @@ var
 
 // Namespace "devicewallapp"
 nsApp.on('connection', function (socket) {
+
   console.log('DeviceWall device connected!');
 
   // Update device status
   socket.on('update', function (data) {
+
     var uuid = data.uuid,
         model = data.model,
         batteryStatus = data.batteryStatus,
@@ -207,32 +209,56 @@ nsApp.on('connection', function (socket) {
     });
 
     if (!updated) {
+
+    	// Determine label for the device
+
+    	var label = 0;
+
+	    devices.forEach(function (device, index) {
+	    	var currentLabel = parseInt(device.label.replace(/[^0-9]/, ''), 10);
+	      if (currentLabel > label) {
+	      	label = currentLabel;
+	      }
+	    });
+
+	    label = 'P' + ('00' + (label + 1)).substr(-3, 3); // P stands for "phone", default format is for example "P001"
+
       devices.push({
         uuid: uuid,
+        label: label,
         model: model,
         batteryStatus: batteryStatus,
         updated: +new Date()
       });
+
     }
 
     app.emit('update-devices');
 
     ns.emit('update', devices);
+
   });
 
   socket.on('disconnect', function () {
     console.log('DeviceWall device disconnected.');
   });
+
 });
+
+
+
 
 
 // Namespace "devicewall"
 ns.on('connection', function (socket) {
+
   console.log('DeviceWall control panel connected!');
 
   // Start
   socket.on('start', function (data) {
+
     console.log('DeviceWall control panel start.');
+
     var user = data.user,
         url = data.url,
         uuids = data.uuids || [];
@@ -280,6 +306,7 @@ ns.on('connection', function (socket) {
       childProcesses[user.id].send({type: 'exit'});
       delete childProcesses[user.id];
     }
+    
     childProcesses[user.id] = fork('./server-browsersync');
     childProcesses[user.id].send({type: 'init', url: url});
     childProcesses[user.id].on('message', function(message) {
@@ -297,11 +324,14 @@ ns.on('connection', function (socket) {
         nsApp.emit('start', data);
       }
     });
+
   });
 
   // Stop
 	socket.on('stop', function (data) {
+
 	  console.log('DeviceWall control panel stop.');
+
 	  var uuids = data.uuids,
 	      user = data.user;
 
@@ -314,12 +344,15 @@ ns.on('connection', function (socket) {
   	    }
 	    });
 	  });
+
     if (user && childProcesses[user.id]) {
       childProcesses[user.id].send('exit');
       delete childProcesses[user.id];
     }
+
 	  app.emit('update-devices');
     ns.emit('update', devices);
+
 	});
 
 	// List devices
@@ -346,7 +379,12 @@ ns.on('connection', function (socket) {
   socket.on('disconnect', function () {
     console.log('DeviceWall control panel disconnected.');
   });
+
 });
+
+
+
+
 
 // Start server
 io.listen(3000);
