@@ -32,6 +32,15 @@
   	/*background-image: radial-gradient($values);*/
 }
 
+@font-face {
+  font-family: 'Entypo';
+  src: url('/assets/fonts/entypo.eot');
+  src: url('/assets/fonts/entypo.eot?#iefix') format('embedded-opentype'),
+       url('/assets/fonts/entypo.woff') format('woff'),
+       url('/assets/fonts/entypo.ttf') format('truetype'),
+       url('/assets/fonts/entypo.svg#Entypo') format('svg');
+}
+
 html {
 	height: 100%;
 }
@@ -204,6 +213,23 @@ table {
 
 }
 
+.plugged {
+	text-align: center;
+	vertical-align: middle;
+}
+
+.plugged span {
+	font-family: 'Entypo';
+	font-size: 2.5rem;
+	line-height: 40%;
+	vertical-align: middle;
+	color: #0f0;
+}
+
+.plugged span:after {
+	content: '\1F50B';
+}
+
 label {
 	display: inline-block;
 	vertical-align: middle;
@@ -281,6 +307,10 @@ input[type=checkbox]:after {
 	text-align: center;
 	line-height: 16px;
 	font-size: .8rem;
+}
+
+input[type=checkbox]:disabled:after {
+	background-color: #aaa;
 }
 
 input[type=checkbox]:checked:after {

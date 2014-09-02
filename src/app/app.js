@@ -107,7 +107,7 @@ function drawDevices(data) {
       '<td>' + (value.platform || '') + '</td>' +
       '<td>' + (value.version || '') + '</td>' +
       '<td>' + (value.batteryStatus.level || '') + '</td>' +
-      '<td>' + (value.batteryStatus.isPlugged || '') + '</td>' +
+      '<td' + (value.batteryStatus.isPlugged ? ' class="plugged"' : '') + '><span></span></td>' +
       '<td>' + (value.userName || '') + '</td>' +
       '<td><time>' + (value.lastUsed ? moment(new Date(value.lastUsed)).fromNow() : '') + '</time></td>' +
       '<td><input type="checkbox" name="uuids[]" value="' + value.uuid + '" ' + (value.userId ? 'disabled' : '') + '></td>'
