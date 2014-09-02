@@ -104,7 +104,10 @@ function drawDevices(data) {
     rowElement.append(
       '<td contenteditable data-key="label" title="Edit">' + value.label + '</td>' +
       '<td>' + (value.model || '') + '</td>' +
-      '<td>' + (value.batteryStatus.value || '') + '</td>' +
+      '<td>' + (value.platform || '') + '</td>' +
+      '<td>' + (value.version || '') + '</td>' +
+      '<td>' + (value.batteryStatus.level || '') + '</td>' +
+      '<td>' + (value.batteryStatus.isPlugged || '') + '</td>' +
       '<td>' + (value.userName || '') + '</td>' +
       '<td><time>' + (value.lastUsed ? moment(new Date(value.lastUsed)).fromNow() : '') + '</time></td>' +
       '<td><input type="checkbox" name="uuids[]" value="' + value.uuid + '" ' + (value.userId ? 'disabled' : '') + '></td>'
@@ -131,7 +134,7 @@ function drawDevices(data) {
 			event.target.blur();
 			return false;
 		}
-	}); 
+	});
 
 }
 
