@@ -11,7 +11,9 @@ var
   users = {},
   devices = [],
   instances = [],
-  config = require('./config.json');
+  config = require('./config.json'),
+  childProcesses = {},
+  fork = require('child_process').fork;
 
 if (fs.existsSync('./data/devices.json')) {
   devices = require('./data/devices.json');
@@ -27,11 +29,6 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(passport.initialize());
 app.use(passport.session());
 
-
-
-
-
-
 app.on('update-devices', function () {
   fs.writeFileSync('./data/devices.json', JSON.stringify(devices));
   console.log('Updated devices.json');
@@ -41,10 +38,6 @@ app.on('update-instances', function () {
   fs.writeFileSync('./data/instances.json', JSON.stringify(instances));
   console.log('Updated instances.json');
 });
-
-
-
-
 
 passport.serializeUser(function (user, done) {
   done(null, user.id);
@@ -73,10 +66,6 @@ passport.use(new GoogleStrategy(
   }
 ));
 
-
-
-
-
 app.get('/auth/google', passport.authenticate('google', {scope: 'openid profile email'}));
 
 app.get('/auth/google/callback',
@@ -86,21 +75,12 @@ app.get('/auth/google/callback',
   }
 );
 
-
-
-
-
 app.get('/user', function (req, res) {
   res.set('Cache-Control', 'no-cache');
   res.json({user: req.user});
 });
 
-
-
-
-
 app.get('/devices', function (req, res) {
-
   devices.sort(function (a, b) {
     if (a.location > b.location) {
       return 1;
@@ -118,15 +98,9 @@ app.get('/devices', function (req, res) {
 
   res.set('Cache-Control', 'no-cache');
   res.json(devices);
-
 });
 
-
-
-
-
 app.post('/identify', function (req, res) {
-
   var label = req.body.label;
 
   if (!label) {
@@ -155,15 +129,9 @@ app.post('/identify', function (req, res) {
   app.emit('update-devices');
 
   res.json({message: 'Identified succesfully.'});
-
 });
 
-
-
-
-
 app.get('/ping', function (req, res) {
-
   var
     label = req.query.label,
     userId = req.query.user_id,
@@ -185,12 +153,7 @@ app.get('/ping', function (req, res) {
 
 });
 
-
-
-
-
 app.post('/save', function (req, res) {
-
   var
     label = req.body.label,
     key = req.body.key,
@@ -210,18 +173,11 @@ app.post('/save', function (req, res) {
 
 });
 
-
-
-
-
 app.use(express.static(__dirname + '/dist'));
 
 var server = app.listen(process.argv[2] || 80, function () {
   console.log('Express server listening on port %d', server.address().port);
 });
-
-
-
 
 
 // Socket.io server
@@ -346,37 +302,28 @@ ns.on('connection', function (socket) {
 
     app.emit('update-instances');
 
-    // Start Browser Sync
-    var bs = browserSync.init(null, {
-      proxy: url,
-      browser: 'disable',
-      ghostMode: {
-        clicks: true,
-        location: true,
-        forms: true,
-        scroll: true
+    if (childProcesses[user.id]) {
+      childProcesses[user.id].send({type: 'exit'});
+      delete childProcesses[user.id];
+    }
+    
+    childProcesses[user.id] = fork('./server-browsersync');
+    childProcesses[user.id].send({type: 'init', url: url});
+    childProcesses[user.id].on('message', function(message) {
+      if (message.type === 'browserSyncInit') {
+        instances.forEach(function(instance, index) {
+          if (instance.userId === user.id) {
+            instance.browserSync = message.browserSync;
+            instance.updated = +new Date();
+          }
+        });
+        data.url = message.browserSync;
+        app.emit('update-devices');
+        ns.emit('update', devices);
+        ns.emit('start', data);
+        nsApp.emit('start', data);
       }
     });
-
-    function browserSyncInit(api) {
-      instances.forEach(function (instance, index) {
-        if (instance.userId === user.id) {
-          instance.browserSync = api.options.urls.external;
-          instance.updated = +new Date();
-        }
-      });
-      data.url = api.options.urls.external;
-
-      app.emit('update-instances');
-
-      ns.emit('update', devices);
-      ns.emit('start', data);
-      nsApp.emit('start', data);
-      bs.events.removeListener('init', browserSyncInit);
-    }
-
-    // Update instances once BrowserSync is up and running, after that the page can be opened
-    bs.events.on('init', browserSyncInit);
 
   });
 
@@ -385,7 +332,8 @@ ns.on('connection', function (socket) {
 
 	  console.log('DeviceWall control panel stop.');
 
-	  var uuids = data.uuids;
+	  var uuids = data.uuids,
+	      user = data.user;
 
 	  // Update device
 	  devices.forEach(function (device, index) {
@@ -396,6 +344,11 @@ ns.on('connection', function (socket) {
   	    }
 	    });
 	  });
+
+    if (user && childProcesses[user.id]) {
+      childProcesses[user.id].send('exit');
+      delete childProcesses[user.id];
+    }
 
 	  app.emit('update-devices');
     ns.emit('update', devices);
