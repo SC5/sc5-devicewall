@@ -155,14 +155,14 @@ app.get('/ping', function (req, res) {
 
 app.post('/save', function (req, res) {
   var
-    label = req.body.label,
+    uuid = req.body.uuid,
     key = req.body.key,
     value = req.body.value;
 
   // Update device
 
   devices.forEach(function (device, index) {
-    if (device.label == label) {
+    if (device.uuid == uuid) {
       device[key] = value;
     }
   });

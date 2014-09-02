@@ -5,6 +5,10 @@ var app = require('./app.js'),
   user,
   devices = [];
 
+
+
+
+
 function initializeSocket() {
   socket = io(config.SOCKET_SERVER);
   socket.on('update', function(data) {
@@ -22,6 +26,10 @@ function initializeSocket() {
   });
 }
 
+
+
+
+
 function start() {
   // Start the app here
   select();
@@ -34,7 +42,12 @@ function start() {
       $('#devices').show();
     }
   });
+
 }
+
+
+
+
 
 function initializeUser(cb) {
   $.getJSON('/user', function (res) {
@@ -48,6 +61,10 @@ function initializeUser(cb) {
   });
 }
 
+
+
+
+
 function login() {
   $('#login').show();
   $('#login-button').click(function () {
@@ -55,33 +72,75 @@ function login() {
   });
 }
 
+
+
+
+
 function selectAll() {
   $('input[name="uuids[]"]').not(':disabled').prop('checked', true);
 }
+
+
+
+
 
 function selectNone() {
   $('input[name="uuids[]"]').not(':disabled').removeAttr('checked');
 }
 
+
+
+
+
 function drawDevices(data) {
+
   var devicesList = $('#devices-list');
   devicesList.html('');
+
   $.each(data, function (key, value) {
+
     var rowElement = $('<tr class="device" data-uuid="' + value.uuid + '"></tr>');
 
     rowElement.append(
-      '<td>' + value.label + '</td>' +
-      '<td data-key="model" title="Edit">' + (value.model || '') + '</td>' +
-      '<td data-key="batteryStatus.value" title="Edit">' + (value.batteryStatus.value || '') + '</td>' +
+      '<td contenteditable data-key="label" title="Edit">' + value.label + '</td>' +
+      '<td>' + (value.model || '') + '</td>' +
+      '<td>' + (value.batteryStatus.value || '') + '</td>' +
       '<td>' + (value.userName || '') + '</td>' +
       '<td><time>' + (value.lastUsed ? moment(new Date(value.lastUsed)).fromNow() : '') + '</time></td>' +
       '<td><input type="checkbox" name="uuids[]" value="' + value.uuid + '" ' + (value.userId ? 'disabled' : '') + '></td>'
     );
+
     devicesList.append(rowElement);
+
   });
+
+ 	$('#devices-list [contenteditable]').blur(function(event) {
+
+		var
+			element = $(event.target),
+			uuid = element.parent().attr('data-uuid'),
+			key = element.attr('data-key'),
+			value = element.text();
+
+		$.post('/save', {uuid: uuid, key: key, value: value});
+
+	});
+
+	$('#devices-list [contenteditable]').keypress(function(event) {
+		if (event.which == 13) {
+			event.target.blur();
+			return false;
+		}
+	}); 
+
 }
 
+
+
+
+
 function select() {
+
   if (!user) {
     initializeUser(select);
     return;
@@ -119,6 +178,10 @@ function select() {
   });
 }
 
+
+
+
+
 function selectSubmit(event) {
   var url = $('#url').val(),
       formData = {
@@ -136,6 +199,10 @@ function selectSubmit(event) {
   return false;
 }
 
+
+
+
+
 function getUserDevices() {
   var i,
       devicesLength = devices.length,
@@ -149,11 +216,19 @@ function getUserDevices() {
   return userDevices;
 }
 
+
+
+
+
 function stopTesting() {
   socket.emit('stop', {user: user, uuids: getUserDevices()});
   $('#stop-testing').hide();
   $('#go').show();
 }
+
+
+
+
 
 exports = module.exports = {
   start: start
