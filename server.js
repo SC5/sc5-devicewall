@@ -197,11 +197,15 @@ nsApp.on('connection', function (socket) {
     var uuid = data.uuid,
         model = data.model,
         batteryStatus = data.batteryStatus,
+        platform = data.platform,
+        version = data.version,
         updated = false;
 
     devices.forEach(function (device, index) {
       if (device.uuid === uuid) {
         device.model = model;
+        device.platform = platform;
+        device.version = version;
         device.batteryStatus = batteryStatus;
         device.updated = +new Date();
         updated = true;
@@ -227,6 +231,8 @@ nsApp.on('connection', function (socket) {
         uuid: uuid,
         label: label,
         model: model,
+        platform: platform,
+        version: version,
         batteryStatus: batteryStatus,
         updated: +new Date()
       });
