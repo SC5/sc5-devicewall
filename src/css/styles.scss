@@ -221,9 +221,10 @@ table {
 .plugged span {
 	font-family: 'Entypo';
 	font-size: 2.5rem;
-	line-height: 40%;
+	line-height: 1rem;
 	vertical-align: middle;
 	color: #0f0;
+	text-shadow: 0 0 5px rgba(0, 0, 0, .25);
 }
 
 .plugged span:after {
