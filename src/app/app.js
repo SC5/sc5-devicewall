@@ -97,7 +97,7 @@ function drawDevices(data) {
   var devicesList = $('#devices-list');
   devicesList.html('');
 
-	var battery = icon = $('<span>').html('&#128267;').html();
+	var battery = $('<span>').html('&#128267;').html();
 
   $.each(data, function (key, value) {
 
