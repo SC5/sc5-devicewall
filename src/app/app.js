@@ -106,7 +106,7 @@ function drawDevices(data) {
       '<td>' + (value.model || '') + '</td>' +
       '<td>' + (value.platform || '') + '</td>' +
       '<td>' + (value.version || '') + '</td>' +
-      '<td>' + (value.batteryStatus.level || '') + '</td>' +
+      '<td>' + (value.batteryStatus.level + ' %' || '') + '</td>' +
       '<td' + (value.batteryStatus.isPlugged ? ' class="plugged"' : '') + '><span></span></td>' +
       '<td>' + (value.userName || '') + '</td>' +
       '<td><time>' + (value.lastUsed ? moment(new Date(value.lastUsed)).fromNow() : '') + '</time></td>' +
