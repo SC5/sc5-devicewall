@@ -100,59 +100,6 @@ app.get('/devices', function (req, res) {
   res.json(devices);
 });
 
-app.post('/identify', function (req, res) {
-  var label = req.body.label;
-
-  if (!label) {
-    res.json({message: 'Label missing.'});
-    return;
-  }
-
-  var updated = false;
-
-  devices.forEach(function (device, index) {
-
-    if (device.label == label) {
-      device.updated = +new Date();
-      updated = true;
-    }
-
-  });
-
-  if (!updated) {
-    devices.push({
-      label: label,
-      updated: +new Date()
-    });
-  }
-
-  app.emit('update-devices');
-
-  res.json({message: 'Identified succesfully.'});
-});
-
-app.get('/ping', function (req, res) {
-  var
-    label = req.query.label,
-    userId = req.query.user_id,
-    message = {};
-
-  instances.forEach(function (instance, index) {
-    if (label) {
-      if (instance.labels.indexOf(label) >= 0 && instance.browserSync && instance.updated + 10000 > (+new Date())) {
-        message.address = instance.browserSync;
-      }
-    } else if (userId) {
-      if (instance.userId == userId && instance.browserSync) {
-        message.address = instance.browserSync;
-      }
-    }
-  });
-
-  res.json(message);
-
-});
-
 app.post('/save', function (req, res) {
   var
     uuid = req.body.uuid,
