@@ -97,17 +97,27 @@ function drawDevices(data) {
   var devicesList = $('#devices-list');
   devicesList.html('');
 
+	var battery = icon = $('<span>').html('&#128267;').html();
+
   $.each(data, function (key, value) {
 
     var rowElement = $('<tr class="device" data-uuid="' + value.uuid + '"></tr>');
+
+    var 
+    	level = value.batteryStatus.level,
+    	isPlugged = value.batteryStatus.isPlugged,
+    	title = level ? 'Level: ' + level + ' %' + (isPlugged ? ', plugged' : '') : '',
+    	position = (level * .8 + 10) + '%',
+    	stop1 = (isPlugged ? '#0f0' : '#fff') + ' ' + position,
+    	stop2 = (isPlugged ? '#0c0' : '#ccc') + ' ' + position,
+    	style = ' style="background-image: -webkit-linear-gradient(left, ' + stop1 + ', ' + stop2 + ');"';
 
     rowElement.append(
       '<td contenteditable data-key="label" title="Edit">' + value.label + '</td>' +
       '<td>' + (value.model || '') + '</td>' +
       '<td>' + (value.platform || '') + '</td>' +
       '<td>' + (value.version || '') + '</td>' +
-      '<td>' + (value.batteryStatus.level + ' %' || '') + '</td>' +
-      '<td' + (value.batteryStatus.isPlugged ? ' class="plugged"' : '') + '><span></span></td>' +
+      '<td title="' + title + '" class="battery' + (isPlugged ? ' plugged' : '') + '"><span' + style + '>' + battery + '</span></td>' +
       '<td>' + (value.userName || '') + '</td>' +
       '<td><time>' + (value.lastUsed ? moment(new Date(value.lastUsed)).fromNow() : '') + '</time></td>' +
       '<td><input type="checkbox" name="uuids[]" value="' + value.uuid + '" ' + (value.userId ? 'disabled' : '') + '></td>'
