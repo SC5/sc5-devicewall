@@ -1,0 +1,12 @@
+*** node_modules/browser-sync/node_modules/foxy/index.js	2014-07-18 18:09:14.000000000 +0300
+--- node_modules/browser-sync/node_modules/foxy/index.js	2014-09-04 13:06:19.529806483 +0300
+***************
+*** 62,68 ****
+          if (res.statusCode === 302) {
+              res.headers.location = utils.handleRedirect(res.headers.location, opts, proxyHost);
+          }
+-         utils.removeHeaders(res.headers, ["content-length", "content-encoding"]);
+      });
+  
+      function getRules() {
+--- 62,67 ----

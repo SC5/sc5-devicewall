@@ -1,6 +1,7 @@
 var path = require('path'),
     util = require('util'),
     gulp = require('gulp'),
+    shell = require('gulp-shell'),
     browsersync = require('browser-sync'),
     $ = require('gulp-load-plugins')(),
     package = require('./package.json'),
@@ -28,6 +29,7 @@ gulp.task('install', function() {
   if (!fs.existsSync('./src/app/config.js')) {
     fs.writeFileSync('./src/app/config.js', fs.readFileSync('./src/app/config.js.template'));
   }
+  gulp.src('').pipe(shell(['patch -p0 < foxy.patch']));
 });
 
 /* Bump version number for package.json & bower.json */
