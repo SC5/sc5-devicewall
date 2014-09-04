@@ -3,7 +3,8 @@ var app = require('./app.js'),
   config = require('./config.js'),
   socket,
   user,
-  devices = [];
+  devices = [],
+  popupWindow;
 
 
 
@@ -20,7 +21,12 @@ function initializeSocket() {
       $('#go').hide();
       $('#stop-testing').show();
       if ($('#open-url').is(':checked')) {
-        window.open(data.url, '_blank');
+        if (popupWindow && !popupWindow.closed) {
+          popupWindow.location.href = data.url;
+          popupWindow.focus();
+        } else {
+          popupWindow = window.open(data.url, '_blank');
+        }
       }
     }
   });
