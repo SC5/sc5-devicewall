@@ -300,6 +300,7 @@ ns.on('connection', function (socket) {
 
 	  app.emit('update-devices');
     ns.emit('update', devices);
+    nsApp.emit('stop', data);
 
     if (user && childProcesses[user.id]) {
       childProcesses[user.id].send({type: 'location', url: config.deviceWallAppURL});
