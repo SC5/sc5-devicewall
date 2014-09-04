@@ -29,7 +29,7 @@ gulp.task('install', function() {
   if (!fs.existsSync('./src/app/config.js')) {
     fs.writeFileSync('./src/app/config.js', fs.readFileSync('./src/app/config.js.template'));
   }
-  gulp.src('').pipe(shell(['patch -p0 < foxy.patch']));
+  gulp.src('').pipe(shell(['patch -p0 -N < foxy.patch'], {ignoreErrors: true}));
 });
 
 /* Bump version number for package.json & bower.json */
