@@ -12,11 +12,11 @@ var app = require('./app.js'),
 
 function initializeSocket() {
   socket = io(config.SOCKET_SERVER);
-  socket.on('update', function(data) {
+  socket.on('update', function (data) {
     devices = data;
     drawDevices(data);
   });
-  socket.on('start', function(data) {
+  socket.on('start', function (data) {
     if (data.user.id === user.id) {
       $('#go').hide();
       $('#stop-testing').show();
@@ -37,7 +37,11 @@ function initializeSocket() {
 
 
 function start() {
+
   // Start the app here
+
+  initializeSocket();
+
   select();
 
   $(window).on('pageshow', function () {
@@ -55,16 +59,59 @@ function start() {
 
 
 
-function initializeUser(cb) {
-  $.getJSON('/user', function (res) {
-    initializeSocket();
-    if (res.user) {
-      user = res.user;
-      cb();
-    } else {
-      login();
-    }
+function initializeUser(fn) {
+
+  if (config.loginType == 1) {
+
+    // Google Auth login
+
+    $.getJSON('/user', function (res) {
+      if (res.user) {
+        user = res.user;
+        console.log(user);
+        fn();
+      } else {
+        login();
+      }
+    });
+
+  } else if (config.loginType == 2) {
+
+    // Nick name login
+    identify(fn);
+
+  }
+
+}
+
+
+
+
+function identify(fn) {
+
+  $('#identify').show();
+  var name = localStorage.getItem('name');
+
+  if (name) {
+    $('#name').val(name);
+  }
+
+  $('#identify-button').click(function () {
+
+    $('#identify').hide();
+
+    var name = $('#name').val();
+    localStorage.setItem('name', name);
+
+    user = {
+      id: name,
+      displayName: name
+    };
+
+    fn();
+
   });
+
 }
 
 
@@ -133,7 +180,7 @@ function drawDevices(data) {
 
   });
 
- 	$('#devices-list [contenteditable]').blur(function(event) {
+ 	$('#devices-list [contenteditable]').blur(function (event) {
 
 		var
 			element = $(event.target),
@@ -145,7 +192,7 @@ function drawDevices(data) {
 
 	});
 
-	$('#devices-list [contenteditable]').keypress(function(event) {
+	$('#devices-list [contenteditable]').keypress(function (event) {
 		if (event.which == 13) {
 			event.target.blur();
 			return false;
@@ -195,6 +242,7 @@ function select() {
     devices = data;
     drawDevices(data);
   });
+
 }
 
 
@@ -202,13 +250,14 @@ function select() {
 
 
 function selectSubmit(event) {
+
   var url = $('#url').val(),
       formData = {
-        "url": url,
-        "uuids": $('input[name="uuids[]"]:checked').map(function(){
+        url: url,
+        uuids: $('input[name="uuids[]"]:checked').map(function () {
           return $(this).val();
         }).get(),
-        "user": user
+        user: user
       };
 
   localStorage.setItem('url', url);
@@ -216,6 +265,7 @@ function selectSubmit(event) {
   socket.emit('start', formData);
 
   return false;
+
 }
 
 
@@ -223,6 +273,7 @@ function selectSubmit(event) {
 
 
 function getUserDevices() {
+
   var i,
       devicesLength = devices.length,
       userDevices = [];
@@ -232,7 +283,9 @@ function getUserDevices() {
       userDevices.push(devices[i].uuid);
     }
   }
+
   return userDevices;
+  
 }
 
 

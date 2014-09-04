@@ -20,6 +20,12 @@
         <button type="button" id="login-button">Sign in using Google account</button>
       </section>
 
+      <section id="identify" class="buttons" style="display: none;">
+        <label for="name">Your name:</label>
+        <input type="text" name="name" size="20" placeholder="John" id="name">
+        <button type="button" id="identify-button">Continue</button>
+      </section>
+
       <section id="devices" style="display: none;">
         <form id="devices-form">
           <h2>Available devices</h2>
@@ -44,7 +50,7 @@
           <h2><label for="address">Website to test</label></h2>
 
           <input type="text" name="url" size="50" placeholder="http://www.sc5.io/" id="url">
-          <input type="checkbox" name="open-url" id="open-url" value="1" checked> Open URL with this browser
+          <label><input type="checkbox" name="open-url" id="open-url" value="1" checked> Open URL with this browser</label>
 
           <div class="buttons">
             <button type="submit" id="go" class="go">Go</button>
