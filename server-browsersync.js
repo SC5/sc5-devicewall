@@ -6,7 +6,7 @@ process.on('message', function(message) {
   if (message.type === 'init') {
     bs = browserSync.init(null, {
       proxy: message.url,
-      host: '192.168.56.101',
+//      host: '192.168.56.101',
       browser: 'disable',
       https: true,
       ghostMode: {
