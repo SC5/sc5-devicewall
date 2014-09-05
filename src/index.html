@@ -1,80 +1,14 @@
 <!doctype html>
-<html>
+<html ng-app="DeviceWall">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DeviceWall</title>
   <!-- inject:css -->
   <!-- endinject -->
-  <script src="socket.io.js"></script>
-</head>
-<body>
-
-  <div id="container" class="centerized">
-
-    <div id="content">
-
-      <h1>DeviceWall</h1>
-
-      <section id="login" class="buttons" style="display: none;">
-        <button type="button" id="login-button">Sign in using Google account</button>
-      </section>
-
-      <section id="identify" class="buttons" style="display: none;">
-        <label for="name">Your name:</label>
-        <input type="text" name="name" size="20" placeholder="John" id="name">
-        <button type="button" id="identify-button">Continue</button>
-      </section>
-
-      <section id="devices" style="display: none;">
-        <form id="devices-form">
-          <h2>Available devices</h2>
-          <table spellcheck="false">
-            <tr>
-              <th>Label</th>
-              <th>Model</th>
-              <th>Platform</th>
-              <th>Version</th>
-              <th>Battery</th>
-              <th>User</th>
-              <th>Last used</th>
-              <th>Select for testing</th>
-            </tr>
-            <tbody id="devices-list"></tbody>
-          </table>
-
-          <div class="buttons">
-            <button type="button" id="select-all">Select all</button> <button type="button" id="select-none">Select none</button>
-          </div>
-
-          <h2><label for="address">Website to test</label></h2>
-
-          <input type="text" name="url" size="50" placeholder="http://www.sc5.io/" id="url">
-          <label><input type="checkbox" name="open-url" id="open-url" value="1" checked> Open URL with this browser</label>
-
-          <div class="buttons">
-            <button type="submit" id="go" class="go">Go</button>
-            <button type="button" id="stop-testing" style="display: none">Stop</button>
-          </div>
-        </form>
-      </section>
-
-      <section id="wait" style="display: none;">
-        <h2>Waiting for connection...</h2>
-        <p>
-          Please wait for Browser Sync to initialize.
-        </p>
-      </section>
-
-    </div>
-
-    <footer>
-      Copyright 2014 SC5 Online
-    </footer>
-
-  </div>
-
   <!-- inject:js -->
   <!-- endinject -->
+</head>
+<body ng-view>
 </body>
 </html>

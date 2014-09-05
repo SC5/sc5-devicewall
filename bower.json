@@ -2,9 +2,18 @@
   "name": "devicewall",
   "version": "0.2.0",
   "dependencies": {
-    "jquery": "2.1.0",
+    "angular": "~1.2.0",
+    "angular-resource": "~1.2.0",
+    "angular-route": "~1.2.0",
+    "angular-socket-io": "~0.6.0",
     "moment": "~2.7.0",
-    "socket.io-client": "^1.0.6"
+    "neat": "~1.6.0",
+    "bourbon": "~3.2.3",
+    "foundation": "~5.3.1",
+    "angular-foundation": "~0.3.0",
+    "ng-lodash": "~0.0.2",
+    "angular-socket-io": "~0.6.0",
+    "socket.io-client": "~1.0.6"
   },
   "devDependencies": {}
 }

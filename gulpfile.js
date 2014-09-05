@@ -3,7 +3,10 @@ var path = require('path'),
     gulp = require('gulp'),
     shell = require('gulp-shell'),
     browsersync = require('browser-sync'),
+    bowerFiles = require('main-bower-files'),
     $ = require('gulp-load-plugins')(),
+    templateCache = require('gulp-angular-templatecache'),
+    eventStream = require('event-stream'),
     package = require('./package.json'),
     fs = require('fs');
 
@@ -62,6 +65,8 @@ gulp.task('preprocess', function() {
     .pipe($.jshint.reporter('default'));
 });
 
+// Old javascript task
+/*
 gulp.task('javascript', ['preprocess'], function() {
 
   // The non-MD5fied prefix, so that we know which version we are actually
@@ -78,11 +83,7 @@ gulp.task('javascript', ['preprocess'], function() {
           moment: {
             path: path.join(componentsPath, 'moment/moment.js'),
             exports: 'moment'
-          }/*,
-          'socket.io': {
-            path: path.join(componentsPath, 'socket.io-client/socket.io.js'),
-            exports: 'socket.io'
-          }*/
+          }
         }
       };
 
@@ -98,6 +99,42 @@ gulp.task('javascript', ['preprocess'], function() {
     .pipe($.concat(bundleName))
     .pipe($.if(config.debug, $.uglify()))
     // Integration test
+    .pipe(gulp.dest('dist'));
+});
+*/
+
+gulp.task('javascript', ['preprocess'], function() {
+
+  // The non-MD5fied prefix, so that we know which version we are actually
+  // referring to in case of fixing bugs
+  var bundleName = util.format('bundle-%s.js', config.version);
+
+  // Note: two pipes get combined together by first
+  // combining components into one bundle, then adding
+  // app sources, and reordering the items. Note that
+  // we expect Angular to be the first item in bower.json
+  // so that component concatenation works
+  var components = gulp.src(['src/components/socket.io-client/socket.io.js'].concat(bowerFiles()))
+    // Socket.io does not specify main file in the manifest; add it manually
+    .pipe($.filter('**/*.js', '!jquery*', '!foundation*'))
+    .pipe($.plumber())
+    .pipe($.concat('components.js'));
+
+  var templates = gulp.src('src/assets/**/*.html')
+    .pipe(templateCache('templates.js', { standalone: true, root: 'assets' }));
+
+  var app = gulp.src('src/app/**/*.js')
+    .pipe($.concat('app.js'));
+
+  return eventStream.merge(components, app, templates)
+    .pipe($.order([
+      '**/components.js',
+      '**/templates.js',
+      '**/app.js'
+    ]))
+    .pipe($.concat(bundleName))
+    .pipe($.if(!config.debug, $.ngmin()))
+    .pipe($.if(!config.debug, $.uglify()))
     .pipe(gulp.dest('dist'));
 });
 

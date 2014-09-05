@@ -1,0 +1,65 @@
+<div id="container" class="{{ container.className }}">
+
+  <div id="content" class="{{ content.className }}">
+    <h1>DeviceWall</h1>
+
+    <section id="login" ng-show="login.show" class="buttons ng-hide">
+      <button type="button" id="login-button" ng-click="loginButton.click()">Sign in using Google account</button>
+    </section>
+
+    <section id="identify" ng-show="identify.show" class="buttons ng-hide">
+      <label for="name">Your name:</label>
+      <input type="text" name="name" size="20" placeholder="John" id="name" ng-model="name">
+      <button type="button" id="identify-button" ng-click="identifyButton.click()">Continue</button>
+    </section>
+
+    <section id="devices" ng-show="devices.show" class="ng-hide">
+      <form id="devices-form" ng-submit="form.selectSubmit()">
+        <h2>Available devices</h2>
+        <table spellcheck="false">
+          <tr>
+            <th>Label</th>
+            <th>Model</th>
+            <th>Platform</th>
+            <th>Version</th>
+            <th>Battery</th>
+            <th>User</th>
+            <th>Last used</th>
+            <th>Select for testing</th>
+          </tr>
+          <tbody id="devices-list" ng-if="deviceList.length > 0">
+            <tr ng-repeat="device in deviceList">
+              <td contenteditable data-key="label" title="Edit">{{ device.label }}</td>
+              <td>{{ device.model }}</td>
+              <td>{{ device.platform }}</td>
+              <td>{{ device.version }}</td>
+              <td title="" class="battery {{ device.batteryStatus.isPlugged ? 'plugged' : '' }}"><span></span></td>
+              <td>{{ device.userName }}</td>
+              <td><time>{{ device.lastUsed | timeSince }}</time></td>
+              <td><input type="checkbox" name="uuids[]" ng-model="uuids[device.uuid]" ng-checked="uuids[device.uuid]" value="{{ device.uuid }}" {{ device.userId ? 'disabled' : '' }}></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="buttons">
+          <button type="button" id="select-all" ng-click="selectAll.click()">Select all</button> <button type="button" id="select-none" ng-click="selectNone.click()">Select none</button>
+        </div>
+
+        <h2><label for="address">Website to test</label></h2>
+
+        <input type="text" name="url" size="50" placeholder="http://www.sc5.io/" id="url" ng-click="url.click()" ng-model="url.value">
+        <label><input type="checkbox" name="open-url" id="open-url" value="1" checked> Open URL with this browser</label>
+
+        <div class="buttons">
+          <button type="submit" id="go" ng-show="go.show" class="go">Go</button>
+          <button type="button" id="stop-testing" ng-show="stopTesting.show" class="ng-hide" ng-click="stopTesting.click()">Stop</button>
+        </div>
+      </form>
+    </section>
+  </div>
+
+  <footer>
+    Copyright 2014 SC5 Online
+  </footer>
+
+</div>
