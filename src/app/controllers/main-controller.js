@@ -34,6 +34,18 @@ angular.module('DeviceWall')
     };
     $scope.popupWindow = null;
     $scope.deviceList = [];
+    $scope.getBatteryStatusTitle = function(level, isPlugged) {
+      return level ? 'Level: ' + level + ' %' + (isPlugged ? ', plugged' : '') : '';
+    };
+    $scope.getBatteryStatusStyle = function(level, isPlugged) {
+      var position = (level * 0.8 + 10) + '%',
+          stop1 = (isPlugged ? '#0f0' : '#fff') + ' ' + position,
+          stop2 = (isPlugged ? '#0c0' : '#ccc') + ' ' + position;
+      return 'background-image: -webkit-linear-gradient(left, ' + stop1 + ', ' + stop2 + ');';
+    };
+    $scope.getDeviceDisabled = function(userId) {
+      return userId ? true : false;
+    };
     $scope.uuids = {};
     $scope.form = {
       selectSubmit: function() {
@@ -69,7 +81,9 @@ angular.module('DeviceWall')
     $scope.selectAll = {
       click: function() {
         _.each($scope.deviceList, function(val, key) {
-          $scope.uuids[val.uuid] = true;
+          if (!val.userId || val.userId === '') {
+            $scope.uuids[val.uuid] = true;
+          }
         });
       }
     };

@@ -33,10 +33,10 @@
               <td>{{ device.model }}</td>
               <td>{{ device.platform }}</td>
               <td>{{ device.version }}</td>
-              <td title="" class="battery {{ device.batteryStatus.isPlugged ? 'plugged' : '' }}"><span></span></td>
+              <td title="{{ getBatteryStatusTitle(device.batteryStatus.level, device.batteryStatus.isPlugged) }}" class="battery {{ device.batteryStatus.isPlugged ? 'plugged' : '' }}"><span style="{{ getBatteryStatusStyle(device.batteryStatus.level, device.batteryStatus.isPlugged) }}">&#128267;</span></td>
               <td>{{ device.userName }}</td>
               <td><time>{{ device.lastUsed | timeSince }}</time></td>
-              <td><input type="checkbox" name="uuids[]" ng-model="uuids[device.uuid]" ng-checked="uuids[device.uuid]" value="{{ device.uuid }}" {{ device.userId ? 'disabled' : '' }}></td>
+              <td><input type="checkbox" name="uuids[]" ng-model="uuids[device.uuid]" ng-checked="uuids[device.uuid]" value="{{ device.uuid }}" ng-disabled="{{ getDeviceDisabled(device.userId) }}"></td>
             </tr>
           </tbody>
         </table>
