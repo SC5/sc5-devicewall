@@ -102,14 +102,14 @@ app.get('/devices', function (req, res) {
 
 app.post('/save', function (req, res) {
   var
-    uuid = req.body.uuid,
+    label = req.body.label,
     key = req.body.key,
     value = req.body.value;
 
   // Update device
 
   devices.forEach(function (device, index) {
-    if (device.uuid == uuid) {
+    if (device.label == label) {
       device[key] = value;
     }
   });
@@ -133,6 +133,14 @@ var
   nsApp = io.of('/devicewallapp'),
   ns = io.of('/devicewall');
 
+function guid() {
+  function _p8(s) {
+      var p = (Math.random().toString(16)+'000000000').substr(2,8);
+      return s ? '-' + p.substr(0,4) + '-' + p.substr(4,4) : p ;
+  }
+  return _p8() + _p8(true) + _p8(true) + _p8();
+}
+
 // Namespace "devicewallapp"
 nsApp.on('connection', function (socket) {
 
@@ -141,7 +149,7 @@ nsApp.on('connection', function (socket) {
   // Update device status
   socket.on('update', function (data) {
 
-    var uuid = data.uuid,
+    var label = data.label,
         model = data.model,
         batteryStatus = data.batteryStatus,
         platform = data.platform,
@@ -149,7 +157,7 @@ nsApp.on('connection', function (socket) {
         updated = false;
 
     devices.forEach(function (device, index) {
-      if (device.uuid === uuid) {
+      if (device.label === label) {
         device.model = model;
         device.platform = platform;
         device.version = version;
@@ -175,7 +183,6 @@ nsApp.on('connection', function (socket) {
 	    label = 'P' + ('00' + (label + 1)).substr(-3, 3); // P stands for "phone", default format is for example "P001"
 
       devices.push({
-        uuid: uuid,
         label: label,
         model: model,
         platform: platform,
@@ -214,13 +221,13 @@ ns.on('connection', function (socket) {
 
     var user = data.user,
         url = data.url,
-        uuids = data.uuids || [];
+        labels = data.labels || [];
 
     // Updating devices
     devices.forEach(function (device, deviceIndex) {
-      uuids.forEach(function (uuid, uuidIndex) {
+      labels.forEach(function (label, labelIndex) {
         // Check that there's no user or same user tries to use device
-        if (device.uuid === uuid && (!device.userId || device.userId === user.id)) {
+        if (device.label === label && (!device.userId || device.userId === user.id)) {
           device.userId = user.id;
           device.userName = user.displayName;
           device.lastUsed = +new Date();
@@ -237,7 +244,7 @@ ns.on('connection', function (socket) {
       if (instance.userId === user.id) {
         updated = true;
         instance.url = url;
-        instance.uuids = uuids;
+        instance.labels = labels;
         instance.browserSync = null;
         instance.updated = +new Date();
       }
@@ -247,7 +254,7 @@ ns.on('connection', function (socket) {
       instances.push({
         userId: user.id,
         url: url,
-        uuids: uuids,
+        labels: labels,
         browserSync: null,
         updated: +new Date()
       });
@@ -285,13 +292,13 @@ ns.on('connection', function (socket) {
 
 	  console.log('DeviceWall control panel stop.');
 
-	  var uuids = data.uuids,
+	  var labels = data.labels,
 	      user = data.user;
 
 	  // Update device
 	  devices.forEach(function (device, index) {
-	    uuids.forEach(function (uuid, index) {
-  	    if (device.uuid === uuid) {
+	    labels.forEach(function (label, index) {
+  	    if (device.label === label) {
   	      device.userId = null;
   	      device.userName = null;
   	    }

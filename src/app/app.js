@@ -68,7 +68,6 @@ function initializeUser(fn) {
     $.getJSON('/user', function (res) {
       if (res.user) {
         user = res.user;
-        console.log(user);
         fn();
       } else {
         login();
@@ -130,7 +129,7 @@ function login() {
 
 
 function selectAll() {
-  $('input[name="uuids[]"]').not(':disabled').prop('checked', true);
+  $('input[name="labels[]"]').not(':disabled').prop('checked', true);
 }
 
 
@@ -138,7 +137,7 @@ function selectAll() {
 
 
 function selectNone() {
-  $('input[name="uuids[]"]').not(':disabled').removeAttr('checked');
+  $('input[name="labels[]"]').not(':disabled').removeAttr('checked');
 }
 
 
@@ -154,13 +153,13 @@ function drawDevices(data) {
 
   $.each(data, function (key, value) {
 
-    var rowElement = $('<tr class="device" data-uuid="' + value.uuid + '"></tr>');
+    var rowElement = $('<tr class="device" data-label="' + value.label + '"></tr>');
 
-    var 
-    	level = value.batteryStatus.level,
-    	isPlugged = value.batteryStatus.isPlugged,
+    var
+    	level = value.batteryStatus ? value.batteryStatus.level : null,
+    	isPlugged = value.batteryStatus ? value.batteryStatus.isPlugged : null,
     	title = level ? 'Level: ' + level + ' %' + (isPlugged ? ', plugged' : '') : '',
-    	position = (level * .8 + 10) + '%',
+    	position = level ? (level * .8 + 10) + '%' : '',
     	stop1 = (isPlugged ? '#0f0' : '#fff') + ' ' + position,
     	stop2 = (isPlugged ? '#0c0' : '#ccc') + ' ' + position,
     	style = ' style="background-image: -webkit-linear-gradient(left, ' + stop1 + ', ' + stop2 + ');"';
@@ -173,7 +172,7 @@ function drawDevices(data) {
       '<td title="' + title + '" class="battery' + (isPlugged ? ' plugged' : '') + '"><span' + style + '>' + battery + '</span></td>' +
       '<td>' + (value.userName || '') + '</td>' +
       '<td><time>' + (value.lastUsed ? moment(new Date(value.lastUsed)).fromNow() : '') + '</time></td>' +
-      '<td><input type="checkbox" name="uuids[]" value="' + value.uuid + '" ' + (value.userId ? 'disabled' : '') + '></td>'
+      '<td><input type="checkbox" name="labels[]" value="' + value.label + '" ' + (value.userId ? 'disabled' : '') + '></td>'
     );
 
     devicesList.append(rowElement);
@@ -184,11 +183,11 @@ function drawDevices(data) {
 
 		var
 			element = $(event.target),
-			uuid = element.parent().attr('data-uuid'),
+			label = element.parent().attr('data-label'),
 			key = element.attr('data-key'),
 			value = element.text();
 
-		$.post('/save', {uuid: uuid, key: key, value: value});
+		$.post('/save', {label: label, key: key, value: value});
 
 	});
 
@@ -254,7 +253,7 @@ function selectSubmit(event) {
   var url = $('#url').val(),
       formData = {
         url: url,
-        uuids: $('input[name="uuids[]"]:checked').map(function () {
+        labels: $('input[name="labels[]"]:checked').map(function () {
           return $(this).val();
         }).get(),
         user: user
@@ -280,12 +279,12 @@ function getUserDevices() {
 
   for (i = 0; i < devicesLength; i++) {
     if (devices[i].userId === user.id) {
-      userDevices.push(devices[i].uuid);
+      userDevices.push(devices[i].label);
     }
   }
 
   return userDevices;
-  
+
 }
 
 
@@ -293,7 +292,7 @@ function getUserDevices() {
 
 
 function stopTesting() {
-  socket.emit('stop', {user: user, uuids: getUserDevices()});
+  socket.emit('stop', {user: user, labels: getUserDevices()});
   $('#stop-testing').hide();
   $('#go').show();
 }
