@@ -98,7 +98,7 @@ body {
 			left: 0;
 			top: 0;
 			width: 100%;
-			height: 100%;		
+			height: 100%;
 		}
 
 		&.centerized #content {
@@ -118,7 +118,7 @@ body {
 			position: absolute;
 			left: 0;
 			bottom: 0;
-		}	
+		}
 
 	}
 
@@ -126,7 +126,7 @@ body {
 
 
 #{headings(all)} {
-	
+
 }
 
 h1 {
@@ -276,6 +276,10 @@ button {
 		font-size: 1.6rem;
 	}
 
+}
+
+button:disabled {
+  background: #aaa;
 }
 
 input[type=text] {
