@@ -250,6 +250,12 @@ button {
 		@include linear-gradient(#ddd, #fff);
 	}
 
+	&:disabled {
+	  @include linear-gradient(#ccc, #aaa);
+	  text-shadow: none;
+	  color: #666;
+	}
+
 	overflow: hidden;
 	white-space: nowrap;
 	-webkit-appearance: none;
@@ -276,10 +282,6 @@ button {
 		font-size: 1.6rem;
 	}
 
-}
-
-button:disabled {
-  background: #aaa;
 }
 
 input[type=text] {
