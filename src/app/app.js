@@ -18,7 +18,7 @@ function initializeSocket() {
   });
   socket.on('start', function (data) {
     if (data.user.id === user.id) {
-      $('#go').hide();
+      $('#go').html('Go').hide().prop('disabled', false);
       $('#stop-testing').show();
       if ($('#open-url').is(':checked')) {
         if (popupWindow && !popupWindow.closed) {
@@ -263,6 +263,10 @@ function select() {
 
 function selectSubmit(event) {
 
+  if ($('#go').is(":disabled")) {
+    return false;
+  }
+
   var url = $('#url').val(),
       formData = {
         url: url,
@@ -271,6 +275,8 @@ function selectSubmit(event) {
         }).get(),
         user: user
       };
+
+  $('#go').prop("disabled", true).html('<img src="assets/images/spiffygif_48x48.gif">');
 
   localStorage.setItem('url', url);
 
