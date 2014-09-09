@@ -171,16 +171,18 @@ nsApp.on('connection', function (socket) {
 
     	// Determine label for the device
 
-    	var label = 0;
+    	var tempLabel = 0;
 
 	    devices.forEach(function (device, index) {
 	    	var currentLabel = parseInt(device.label.replace(/[^0-9]/, ''), 10);
-	      if (currentLabel > label) {
-	      	label = currentLabel;
+	      if (currentLabel > tempLabel) {
+	      	tempLabel = currentLabel;
 	      }
 	    });
 
-	    label = 'P' + ('00' + (label + 1)).substr(-3, 3); // P stands for "phone", default format is for example "P001"
+      if (!label) {
+        label = 'P' + ('00' + (label + 1)).substr(-3, 3); // P stands for "phone", default format is for example "P001"
+	    }
 
       devices.push({
         label: label,
