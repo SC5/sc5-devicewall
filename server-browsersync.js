@@ -1,12 +1,14 @@
 var browserSync = require('browser-sync'),
     config = require('./config.json'),
-    bs;
+    bs,
+    url = require('url');
 
 process.on('message', function(message) {
   if (message.type === 'init') {
+    var parsedUrl = url.parse(message.url);
     bs = browserSync.init(null, {
       proxy: message.url,
-//      host: '192.168.56.101',
+      startPath: parsedUrl.path,
       browser: 'disable',
       https: true,
       ghostMode: {
