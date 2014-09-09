@@ -149,20 +149,20 @@ function drawDevices(data) {
   var devicesList = $('#devices-list');
   devicesList.html('');
 
-	var battery = $('<span>').html('&#128267;').html();
+  var battery = $('<span>').html('&#128267;').html();
 
   $.each(data, function (key, value) {
 
     var rowElement = $('<tr class="device" data-label="' + value.label + '"></tr>');
 
     var
-    	level = value.batteryStatus ? value.batteryStatus.level : null,
-    	isPlugged = value.batteryStatus ? value.batteryStatus.isPlugged : null,
-    	title = level ? 'Level: ' + level + ' %' + (isPlugged ? ', plugged' : '') : '',
-    	position = level ? (level * .8 + 10) + '%' : '',
-    	stop1 = (isPlugged ? '#0f0' : '#fff') + ' ' + position,
-    	stop2 = (isPlugged ? '#0c0' : '#ccc') + ' ' + position,
-    	style = ' style="background-image: -webkit-linear-gradient(left, ' + stop1 + ', ' + stop2 + ');"';
+      level = value.batteryStatus ? value.batteryStatus.level : null,
+      isPlugged = value.batteryStatus ? value.batteryStatus.isPlugged : null,
+      title = level ? 'Level: ' + level + ' %' + (isPlugged ? ', plugged' : '') : '',
+      position = level ? (level * 0.8 + 10) + '%' : '',
+      stop1 = (isPlugged ? '#0f0' : '#fff') + ' ' + position,
+      stop2 = (isPlugged ? '#0c0' : '#ccc') + ' ' + position,
+      style = ' style="background-image: -webkit-linear-gradient(left, ' + stop1 + ', ' + stop2 + ');"';
 
     rowElement.append(
       '<td contenteditable data-key="label" title="Edit">' + value.label + '</td>' +
@@ -179,24 +179,37 @@ function drawDevices(data) {
 
   });
 
- 	$('#devices-list [contenteditable]').blur(function (event) {
+  $('#devices-list [contenteditable]').blur(function (event) {
 
-		var
-			element = $(event.target),
-			label = element.parent().attr('data-label'),
-			key = element.attr('data-key'),
-			value = element.text();
+    var
+      element = $(event.target),
+      label = element.parent().attr('data-label'),
+      key = element.attr('data-key'),
+      value = element.text(),
+      labelIsntUnique;
 
-		$.post('/save', {label: label, key: key, value: value});
+    if (key === 'label') {
+      if (label !== value) {
+        for (var i = 0; i < devices.length; i++) {
+          if (devices[i].label === value) {
+            labelIsntUnique = true;
+          }
+        }
+      }
+    }
+    if (labelIsntUnique) {
+      element.text(label);
+    } else {
+      $.post('/save', {label: label, key: key, value: value});
+    }
+  });
 
-	});
-
-	$('#devices-list [contenteditable]').keypress(function (event) {
-		if (event.which == 13) {
-			event.target.blur();
-			return false;
-		}
-	});
+  $('#devices-list [contenteditable]').keypress(function (event) {
+    if (event.which == 13) {
+      event.target.blur();
+      return false;
+    }
+  });
 
 }
 
