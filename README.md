@@ -24,6 +24,14 @@ triggered by
 
 It actually performs a release build, too (to verify that everything is ok).
 
+## Configuration
+
+config.json.template has to be copied to config.json and modified.
+
+src/app/config.js.template has to be copied to src/app/config.js and modified.
+
+gulp copies these by default if destination file doesn't exist.
+
 ## Building
 
 The current build compiles JS and CSS monoliths for both the debug and release builds. The big
@@ -48,14 +56,6 @@ To update your package version, you eventually want to do one of the following:
     > gulp bump --minor
     > gulp bump --major
     > gulp bump # defaults to minor
-
-## Configuration
-
-config.json.template has to be copied to config.json
-
-src/app/config.js.template has to be copied to src/app/config.js
-
-gulp copies these by default if destination file doesn't exist.
 
 ## Running the Service
 
