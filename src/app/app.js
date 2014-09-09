@@ -235,13 +235,31 @@ function select() {
 
   $('#select-all').click(selectAll);
   $('#select-none').click(selectNone);
-
   $('#stop-testing').click(stopTesting);
+  $('#url').keyup(urlKeyup);
 
   $.getJSON('/devices', function (data) {
     devices = data;
     drawDevices(data);
   });
+
+}
+
+
+
+
+
+function urlKeyup(event) {
+
+  var url = $('#url').val();
+
+  if (/^https/.test(url)) {
+    $('#notice').fadeIn();
+    $('#go').attr('disabled', true);
+  } else {
+    $('#notice').fadeOut();
+    $('#go').attr('disabled', false);
+  }
 
 }
 
