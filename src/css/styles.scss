@@ -210,21 +210,27 @@ table {
 			text-align: center;
 		}
 
-		&.battery {
+		&.battery,
+		&.remove {
 
 			text-align: center;
 			vertical-align: middle;
 
 			span {
 				font-family: 'Entypo';
-				font-size: 2.4rem;
+				line-height: 1rem;
 				vertical-align: middle;
 				color: #fff;
-				cursor: default;
+			}
+
+		}
+
+		&.battery {
+
+			span {
+				font-size: 1.6rem;
 				-webkit-background-clip: text;
 				-webkit-text-fill-color: transparent;
-				display: block;
-				margin-top: -1.3rem;
 			}
 
 			&.plugged span {
@@ -232,19 +238,14 @@ table {
 			}
 
 		}
-
+	
 		&.remove {
-      text-align: center;
-      vertical-align: middle;
-		  span {
-        font-family: 'Entypo';
-        font-size: 2.4rem;
-        color: #fff;
-        cursor: pointer;
-        vertical-align: middle;
-        display: block;
-        margin-top: -1.3rem;
-		  }
+
+			span {
+				font-size: 1.2rem;
+				cursor: pointer;
+			}
+
 		}
 
 	}
