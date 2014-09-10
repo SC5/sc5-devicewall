@@ -157,6 +157,7 @@ function drawDevices(data) {
   var devicesList = $('#devices-list'),
       battery = $('<span>').html('&#128267;').html(),
       trash = $('<span>').html('&#59177;').html();
+
   devicesList.html('');
 
   $.each(data, function (key, value) {
@@ -174,9 +175,9 @@ function drawDevices(data) {
 
     rowElement.append(
       '<td contenteditable data-key="label" title="Edit">' + value.label + '</td>' +
-      '<td>' + (value.model || '') + '</td>' +
-      '<td>' + (value.platform || '') + '</td>' +
-      '<td>' + (value.version || '') + '</td>' +
+      '<td contenteditable data-key="model" title="Edit">' + (value.model || '') + '</td>' +
+      '<td contenteditable data-key="platform" title="Edit">' + (value.platform || '') + '</td>' +
+      '<td contenteditable data-key="version" title="Edit">' + (value.version || '') + '</td>' +
       '<td title="' + title + '" class="battery' + (isPlugged ? ' plugged' : '') + '"><span' + style + '>' + battery + '</span></td>' +
       '<td>' + (value.userName || '') + '</td>' +
       '<td><time>' + (value.lastUsed ? moment(new Date(value.lastUsed)).fromNow() : '') + '</time></td>' +
@@ -195,22 +196,24 @@ function drawDevices(data) {
       label = element.parent().attr('data-label'),
 			key = element.attr('data-key'),
       value = element.text(),
-      labelIsntUnique;
+      labelIsUnique = true;
 
     if (key === 'label') {
       if (label !== value) {
         for (var i = 0; i < devices.length; i++) {
           if (devices[i].label === value) {
-            labelIsntUnique = true;
+            labelIsUnique = false;
           }
         }
       }
     }
-    if (labelIsntUnique) {
+
+    if (!labelIsUnique) {
       element.text(label);
     } else {
       $.post('/save', {label: label, key: key, value: value});
     }
+
 	});
 
 	$('#devices-list [contenteditable]').keypress(function (event) {
@@ -279,10 +282,10 @@ function urlKeyup(event) {
   var url = $('#url').val();
 
   if (/^https/.test(url)) {
-    $('#notice').fadeIn(250);
+    $('#tooltip').fadeIn(250);
     $('#go').attr('disabled', true);
   } else {
-    $('#notice').fadeOut(250);
+    $('#tooltip').fadeOut(250);
     $('#go').attr('disabled', false);
   }
 
