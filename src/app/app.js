@@ -272,10 +272,10 @@ function urlKeyup(event) {
   var url = $('#url').val();
 
   if (/^https/.test(url)) {
-    $('#notice').fadeIn();
+    $('#notice').fadeIn(250);
     $('#go').attr('disabled', true);
   } else {
-    $('#notice').fadeOut();
+    $('#notice').fadeOut(250);
     $('#go').attr('disabled', false);
   }
 
