@@ -24,7 +24,7 @@
         <form action="" method="post" id="identify-form">
           <label for="name">Your name:</label>
           <input type="text" name="name" size="20" placeholder="John" id="name">
-          <button type="submit" id="identify-button">Continue</button>
+          <button type="submit" id="identify-button" disabled>Continue</button>
         </form>
       </section>
 
@@ -53,7 +53,7 @@
           <h2><label for="address">Website to test</label></h2>
 
           <span class="input">
-            <span id="tooltip" class="tooltip" style="display: none;">Https is not supported. Please use http protocol.</span>
+            <span id="tooltip-url" class="tooltip" style="display: none;">Https is not supported. Please use http protocol.</span>
             <input type="text" name="url" size="50" placeholder="http://www.sc5.io/" id="url">
           </span>
 
@@ -62,7 +62,7 @@
           </div>
 
           <div class="buttons">
-            <button type="submit" id="go" class="go">Go</button>
+            <button type="submit" id="go" class="go" disabled>Go</button>
             <button type="button" id="stop-testing" style="display: none">Stop</button>
           </div>
         </form>

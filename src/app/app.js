@@ -101,6 +101,13 @@ function identify(fn) {
     $('#name').val(name);
   }
 
+  $('#name').keyup(function (event) {
+    var name = $('#name').val();
+    $('#identify-button').attr('disabled', !name);
+  });
+
+  $('#identify-button').attr('disabled', !name);
+
   $('#identify-form').submit(function () {
 
     $('#identify').hide();
@@ -266,6 +273,8 @@ function select() {
   $('#stop-testing').click(stopTesting);
   $('#url').keyup(urlKeyup);
 
+  $('#go').attr('disabled', !url);
+
   $.getJSON('/devices', function (data) {
     devices = data;
     drawDevices(data);
@@ -279,14 +288,16 @@ function select() {
 
 function urlKeyup(event) {
 
-  var url = $('#url').val();
+  var 
+    url = $('#url').val(),
+    value = /^https/.test(url);
+
+  $('#go').attr('disabled', value);
 
   if (/^https/.test(url)) {
-    $('#tooltip').fadeIn(250);
-    $('#go').attr('disabled', true);
+    $('#tooltip-url').fadeIn(250);
   } else {
-    $('#tooltip').fadeOut(250);
-    $('#go').attr('disabled', false);
+    $('#tooltip-url').fadeOut(250);
   }
 
 }
