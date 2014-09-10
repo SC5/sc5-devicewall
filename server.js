@@ -334,6 +334,20 @@ ns.on('connection', function (socket) {
 		fn(devices);
 	});
 
+  socket.on('remove', function(data) {
+    devices = devices.filter(function (device) {
+      var removeDevice = false;
+      data.labels.forEach(function(element) {
+        if (element === device.label) {
+          removeDevice = true;
+        }
+      });
+      return !removeDevice;
+    });
+    app.emit('update-devices');
+    ns.emit('update', devices);
+  });
+
   socket.on('disconnect', function () {
     console.log('DeviceWall control panel disconnected.');
   });

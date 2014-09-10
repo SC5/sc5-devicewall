@@ -216,19 +216,34 @@ table {
 
 			span {
 				font-family: 'Entypo';
-				font-size: 3rem;
-				line-height: 1rem;
+				font-size: 2.4rem;
 				vertical-align: middle;
 				color: #fff;
 				cursor: default;
 				-webkit-background-clip: text;
 				-webkit-text-fill-color: transparent;
+				display: block;
+				margin-top: -1.3rem;
 			}
 
 			&.plugged span {
 				color: #0f0;
 			}
 
+		}
+
+		&.remove {
+      text-align: center;
+      vertical-align: middle;
+		  span {
+        font-family: 'Entypo';
+        font-size: 2.4rem;
+        color: #fff;
+        cursor: pointer;
+        vertical-align: middle;
+        display: block;
+        margin-top: -1.3rem;
+		  }
 		}
 
 	}

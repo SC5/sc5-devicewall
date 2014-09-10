@@ -152,10 +152,10 @@ function selectNone() {
 
 function drawDevices(data) {
 
-  var devicesList = $('#devices-list');
+  var devicesList = $('#devices-list'),
+      battery = $('<span>').html('&#128267;').html(),
+      trash = $('<span>').html('&#59177;').html();
   devicesList.html('');
-
-	var battery = $('<span>').html('&#128267;').html();
 
   $.each(data, function (key, value) {
 
@@ -178,7 +178,8 @@ function drawDevices(data) {
       '<td title="' + title + '" class="battery' + (isPlugged ? ' plugged' : '') + '"><span' + style + '>' + battery + '</span></td>' +
       '<td>' + (value.userName || '') + '</td>' +
       '<td><time>' + (value.lastUsed ? moment(new Date(value.lastUsed)).fromNow() : '') + '</time></td>' +
-      '<td><input type="checkbox" name="labels[]" value="' + value.label + '" ' + (value.userId ? 'disabled' : '') + '></td>'
+      '<td><input type="checkbox" name="labels[]" value="' + value.label + '" ' + (value.userId ? 'disabled' : '') + '></td>' +
+      '<td class="remove"><span>' + trash + '</span></td>'
     );
 
     devicesList.append(rowElement);
@@ -216,6 +217,10 @@ function drawDevices(data) {
 			return false;
 		}
 	});
+
+  $('#devices-list .remove').click(function(event) {
+    socket.emit('remove', {labels: [$(this).parent().attr('data-label')]});
+  });
 
 }
 
