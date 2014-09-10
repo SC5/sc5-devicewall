@@ -30,6 +30,12 @@ function initializeSocket() {
       }
     }
   });
+
+  socket.on('server-stop', function(data) {
+    if (data.user.id === user.id) {
+      $('#go').prop('disabled', false);
+    }
+  });
 }
 
 
@@ -155,7 +161,7 @@ function drawDevices(data) {
 
     var rowElement = $('<tr class="device" data-label="' + value.label + '"></tr>');
 
-    var 
+    var
       level = value.batteryStatus ? value.batteryStatus.level : null,
       isPlugged = value.batteryStatus ? value.batteryStatus.isPlugged : null,
     	title = level ? 'Level: ' + level + ' %' + (isPlugged ? ', plugged' : '') : '',
@@ -321,7 +327,7 @@ function getUserDevices() {
   }
 
   return userDevices;
-  
+
 }
 
 
@@ -331,7 +337,7 @@ function getUserDevices() {
 function stopTesting() {
   socket.emit('stop', {user: user, labels: getUserDevices()});
   $('#stop-testing').hide();
-  $('#go').show();
+  $('#go').prop('disabled', true).show();
 }
 
 

@@ -305,8 +305,11 @@ ns.on('connection', function (socket) {
 
     if (user && childProcesses[user.id]) {
       childProcesses[user.id].send({type: 'location', url: config.deviceWallAppURL});
-      childProcesses[user.id].send({type: 'exit'});
-      delete childProcesses[user.id];
+      setTimeout(function() {
+        childProcesses[user.id].send({type: 'exit'});
+        delete childProcesses[user.id];
+        ns.emit('server-stop', {user: user});
+      }, 2000);
     }
 	});
 
