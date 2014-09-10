@@ -171,7 +171,7 @@ function drawDevices(data) {
       position = level ? (level * 0.8 + 10) + '%' : '',
     	stop1 = (isPlugged ? '#0f0' : '#fff') + ' ' + position,
     	stop2 = (isPlugged ? '#0c0' : '#ccc') + ' ' + position,
-    	style = ' style="background-image: -webkit-linear-gradient(left, ' + stop1 + ', ' + stop2 + ');"';
+    	style = ' style="background-image: -webkit-linear-gradient(rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, .3) 80%), -webkit-linear-gradient(left, ' + stop1 + ', ' + stop2 + ');"';
 
     rowElement.append(
       '<td contenteditable data-key="label" title="Edit">' + value.label + '</td>' +

@@ -220,6 +220,7 @@ table {
 				font-family: 'Entypo';
 				line-height: 1rem;
 				vertical-align: middle;
+				padding: 0 5px;
 				color: #fff;
 			}
 
@@ -231,6 +232,7 @@ table {
 				font-size: 1.6rem;
 				-webkit-background-clip: text;
 				-webkit-text-fill-color: transparent;
+				cursor: default;
 			}
 
 			&.plugged span {
@@ -244,6 +246,9 @@ table {
 			span {
 				font-size: 1.2rem;
 				cursor: pointer;
+				background-image: -webkit-linear-gradient(left, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, .3) 80%), -webkit-linear-gradient(#fff 0%, #fff 100%);
+			  -webkit-background-clip: text;
+			  -webkit-text-fill-color: transparent;
 			}
 
 		}
@@ -364,6 +369,7 @@ input[type=checkbox]:checked {
 	margin: 0 2px;
 	padding: 0;
 	vertical-align: middle;
+	cursor: pointer;
 }
 
 input[type=checkbox]:after {
