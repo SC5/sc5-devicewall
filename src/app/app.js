@@ -101,7 +101,7 @@ function identify(fn) {
     $('#name').val(name);
   }
 
-  $('#identify-button').click(function () {
+  $('#identify-form').submit(function () {
 
     $('#identify').hide();
 
@@ -114,6 +114,8 @@ function identify(fn) {
     };
 
     fn();
+
+    return false;
 
   });
 
