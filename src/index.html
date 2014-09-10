@@ -21,9 +21,11 @@
       </section>
 
       <section id="identify" class="buttons" style="display: none;">
-        <label for="name">Your name:</label>
-        <input type="text" name="name" size="20" placeholder="John" id="name">
-        <button type="button" id="identify-button">Continue</button>
+        <form action="" method="post" id="identify-form">
+          <label for="name">Your name:</label>
+          <input type="text" name="name" size="20" placeholder="John" id="name">
+          <button type="submit" id="identify-button">Continue</button>
+        </form>
       </section>
 
       <section id="devices" style="display: none;">
@@ -51,12 +53,12 @@
           <h2><label for="address">Website to test</label></h2>
 
           <span class="input">
-            <span id="notice" class="notice" style="display: none;">Https is not supported. Please use http protocol.</span>
+            <span id="tooltip" class="tooltip" style="display: none;">Https is not supported. Please use http protocol.</span>
             <input type="text" name="url" size="50" placeholder="http://www.sc5.io/" id="url">
           </span>
 
           <div class="checkbox">
-            <label><input type="checkbox" name="open-url" id="open-url" value="1" checked> Open URL with this browser</label>
+            <label><input type="checkbox" name="open-url" id="open-url" value="1"> Open URL with this browser</label>
           </div>
 
           <div class="buttons">

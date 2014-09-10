@@ -205,6 +205,7 @@ table {
 
 		}
 
+		&:nth-child(8),
 		&:last-child {
 			text-align: center;
 		}
@@ -305,7 +306,7 @@ button {
 	vertical-align: middle;
 	position: relative;
 
-	.notice {
+	.tooltip {
 
 		display: block;
 		position: absolute;
