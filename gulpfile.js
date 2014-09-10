@@ -30,6 +30,7 @@ gulp.task('install', function() {
     fs.writeFileSync('./src/app/config.js', fs.readFileSync('./src/app/config.js.template'));
   }
   gulp.src('').pipe(shell(['patch -p0 -N < foxy.patch'], {ignoreErrors: true}));
+  gulp.src('').pipe(shell(['patch -p0 -N < browsersync.patch'], {ignoreErrors: true}));
 });
 
 /* Bump version number for package.json & bower.json */
