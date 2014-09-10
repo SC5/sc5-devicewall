@@ -178,7 +178,7 @@ function drawDevices(data) {
       '<td contenteditable data-key="model" title="Edit">' + (value.model || '') + '</td>' +
       '<td contenteditable data-key="platform" title="Edit">' + (value.platform || '') + '</td>' +
       '<td contenteditable data-key="version" title="Edit">' + (value.version || '') + '</td>' +
-      '<td title="' + title + '" class="battery' + (isPlugged ? ' plugged' : '') + '"><span' + style + '>' + battery + '</span></td>' +
+      (level ? '<td title="' + title + '" class="battery' + (isPlugged ? ' plugged' : '') + '"><span' + style + '>' + battery + '</span></td>' : '<td></td>') +
       '<td>' + (value.userName || '') + '</td>' +
       '<td><time>' + (value.lastUsed ? moment(new Date(value.lastUsed)).fromNow() : '') + '</time></td>' +
       '<td><input type="checkbox" name="labels[]" value="' + value.label + '" ' + (value.userId ? 'disabled' : '') + '></td>' +
