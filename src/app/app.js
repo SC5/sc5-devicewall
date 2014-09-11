@@ -271,7 +271,6 @@ function select() {
   $('#select-all').click(selectAll);
   $('#select-none').click(selectNone);
   $('#stop-testing').click(stopTesting);
-  $('#url').keyup(urlKeyup);
 
   $('#go').attr('disabled', !url);
 
@@ -279,26 +278,6 @@ function select() {
     devices = data;
     drawDevices(data);
   });
-
-}
-
-
-
-
-
-function urlKeyup(event) {
-
-  var 
-    url = $('#url').val(),
-    value = /^https/.test(url);
-
-  $('#go').attr('disabled', value);
-
-  if (/^https/.test(url)) {
-    $('#tooltip-url').fadeIn(250);
-  } else {
-    $('#tooltip-url').fadeOut(250);
-  }
 
 }
 
