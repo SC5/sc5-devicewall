@@ -70,56 +70,6 @@ Live reloading is enabled when running *gulp watch* in another window. Just chan
 JavaScript or SASS files to trigger reload. The reload monitors 'dist' directory and pushes the
 changes as needed.
 
-##  Extending & Hacking
-
-###  Project layout
-
-#### App
-
-    src/             The client-side source code
-    src/index.html   The HTML entry point, stub page
-    src/app          Application source code
-    src/app/main.js  The app JS entry point
-    src/components   The 3rd party JS dependencies
-    src/css          The CSS templates
-
-
-####  Build System
-
-    gulpfile.js         The Gulp build configuration
-    bower.json          The Bower components
-    .bowerrc            The Bower directory overrides
-    package.json        The build level dependencies
-
-### Build Results
-
-    dist/               The build results (debug and release builds)
-
-## Using BoBrSASS as an Upstream
-
-Upgrading the boilerplate in your project may be tedious work. Once BoBrSASS
-directory structure becomes stable (it might be already, but no guarantees!),
-you can use it directly as an upstream (here with a name 'bobrsass').
-
-    > git remote add -f bobrsass git@github.com:SC5/gulp-bobrsass-boilerplate.git
-
-Now synchronizing with BoBrSASS becomes easier:
-
-    > git pull bobrsass master
-
-It is possible to use BoBrSASS as a subtree, too:
-
-    > git subtree add --prefix client --squash git@github.com:SC5/gulp-bobrsass-boilerplate.git master --squash
-    > git remote add -f bobrsass git@github.com:SC5/gulp-bobrsass-boilerplate.git
-    > git fetch bobrsass master
-
-Note that you need to use a recent version of git that supports subtrees.
-
-The example pulls BoBrSASS master branch into 'client' subdirectory. The key here is to use
-'--prefix client' to keep the boilerplate in its own subdirectory. Later on, sync by:
-
-    > git subtree pull --prefix client bobrsass master
-
 ## Testing
 
 Run tests with PhantomJS:
@@ -130,24 +80,6 @@ Or in debug mode with chromedriver in a browser:
 
     > gulp test --debug
 
-## TODO
-
-* SASS source maps
-* Add more examples & documentation
-
-## Release History
-
-* 2014/02/12 - v0.1.0 - Initial commit (partially working stub)
-* 2014/02/24 - v0.1.1 - Fix the build errors, update README
-* 2014/05/08 - v0.2.0 - Update dependecies, add linting and plugin loader, update README
-* 2014/05/09 - v0.3.0 - Add Protractor test framework, update README
-* 2014/05/14 - v0.3.1 - Better linting
-
 ## License
 
-Copyright (c) 2014 [SC5](http://sc5.io/), licensed for users and contributors under MIT license.
-https://github.com/sc5/grunt-bobrsass-boilerplate/blob/master/LICENSE-MIT
-
-
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/SC5/gulp-bobrsass-boilerplate/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
-
+Copyright (c) 2014 [SC5](http://sc5.io/)
