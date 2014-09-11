@@ -270,7 +270,6 @@ ns.on('connection', function (socket) {
     }
 
     childProcesses[user.id] = fork('./server-browsersync');
-    childProcesses[user.id].send({type: 'init', url: testUrl});
     childProcesses[user.id].on('message', function(message) {
       if (message.type === 'browserSyncInit') {
         instances.forEach(function(instance, index) {
@@ -285,7 +284,13 @@ ns.on('connection', function (socket) {
         ns.emit('start', data);
         nsApp.emit('start', data);
       }
+      if (message.type === 'browserSyncExit') {
+        childProcesses[user.id].send({type: 'exit'});
+        delete childProcesses[user.id];
+        ns.emit('server-stop', {user: user});
+      }
     });
+    childProcesses[user.id].send({type: 'init', url: testUrl});
 
   });
 
@@ -312,12 +317,12 @@ ns.on('connection', function (socket) {
     nsApp.emit('stop', data);
 
     if (user && childProcesses[user.id]) {
-      childProcesses[user.id].send({type: 'location', url: config.deviceWallAppURL});
-      setTimeout(function() {
-        childProcesses[user.id].send({type: 'exit'});
-        delete childProcesses[user.id];
-        ns.emit('server-stop', {user: user});
-      }, 2000);
+      childProcesses[user.id].send({
+        type: 'location',
+        url: config.deviceWallAppURL,
+        timeout: 5000,
+        completeMessageType: 'browserSyncExit'
+      });
     }
 	});
 

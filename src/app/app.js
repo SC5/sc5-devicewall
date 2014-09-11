@@ -101,6 +101,13 @@ function identify(fn) {
     $('#name').val(name);
   }
 
+  $('#name').keyup(function (event) {
+    var name = $('#name').val();
+    $('#identify-button').attr('disabled', !name);
+  });
+
+  $('#identify-button').attr('disabled', !name);
+
   $('#identify-form').submit(function () {
 
     $('#identify').hide();
@@ -171,14 +178,14 @@ function drawDevices(data) {
       position = level ? (level * 0.8 + 10) + '%' : '',
     	stop1 = (isPlugged ? '#0f0' : '#fff') + ' ' + position,
     	stop2 = (isPlugged ? '#0c0' : '#ccc') + ' ' + position,
-    	style = ' style="background-image: -webkit-linear-gradient(left, ' + stop1 + ', ' + stop2 + ');"';
+    	style = ' style="background-image: -webkit-linear-gradient(rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, .3) 80%), -webkit-linear-gradient(left, ' + stop1 + ', ' + stop2 + ');"';
 
     rowElement.append(
       '<td contenteditable data-key="label" title="Edit">' + value.label + '</td>' +
       '<td contenteditable data-key="model" title="Edit">' + (value.model || '') + '</td>' +
       '<td contenteditable data-key="platform" title="Edit">' + (value.platform || '') + '</td>' +
       '<td contenteditable data-key="version" title="Edit">' + (value.version || '') + '</td>' +
-      '<td title="' + title + '" class="battery' + (isPlugged ? ' plugged' : '') + '"><span' + style + '>' + battery + '</span></td>' +
+      (level ? '<td title="' + title + '" class="battery' + (isPlugged ? ' plugged' : '') + '"><span' + style + '>' + battery + '</span></td>' : '<td></td>') +
       '<td>' + (value.userName || '') + '</td>' +
       '<td><time>' + (value.lastUsed ? moment(new Date(value.lastUsed)).fromNow() : '') + '</time></td>' +
       '<td><input type="checkbox" name="labels[]" value="' + value.label + '" ' + (value.userId ? 'disabled' : '') + '></td>' +
@@ -266,6 +273,8 @@ function select() {
   $('#stop-testing').click(stopTesting);
   $('#url').keyup(urlKeyup);
 
+  $('#go').attr('disabled', !url);
+
   $.getJSON('/devices', function (data) {
     devices = data;
     drawDevices(data);
@@ -279,14 +288,16 @@ function select() {
 
 function urlKeyup(event) {
 
-  var url = $('#url').val();
+  var 
+    url = $('#url').val(),
+    value = /^https/.test(url);
+
+  $('#go').attr('disabled', value);
 
   if (/^https/.test(url)) {
-    $('#tooltip').fadeIn(250);
-    $('#go').attr('disabled', true);
+    $('#tooltip-url').fadeIn(250);
   } else {
-    $('#tooltip').fadeOut(250);
-    $('#go').attr('disabled', false);
+    $('#tooltip-url').fadeOut(250);
   }
 
 }
