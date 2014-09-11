@@ -214,8 +214,16 @@ ns.on('connection', function (socket) {
     console.log('DeviceWall control panel start.');
 
     var user = data.user,
-        url = data.url,
+        testUrl = data.url,
         labels = data.labels || [];
+
+    if (testUrl.match(/:\/\//)) {
+      if (!testUrl.match(/^http[s]*/)) {
+        testUrl.replace(/.*:\/\//, 'http://');
+      }
+    } else {
+      testUrl = 'http://' + testUrl;
+    }
 
     // Updating devices
     devices.forEach(function (device, deviceIndex) {
@@ -237,7 +245,7 @@ ns.on('connection', function (socket) {
     instances.forEach(function (instance, index) {
       if (instance.userId === user.id) {
         updated = true;
-        instance.url = url;
+        instance.url = testUrl;
         instance.labels = labels;
         instance.browserSync = null;
         instance.updated = +new Date();
@@ -247,7 +255,7 @@ ns.on('connection', function (socket) {
     if (!updated) {
       instances.push({
         userId: user.id,
-        url: url,
+        url: testUrl,
         labels: labels,
         browserSync: null,
         updated: +new Date()
@@ -262,7 +270,7 @@ ns.on('connection', function (socket) {
     }
 
     childProcesses[user.id] = fork('./server-browsersync');
-    childProcesses[user.id].send({type: 'init', url: url});
+    childProcesses[user.id].send({type: 'init', url: testUrl});
     childProcesses[user.id].on('message', function(message) {
       if (message.type === 'browserSyncInit') {
         instances.forEach(function(instance, index) {
