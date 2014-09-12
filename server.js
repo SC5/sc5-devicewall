@@ -118,20 +118,6 @@ nsApp.on('connection', function (socket) {
     });
 
     if (!updated) {
-      // Determine label for the device
-      var tempLabel = 0;
-
-      devices.forEach(function (device, index) {
-        var currentLabel = parseInt(device.label.replace(/[^0-9]/, ''), 10);
-        if (currentLabel > tempLabel) {
-          tempLabel = currentLabel;
-        }
-      });
-
-      if (!label) {
-        label = 'P' + ('00' + (tempLabel + 1)).substr(-3, 3); // P stands for "phone", default format is for example "P001"
-      }
-
       devices.push({
         label: label,
         model: model,
