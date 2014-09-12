@@ -6,10 +6,6 @@ var app = require('./app.js'),
   devices = [],
   popupWindow;
 
-
-
-
-
 function initializeSocket() {
   socket = io(config.SOCKET_SERVER);
   socket.on('update', function (data) {
@@ -38,14 +34,8 @@ function initializeSocket() {
   });
 }
 
-
-
-
-
 function start() {
-
   // Start the app here
-
   initializeSocket();
 
   select();
@@ -58,19 +48,11 @@ function start() {
       $('#devices').show();
     }
   });
-
 }
 
-
-
-
-
 function initializeUser(fn) {
-
-  if (config.loginType == 1) {
-
+  if (config.loginType === 1) {
     // Google Auth login
-
     $.getJSON('/user', function (res) {
       if (res.user) {
         user = res.user;
@@ -79,21 +61,13 @@ function initializeUser(fn) {
         login();
       }
     });
-
-  } else if (config.loginType == 2) {
-
+  } else if (config.loginType === 2) {
     // Nick name login
     identify(fn);
-
   }
-
 }
 
-
-
-
 function identify(fn) {
-
   $('#identify').show();
   var name = localStorage.getItem('name');
 
@@ -123,14 +97,8 @@ function identify(fn) {
     fn();
 
     return false;
-
   });
-
 }
-
-
-
-
 
 function login() {
   $('#login').show();
@@ -139,28 +107,15 @@ function login() {
   });
 }
 
-
-
-
-
 function selectAll() {
   $('input[name="labels[]"]').not(':disabled').prop('checked', true);
 }
-
-
-
-
 
 function selectNone() {
   $('input[name="labels[]"]').not(':disabled').removeAttr('checked');
 }
 
-
-
-
-
 function drawDevices(data) {
-
   var devicesList = $('#devices-list'),
       battery = $('<span>').html('&#128267;').html(),
       trash = $('<span>').html('&#59177;').html();
@@ -174,11 +129,11 @@ function drawDevices(data) {
     var
       level = value.batteryStatus ? value.batteryStatus.level : null,
       isPlugged = value.batteryStatus ? value.batteryStatus.isPlugged : null,
-    	title = level ? 'Level: ' + level + ' %' + (isPlugged ? ', plugged' : '') : '',
+      title = level ? 'Level: ' + level + ' %' + (isPlugged ? ', plugged' : '') : '',
       position = level ? (level * 0.8 + 10) + '%' : '',
-    	stop1 = (isPlugged ? '#0f0' : '#fff') + ' ' + position,
-    	stop2 = (isPlugged ? '#0c0' : '#ccc') + ' ' + position,
-    	style = ' style="background-image: -webkit-linear-gradient(rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, .3) 80%), -webkit-linear-gradient(left, ' + stop1 + ', ' + stop2 + ');"';
+      stop1 = (isPlugged ? '#0f0' : '#fff') + ' ' + position,
+      stop2 = (isPlugged ? '#0c0' : '#ccc') + ' ' + position,
+      style = ' style="background-image: -webkit-linear-gradient(rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, .3) 80%), -webkit-linear-gradient(left, ' + stop1 + ', ' + stop2 + ');"';
 
     rowElement.append(
       '<td contenteditable data-key="label" title="Edit">' + value.label + '</td>' +
@@ -196,12 +151,12 @@ function drawDevices(data) {
 
   });
 
- 	$('#devices-list [contenteditable]').blur(function (event) {
+   $('#devices-list [contenteditable]').blur(function (event) {
 
-		var
-			element = $(event.target),
+    var
+      element = $(event.target),
       label = element.parent().attr('data-label'),
-			key = element.attr('data-key'),
+      key = element.attr('data-key'),
       value = element.text(),
       labelIsUniqueAndNotEmpty = true;
 
@@ -223,27 +178,21 @@ function drawDevices(data) {
       $.post('/save', {label: label, key: key, value: value});
     }
 
-	});
+  });
 
-	$('#devices-list [contenteditable]').keypress(function (event) {
-		if (event.which == 13) {
-			event.target.blur();
-			return false;
-		}
-	});
+  $('#devices-list [contenteditable]').keypress(function (event) {
+    if (event.which === 13) {
+      event.target.blur();
+      return false;
+    }
+  });
 
   $('#devices-list .remove').click(function(event) {
     socket.emit('remove', {labels: [$(this).parent().attr('data-label')]});
   });
-
 }
 
-
-
-
-
 function select() {
-
   if (!user) {
     initializeUser(select);
     return;
@@ -280,15 +229,9 @@ function select() {
     devices = data;
     drawDevices(data);
   });
-
 }
 
-
-
-
-
 function selectSubmit(event) {
-
   if ($('#go').is(":disabled")) {
     return false;
   }
@@ -309,15 +252,9 @@ function selectSubmit(event) {
   socket.emit('start', formData);
 
   return false;
-
 }
 
-
-
-
-
 function getUserDevices() {
-
   var i,
       devicesLength = devices.length,
       userDevices = [];
@@ -329,22 +266,13 @@ function getUserDevices() {
   }
 
   return userDevices;
-
 }
-
-
-
-
 
 function stopTesting() {
   socket.emit('stop', {user: user, labels: getUserDevices()});
   $('#stop-testing').hide();
   $('#go').prop('disabled', true).show();
 }
-
-
-
-
 
 exports = module.exports = {
   start: start
