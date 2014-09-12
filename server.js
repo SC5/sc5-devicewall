@@ -12,7 +12,9 @@ var
   instances = [],
   config = require('./config.json'),
   childProcesses = {},
-  fork = require('child_process').fork;
+  fork = require('child_process').fork,
+  HTTP_PORT = process.env.HTTP_PORT || 8888,
+  SOCKET_PORT = process.env.SOCKET_PORT || 3000;
 
 if (fs.existsSync('./data/devices.json')) {
   devices = require('./data/devices.json');
@@ -47,7 +49,7 @@ var userRoute = require('./routes/user.js')(app);
 
 app.use(express.static(__dirname + '/dist'));
 
-var server = app.listen(process.argv[2] || 80, function () {
+var server = app.listen(HTTP_PORT, function () {
   console.log('Express server listening on port %d', server.address().port);
 });
 
@@ -282,5 +284,5 @@ ns.on('connection', function (socket) {
 });
 
 // Start server
-io.listen(3000);
-console.log('Socket.io server listening on port 3000');
+io.listen(SOCKET_PORT);
+console.log('Socket.io server listening on port %d', SOCKET_PORT);
