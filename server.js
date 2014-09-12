@@ -107,7 +107,6 @@ app.post('/save', function (req, res) {
     value = req.body.value;
 
   // Update device
-
   devices.forEach(function (device, index) {
     if (device.label == label) {
       device[key] = value;
@@ -115,9 +114,7 @@ app.post('/save', function (req, res) {
   });
 
   app.emit('update-devices');
-
   res.json({message: 'Saved value'});
-
 });
 
 app.use(express.static(__dirname + '/dist'));
@@ -135,12 +132,10 @@ var
 
 // Namespace "devicewallapp"
 nsApp.on('connection', function (socket) {
-
   console.log('DeviceWall device connected!');
 
   // Update device status
   socket.on('update', function (data) {
-
     var label = data.label,
         model = data.model,
         batteryStatus = data.batteryStatus,
@@ -160,9 +155,7 @@ nsApp.on('connection', function (socket) {
     });
 
     if (!updated) {
-
     	// Determine label for the device
-
     	var tempLabel = 0;
 
 	    devices.forEach(function (device, index) {
@@ -184,33 +177,23 @@ nsApp.on('connection', function (socket) {
         batteryStatus: batteryStatus,
         updated: +new Date()
       });
-
     }
 
     app.emit('update-devices');
-
     ns.emit('update', devices);
-
   });
 
   socket.on('disconnect', function () {
     console.log('DeviceWall device disconnected.');
   });
-
 });
-
-
-
-
 
 // Namespace "devicewall"
 ns.on('connection', function (socket) {
-
   console.log('DeviceWall control panel connected!');
 
   // Start
   socket.on('start', function (data) {
-
     console.log('DeviceWall control panel start.');
 
     var user = data.user,
@@ -237,8 +220,6 @@ ns.on('connection', function (socket) {
       });
     });
 
-    app.emit('update-devices');
-
     // Updating instances
     var updated = false;
 
@@ -262,8 +243,6 @@ ns.on('connection', function (socket) {
       });
     }
 
-    app.emit('update-instances');
-
     if (childProcesses[user.id]) {
       childProcesses[user.id].send({type: 'exit'});
       delete childProcesses[user.id];
@@ -279,6 +258,7 @@ ns.on('connection', function (socket) {
           }
         });
         data.url = message.browserSync;
+        app.emit('update-instances');
         app.emit('update-devices');
         ns.emit('update', devices);
         ns.emit('start', data);
@@ -291,12 +271,10 @@ ns.on('connection', function (socket) {
       }
     });
     childProcesses[user.id].send({type: 'init', url: testUrl});
-
   });
 
   // Stop
 	socket.on('stop', function (data) {
-
 	  console.log('DeviceWall control panel stop.');
 
 	  var labels = data.labels,
@@ -327,7 +305,6 @@ ns.on('connection', function (socket) {
 	});
 
 	// List devices
-
 	socket.on('list', function (data, fn) {
 	  devices.sort(function (a, b) {
 	    if (a.location > b.location) {
@@ -366,10 +343,6 @@ ns.on('connection', function (socket) {
   });
 
 });
-
-
-
-
 
 // Start server
 io.listen(3000);

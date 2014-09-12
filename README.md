@@ -1,4 +1,4 @@
-# Device Wall
+# SC5 Device Wall
 
 ## Installation
 
