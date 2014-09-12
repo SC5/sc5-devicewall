@@ -80,43 +80,6 @@ app.get('/user', function (req, res) {
   res.json({user: req.user});
 });
 
-app.get('/devices', function (req, res) {
-  devices.sort(function (a, b) {
-    if (a.location > b.location) {
-      return 1;
-    } else if (a.location < b.location) {
-      return -1;
-    } else {
-      if (a.label > b.label) {
-        return 1;
-      } else if (a.label < b.label) {
-        return -1;
-      }
-    }
-    return 0;
-  });
-
-  res.set('Cache-Control', 'no-cache');
-  res.json(devices);
-});
-
-app.post('/save', function (req, res) {
-  var
-    label = req.body.label,
-    key = req.body.key,
-    value = req.body.value;
-
-  // Update device
-  devices.forEach(function (device, index) {
-    if (device.label === label) {
-      device[key] = value;
-    }
-  });
-
-  app.emit('update-devices');
-  res.json({message: 'Saved value'});
-});
-
 app.use(express.static(__dirname + '/dist'));
 
 var server = app.listen(process.argv[2] || 80, function () {
@@ -305,7 +268,7 @@ ns.on('connection', function (socket) {
   });
 
   // List devices
-  socket.on('list', function (data, fn) {
+  socket.on('list', function (fn) {
     devices.sort(function (a, b) {
       if (a.location > b.location) {
         return 1;
@@ -336,6 +299,23 @@ ns.on('connection', function (socket) {
     });
     app.emit('update-devices');
     ns.emit('update', devices);
+  });
+
+  socket.on('save', function (data) {
+    var
+      label = data.label,
+      key = data.key,
+      value = data.value;
+
+    // Update device
+    devices.forEach(function (device, index) {
+      if (device.label === label) {
+        device[key] = value;
+      }
+    });
+
+    app.emit('update-devices');
+    socket.broadcast.emit('update', devices);
   });
 
   socket.on('disconnect', function () {

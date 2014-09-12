@@ -175,7 +175,7 @@ function drawDevices(data) {
     if (!labelIsUniqueAndNotEmpty) {
       element.text(label);
     } else {
-      $.post('/save', {label: label, key: key, value: value});
+      socket.emit('save', {label: label, key: key, value: value});
     }
 
   });
@@ -225,7 +225,7 @@ function select() {
 
   $('#go').attr('disabled', !url);
 
-  $.getJSON('/devices', function (data) {
+  socket.emit('list', function (data) {
     devices = data;
     drawDevices(data);
   });
