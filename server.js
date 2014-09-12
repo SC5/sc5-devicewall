@@ -108,7 +108,7 @@ app.post('/save', function (req, res) {
 
   // Update device
   devices.forEach(function (device, index) {
-    if (device.label == label) {
+    if (device.label === label) {
       device[key] = value;
     }
   });
@@ -155,19 +155,19 @@ nsApp.on('connection', function (socket) {
     });
 
     if (!updated) {
-    	// Determine label for the device
-    	var tempLabel = 0;
+      // Determine label for the device
+      var tempLabel = 0;
 
-	    devices.forEach(function (device, index) {
-	    	var currentLabel = parseInt(device.label.replace(/[^0-9]/, ''), 10);
-	      if (currentLabel > tempLabel) {
-	      	tempLabel = currentLabel;
-	      }
-	    });
+      devices.forEach(function (device, index) {
+        var currentLabel = parseInt(device.label.replace(/[^0-9]/, ''), 10);
+        if (currentLabel > tempLabel) {
+          tempLabel = currentLabel;
+        }
+      });
 
       if (!label) {
-        label = 'P' + ('00' + (label + 1)).substr(-3, 3); // P stands for "phone", default format is for example "P001"
-	    }
+        label = 'P' + ('00' + (tempLabel + 1)).substr(-3, 3); // P stands for "phone", default format is for example "P001"
+      }
 
       devices.push({
         label: label,
@@ -274,23 +274,23 @@ ns.on('connection', function (socket) {
   });
 
   // Stop
-	socket.on('stop', function (data) {
-	  console.log('DeviceWall control panel stop.');
+  socket.on('stop', function (data) {
+    console.log('DeviceWall control panel stop.');
 
-	  var labels = data.labels,
-	      user = data.user;
+    var labels = data.labels,
+        user = data.user;
 
-	  // Update device
-	  devices.forEach(function (device, index) {
-	    labels.forEach(function (label, index) {
-  	    if (device.label === label) {
-  	      device.userId = null;
-  	      device.userName = null;
-  	    }
-	    });
-	  });
+    // Update device
+    devices.forEach(function (device, index) {
+      labels.forEach(function (label, index) {
+        if (device.label === label) {
+          device.userId = null;
+          device.userName = null;
+        }
+      });
+    });
 
-	  app.emit('update-devices');
+    app.emit('update-devices');
     ns.emit('update', devices);
     nsApp.emit('stop', data);
 
@@ -302,27 +302,27 @@ ns.on('connection', function (socket) {
         completeMessageType: 'browserSyncExit'
       });
     }
-	});
+  });
 
-	// List devices
-	socket.on('list', function (data, fn) {
-	  devices.sort(function (a, b) {
-	    if (a.location > b.location) {
-	      return 1;
-	    } else if (a.location < b.location) {
-	      return -1;
-	    } else {
-	      if (a.label > b.label) {
-	        return 1;
-	      } else if (a.label < b.label) {
-	        return -1;
-	      }
-	    }
-	    return 0;
-	  });
+  // List devices
+  socket.on('list', function (data, fn) {
+    devices.sort(function (a, b) {
+      if (a.location > b.location) {
+        return 1;
+      } else if (a.location < b.location) {
+        return -1;
+      } else {
+        if (a.label > b.label) {
+          return 1;
+        } else if (a.label < b.label) {
+          return -1;
+        }
+      }
+      return 0;
+    });
 
-		fn(devices);
-	});
+    fn(devices);
+  });
 
   socket.on('remove', function(data) {
     devices = devices.filter(function (device) {

@@ -203,19 +203,21 @@ function drawDevices(data) {
       label = element.parent().attr('data-label'),
 			key = element.attr('data-key'),
       value = element.text(),
-      labelIsUnique = true;
+      labelIsUniqueAndNotEmpty = true;
 
     if (key === 'label') {
-      if (label !== value) {
+      if (value === '') {
+        labelIsUniqueAndNotEmpty = false;
+      } else if (label !== value) {
         for (var i = 0; i < devices.length; i++) {
           if (devices[i].label === value) {
-            labelIsUnique = false;
+            labelIsUniqueAndNotEmpty = false;
           }
         }
       }
     }
 
-    if (!labelIsUnique) {
+    if (!labelIsUniqueAndNotEmpty) {
       element.text(label);
     } else {
       $.post('/save', {label: label, key: key, value: value});
