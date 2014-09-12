@@ -8,7 +8,6 @@ var
   passport = require('passport'),
   GoogleStrategy = require('passport-google-oauth').OAuth2Strategy,
   app = express(),
-  users = {},
   devices = [],
   instances = [],
   config = require('./config.json'),
@@ -39,46 +38,12 @@ app.on('update-instances', function () {
   console.log('Updated instances.json');
 });
 
-passport.serializeUser(function (user, done) {
-  done(null, user.id);
+var authRoute = require('./routes/auth.js')(app, {
+  config: config,
+  passport: passport,
+  GoogleStrategy: GoogleStrategy
 });
-
-passport.deserializeUser(function (id, done) {
-  done(null, users[id]);
-});
-
-passport.use(new GoogleStrategy(
-  {
-    clientID: config.GOOGLE_CLIENT_ID,
-    clientSecret: config.GOOGLE_CLIENT_SECRET,
-    callbackURL:config.GOOGLE_CALLBACK_URL
-  },
-  function (accessToken, refreshToken, profile, done) {
-    var
-      userId = profile.id,
-      user = {
-        id: userId,
-        displayName: profile.displayName,
-        emails: profile.emails
-      };
-    users[userId] = user;
-    return done(null, user);
-  }
-));
-
-app.get('/auth/google', passport.authenticate('google', {scope: 'openid profile email'}));
-
-app.get('/auth/google/callback',
-  passport.authenticate('google', {failureRedirect: '/'}),
-  function (req, res) {
-    res.redirect('/');
-  }
-);
-
-app.get('/user', function (req, res) {
-  res.set('Cache-Control', 'no-cache');
-  res.json({user: req.user});
-});
+var userRoute = require('./routes/user.js')(app);
 
 app.use(express.static(__dirname + '/dist'));
 
@@ -108,9 +73,15 @@ nsApp.on('connection', function (socket) {
 
     devices.forEach(function (device, index) {
       if (device.label === label) {
-        device.model = model;
-        device.platform = platform;
-        device.version = version;
+        if (model) {
+          device.model = model;
+        }
+        if (platform) {
+          device.platform = platform;
+        }
+        if (version) {
+          device.version = version;
+        }
         device.batteryStatus = batteryStatus;
         device.updated = +new Date();
         updated = true;

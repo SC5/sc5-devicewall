@@ -1,5 +1,4 @@
 exports = module.exports = {
   SOCKET_SERVER: "http://devicewall.sc5.io:3000/devicewall",
-  loginType: 1 // Google Auth login
-  //loginType: 2 // Nick name login
+  loginType: 1 // 1 = Google Auth login, 2 = Nickname login
 };
