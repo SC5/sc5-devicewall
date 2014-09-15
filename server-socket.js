@@ -73,6 +73,16 @@ module.exports = function (app, options) {
       ns.emit('update', devices);
     });
 
+    socket.on('check-platform', function(data, fn) {
+      var platform = '';
+      devices.forEach(function (device, index) {
+        if (data.label === device.label) {
+          platform = device.platform;
+        }
+      });
+      fn({platform: platform});
+    });
+
     socket.on('disconnect', function () {
       console.log('DeviceWall device disconnected.');
     });
