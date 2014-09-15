@@ -38,6 +38,7 @@ module.exports = function (app, options) {
           model = data.model,
           batteryStatus = data.batteryStatus,
           platform = data.platform,
+          appPlatform = data.appPlatform,
           version = data.version,
           updated = false;
 
@@ -52,6 +53,9 @@ module.exports = function (app, options) {
           if (version) {
             device.version = version;
           }
+          if (appPlatform) {
+            device.appPlatform = appPlatform;
+          }
           device.batteryStatus = batteryStatus;
           device.updated = +new Date();
           updated = true;
@@ -63,6 +67,7 @@ module.exports = function (app, options) {
           label: label,
           model: model,
           platform: platform,
+          appPlatform: appPlatform,
           version: version,
           batteryStatus: batteryStatus,
           updated: +new Date()
@@ -74,13 +79,13 @@ module.exports = function (app, options) {
     });
 
     socket.on('check-platform', function(data, fn) {
-      var platform = '';
+      var appPlatform = '';
       devices.forEach(function (device, index) {
         if (data.label === device.label) {
-          platform = device.platform;
+          appPlatform = device.appPlatform;
         }
       });
-      fn({platform: platform});
+      fn({appPlatform: appPlatform});
     });
 
     socket.on('disconnect', function () {

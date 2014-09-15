@@ -3,5 +3,5 @@
   "GOOGLE_CLIENT_SECRET": "4-kV0DljkbtvpV4GlPIR9S3j",
   "GOOGLE_CALLBACK_URL": "http://devicewall.sc5.io:8888/auth/google/callback",
   "sessionKey": "devicewall12345",
-  "deviceWallAppURL": "http://devicewall.sc5.io:8080/"
+  "deviceWallAppURL": "http://devicewall.sc5.io:8080/return"
 }
