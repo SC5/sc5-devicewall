@@ -1,7 +1,10 @@
 *** node_modules/browser-sync/node_modules/foxy/index.js	2014-07-18 18:09:14.000000000 +0300
---- node_modules/browser-sync/node_modules/foxy/index.js	2014-09-04 13:06:19.529806483 +0300
+--- node_modules/browser-sync/node_modules/foxy/index.js	2014-09-15 12:19:20.091373289 +0300
 ***************
-*** 62,68 ****
+*** 59,68 ****
+  
+      // Remove headers
+      proxyServer.on("proxyRes", function (res) {
           if (res.statusCode === 302) {
               res.headers.location = utils.handleRedirect(res.headers.location, opts, proxyHost);
           }
@@ -9,4 +12,16 @@
       });
   
       function getRules() {
---- 62,67 ----
+--- 59,70 ----
+  
+      // Remove headers
+      proxyServer.on("proxyRes", function (res) {
++         if (res.statusCode === 301) {
++             res.statusCode = 302;
++         }
+          if (res.statusCode === 302) {
+              res.headers.location = utils.handleRedirect(res.headers.location, opts, proxyHost);
+          }
+      });
+  
+      function getRules() {
