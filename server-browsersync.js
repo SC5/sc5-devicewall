@@ -26,6 +26,7 @@ process.on('message', function(message) {
     var parsedUrl = url.parse(message.url);
     bs = browserSync.init(null, {
       proxy: message.url,
+      host: '192.168.56.101',
       startPath: parsedUrl.path,
       browser: 'disable',
       https: true,
