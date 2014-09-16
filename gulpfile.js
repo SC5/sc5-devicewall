@@ -29,7 +29,8 @@ gulp.task('install', function() {
   if (!fs.existsSync('./src/app/config.js')) {
     fs.writeFileSync('./src/app/config.js', fs.readFileSync('./src/app/config.js.template'));
   }
-  gulp.src('').pipe(shell(['patch -p0 -N < foxy.patch'], {ignoreErrors: true}));
+  // Patching (replace with BrowserSync fork)
+  gulp.src('./index.js').pipe(gulp.dest('./node_modules/browser-sync/node_modules/foxy'));
   gulp.src('').pipe(shell(['patch -p0 -N < browsersync.patch'], {ignoreErrors: true}));
 });
 

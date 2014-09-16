@@ -2,7 +2,8 @@ var browserSync = require('browser-sync'),
     config = require('./config.json'),
     bs,
     url = require('url'),
-    Q = require('q');
+    Q = require('q'),
+    phantom = require('phantom');
 
 function deferredEmit(socket, event, data, timeout) {
   var deferred = Q.defer();
@@ -17,6 +18,39 @@ function deferredEmit(socket, event, data, timeout) {
       clearTimeout(t1);
     }
     deferred.resolve();
+  });
+  return deferred.promise;
+}
+
+function deferredCacheWarming(url) {
+  var deferred = Q.defer(),
+      timeoutHandle;
+  // Hardcoded timeout of 10000ms to resolve (in case phantomjs crashes etc.)
+  setTimeout(function() {
+    deferred.resolve();
+  }, 10000);
+  phantom.create(function(ph) {
+    ph.createPage(function (page) {
+      // If we don't get new responses in 1000ms, let's resolve
+      page.set('onResourceReceived', function(requestData) {
+        if (requestData.url.substring(0, url.length) === url) {
+          if (timeoutHandle) {
+            clearTimeout(timeoutHandle);
+          }
+          timeoutHandle = setTimeout(function() {
+            deferred.resolve();
+          }, 1000);
+        }
+      });
+      // Hardcoded timeout of 10000ms to resolve (in case the page takes too long to load)
+      page.open(url, function(status) {
+        if(timeoutHandle) {
+          setTimeout(function() {
+            deferred.resolve();
+          }, 10000);
+        }
+      });
+    });
   });
   return deferred.promise;
 }
@@ -38,10 +72,12 @@ process.on('message', function(message) {
     });
 
     bs.events.on('init', function(api) {
-      process.send({type: 'browserSyncInit', browserSync: api.options.urls.external});
+      var cacheWarmed = deferredCacheWarming(api.options.urls.external);
+      cacheWarmed.then(function() {
+        process.send({type: 'browserSyncInit', browserSync: api.options.urls.external});
+      });
     });
   } else if (message.type === 'location') {
-    // bs.io.sockets.emit('location', {url: message.url});
     var promises = [];
     bs.io.sockets.sockets.forEach(function(socket) {
       promises.push(deferredEmit(socket, 'location', {url: message.url}, message.timeout || 5000));
