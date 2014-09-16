@@ -223,8 +223,6 @@ function select() {
   $('#select-none').click(selectNone);
   $('#stop-testing').click(stopTesting);
 
-  $('#go').attr('disabled', !url);
-
   socket.emit('list', function (data) {
     devices = data;
     drawDevices(data);
