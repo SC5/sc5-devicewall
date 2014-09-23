@@ -6,12 +6,17 @@ var
   browserSync = require('browser-sync'),
   passport = require('passport'),
   GoogleStrategy = require('passport-google-oauth').OAuth2Strategy,
+  https = require('https'),
+  http = require('http'),
   app = express(),
   config = require('./config.json'),
   HTTP_PORT = process.env.HTTP_PORT || 8888,
   SOCKET_PORT = process.env.SOCKET_PORT || 3000,
   server,
   io;
+
+https.globalAgent.maxSockets = config.maxSockets || 5;
+http.globalAgent.maxSockets = config.maxSockets || 5;
 
 app.use(cookieParser());
 app.use(expressSession({secret: config.sessionKey, resave: true, saveUninitialized: true}));

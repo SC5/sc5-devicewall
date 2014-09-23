@@ -2,8 +2,13 @@ var browserSync = require('browser-sync'),
     config = require('./config.json'),
     bs,
     url = require('url'),
+    http = require('http'),
+    https = require('https'),
     Q = require('q'),
     phantom = require('phantom');
+
+https.globalAgent.maxSockets = config.maxSockets || 5;
+http.globalAgent.maxSockets = config.maxSockets || 5;
 
 function deferredEmit(socket, event, data, timeout) {
   var deferred = Q.defer();
