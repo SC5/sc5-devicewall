@@ -118,7 +118,10 @@ function selectNone() {
 function drawDevices(data) {
   var devicesList = $('#devices-list'),
       battery = $('<span>').html('&#128267;').html(),
-      trash = $('<span>').html('&#59177;').html();
+      trash = $('<span>').html('&#59177;').html(),
+      labels = $('input[name="labels[]"]:checked').map(function() {
+        return this.value;
+      }).get();
 
   devicesList.html('');
 
@@ -133,7 +136,8 @@ function drawDevices(data) {
       position = level ? (level * 0.8 + 10) + '%' : '',
       stop1 = (isPlugged ? '#0f0' : '#fff') + ' ' + position,
       stop2 = (isPlugged ? '#0c0' : '#ccc') + ' ' + position,
-      style = ' style="background-image: -webkit-linear-gradient(rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, .3) 80%), -webkit-linear-gradient(left, ' + stop1 + ', ' + stop2 + ');"';
+      style = ' style="background-image: -webkit-linear-gradient(rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, .3) 80%), -webkit-linear-gradient(left, ' + stop1 + ', ' + stop2 + ');"',
+      checked = labels.indexOf(value.label) !== -1 && !value.userId ? 'checked' : '';
 
     rowElement.append(
       '<td contenteditable data-key="label" title="Edit">' + value.label + '</td>' +
@@ -143,7 +147,7 @@ function drawDevices(data) {
       (level ? '<td title="' + title + '" class="battery' + (isPlugged ? ' plugged' : '') + '"><span' + style + '>' + battery + '</span></td>' : '<td></td>') +
       '<td>' + (value.userName || '') + '</td>' +
       '<td><time>' + (value.lastUsed ? moment(new Date(value.lastUsed)).fromNow() : '') + '</time></td>' +
-      '<td><input type="checkbox" name="labels[]" value="' + value.label + '" ' + (value.userId ? 'disabled' : '') + '></td>' +
+      '<td><input type="checkbox" name="labels[]" value="' + value.label + '" ' + (value.userId ? 'disabled' : '') + ' ' + checked + '></td>' +
       '<td class="remove"><span>' + trash + '</span></td>'
     );
 
