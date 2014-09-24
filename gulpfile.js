@@ -30,8 +30,8 @@ gulp.task('install', function() {
     fs.writeFileSync('./src/app/config.js', fs.readFileSync('./src/app/config.js.template'));
   }
   // Patching (replace with BrowserSync fork)
-  gulp.src('./index.js').pipe(gulp.dest('./node_modules/browser-sync/node_modules/foxy'));
-  gulp.src('').pipe(shell(['patch -p0 -N < browsersync.patch'], {ignoreErrors: true}));
+  gulp.src('./patches/foxy/index.js').pipe(gulp.dest('./node_modules/browser-sync/node_modules/foxy'));
+  gulp.src('./patches/browser-sync/lib/server/index.js').pipe(gulp.dest('./node_modules/browser-sync/lib/server'));
 });
 
 /* Bump version number for package.json & bower.json */
