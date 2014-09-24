@@ -29,9 +29,6 @@ gulp.task('install', function() {
   if (!fs.existsSync('./src/app/config.js')) {
     fs.writeFileSync('./src/app/config.js', fs.readFileSync('./src/app/config.js.template'));
   }
-  // Patching (replace with BrowserSync fork)
-  gulp.src('./patches/foxy/index.js').pipe(gulp.dest('./node_modules/browser-sync/node_modules/foxy'));
-  gulp.src('./patches/browser-sync/lib/server/index.js').pipe(gulp.dest('./node_modules/browser-sync/lib/server'));
 });
 
 /* Bump version number for package.json & bower.json */

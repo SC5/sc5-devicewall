@@ -8,7 +8,7 @@
   "private": false,
   "dependencies": {
     "body-parser": "^1.4.3",
-    "browser-sync": "1.4.0",
+    "browser-sync": "SC5/browser-sync#master",
     "cookie-parser": "^1.3.2",
     "express": "^4.4.4",
     "express-session": "^1.6.5",
