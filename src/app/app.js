@@ -140,7 +140,7 @@ function drawDevices(data) {
       checked = labels.indexOf(value.label) !== -1 && !value.userId ? 'checked' : '';
 
     rowElement.append(
-      '<td contenteditable data-key="label" title="Edit">' + value.label + '</td>' +
+      '<td>' + value.label + '</td>' +
       '<td contenteditable data-key="model" title="Edit">' + (value.model || '') + '</td>' +
       '<td contenteditable data-key="platform" title="Edit">' + (value.platform || '') + '</td>' +
       '<td contenteditable data-key="version" title="Edit">' + (value.version || '') + '</td>' +
@@ -161,27 +161,9 @@ function drawDevices(data) {
       element = $(event.target),
       label = element.parent().attr('data-label'),
       key = element.attr('data-key'),
-      value = element.text(),
-      labelIsUniqueAndNotEmpty = true;
+      value = element.text();
 
-    if (key === 'label') {
-      if (value === '') {
-        labelIsUniqueAndNotEmpty = false;
-      } else if (label !== value) {
-        for (var i = 0; i < devices.length; i++) {
-          if (devices[i].label === value) {
-            labelIsUniqueAndNotEmpty = false;
-          }
-        }
-      }
-    }
-
-    if (!labelIsUniqueAndNotEmpty) {
-      element.text(label);
-    } else {
-      socket.emit('save', {label: label, key: key, value: value});
-    }
-
+    socket.emit('save', {label: label, key: key, value: value});
   });
 
   $('#devices-list [contenteditable]').keypress(function (event) {
