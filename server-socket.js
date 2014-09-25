@@ -7,8 +7,12 @@ module.exports = function (app, options) {
     fs = require('fs'),
     nsApp = io.of('/devicewallapp'),
     ns = io.of('/devicewall'),
+    Q = require('q'),
     devices = [],
-    instances = [];
+    instances = {},
+    instancesUpdated = false,
+    devicesUpdated = false,
+    updateInterval;
 
   if (fs.existsSync('./data/devices.json')) {
     devices = require('./data/devices.json');
@@ -18,14 +22,48 @@ module.exports = function (app, options) {
     instances = require('./data/instances.json');
   }
 
+  function updateDevices() {
+    if (devicesUpdated) {
+      devicesUpdated = false;
+      fs.writeFileSync('./data/devices.json', JSON.stringify(devices));
+      console.log('Updated devices.json');
+    }
+  }
+
+  function updateInstances() {
+    if (instancesUpdated) {
+      instancesUpdated = false;
+      fs.writeFileSync('./data/instances.json', JSON.stringify(instances));
+      console.log('Updated instances.json');
+    }
+  }
+
+  function instanceCanBeStarted(user) {
+    var deferred = Q.defer();
+    if (childProcesses[user.id]) {
+      childProcesses[user.id].send({
+        type: 'location',
+        url: config.deviceWallAppURL,
+        timeout: 5000,
+        completeMessageType: 'browserSyncExit'
+      });
+      childProcesses[user.id].on('message', function(message) {
+        if (message.type === 'browserSyncExit') {
+          deferred.resolve();
+        }
+      });
+    } else {
+      deferred.resolve();
+    }
+    return deferred.promise;
+  }
+
   app.on('update-devices', function () {
-    fs.writeFileSync('./data/devices.json', JSON.stringify(devices));
-    console.log('Updated devices.json');
+    instancesUpdated = true;
   });
 
   app.on('update-instances', function () {
-    fs.writeFileSync('./data/instances.json', JSON.stringify(instances));
-    console.log('Updated instances.json');
+    devicesUpdated = true;
   });
 
   // Namespace "devicewallapp"
@@ -128,54 +166,52 @@ module.exports = function (app, options) {
       // Updating instances
       var updated = false;
 
-      instances.forEach(function (instance, index) {
-        if (instance.userId === user.id) {
-          updated = true;
-          instance.url = testUrl;
-          instance.labels = labels;
-          instance.browserSync = null;
-          instance.updated = +new Date();
-        }
-      });
+      if (instances[user.id]) {
+        updated = true;
+        instances[user.id].url = testUrl;
+        instances[user.id].labels = labels;
+        instances[user.id].browserSync = null;
+        instances[user.id].updated = +new Date();
+      }
 
       if (!updated) {
-        instances.push({
+        instances[user.id] = {
           userId: user.id,
           url: testUrl,
           labels: labels,
           browserSync: null,
           updated: +new Date()
-        });
+        };
       }
 
-      if (childProcesses[user.id]) {
-        childProcesses[user.id].send({type: 'exit'});
-        delete childProcesses[user.id];
-      }
-
-      childProcesses[user.id] = fork('./server-browsersync');
-      childProcesses[user.id].on('message', function(message) {
-        if (message.type === 'browserSyncInit') {
-          instances.forEach(function(instance, index) {
-            if (instance.userId === user.id) {
-              instance.browserSync = message.browserSync;
-              instance.updated = +new Date();
+      instanceCanBeStarted(user).then(function() {
+        childProcesses[user.id] = fork('./server-browsersync');
+        childProcesses[user.id].on('message', function(message) {
+          if (message.type === 'browserSyncInit') {
+            if (instances[user.id]) {
+              instances[user.id].browserSync = message.browserSync;
+              instances[user.id].updated = +new Date();
             }
-          });
-          data.url = message.browserSync;
-          app.emit('update-instances');
-          app.emit('update-devices');
-          ns.emit('update', devices);
-          ns.emit('start', data);
-          nsApp.emit('start', data);
-        }
-        if (message.type === 'browserSyncExit') {
-          childProcesses[user.id].send({type: 'exit'});
-          delete childProcesses[user.id];
-          ns.emit('server-stop', {user: user});
-        }
+            data.url = message.browserSync;
+            app.emit('update-instances');
+            app.emit('update-devices');
+            ns.emit('update', devices);
+            ns.emit('start', data);
+            nsApp.emit('start', data);
+          }
+          if (message.type === 'browserSyncExit') {
+            childProcesses[user.id].send({type: 'exit'});
+            if (childProcesses[user.id]) {
+              delete childProcesses[user.id];
+            }
+            if (instances[user.id]) {
+              delete instances[user.id];
+            }
+            ns.emit('server-stop', {user: user});
+          }
+        });
+        childProcesses[user.id].send({type: 'init', url: testUrl});
       });
-      childProcesses[user.id].send({type: 'init', url: testUrl});
     });
 
     // Stop
@@ -264,4 +300,9 @@ module.exports = function (app, options) {
       console.log('DeviceWall control panel disconnected.');
     });
   });
+
+  updateInterval = setInterval(function() {
+    updateDevices();
+    updateInstances();
+  }, 10000);
 };
