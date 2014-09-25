@@ -274,6 +274,7 @@ module.exports = function (app, options) {
         });
         app.emit('update-devices');
         ns.emit('update', devices);
+        ns.emit('stopall');
       });
     });
 

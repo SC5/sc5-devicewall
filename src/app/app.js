@@ -32,6 +32,11 @@ function initializeSocket() {
       $('#go').prop('disabled', false);
     }
   });
+
+  socket.on('stopall', function() {
+    $('#stop-testing').hide();
+    $('#go').prop('disabled', false).html('Go').show();
+  });
 }
 
 function start() {
