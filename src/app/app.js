@@ -208,6 +208,7 @@ function select() {
   $('#select-all').click(selectAll);
   $('#select-none').click(selectNone);
   $('#stop-testing').click(stopTesting);
+  $('#stop-all-testing').click(stopAllTesting);
 
   socket.emit('list', function (data) {
     devices = data;
@@ -255,7 +256,13 @@ function getUserDevices() {
 function stopTesting() {
   socket.emit('stop', {user: user, labels: getUserDevices()});
   $('#stop-testing').hide();
-  $('#go').prop('disabled', true).show();
+  //$('#go').prop('disabled', true).show();
+}
+
+function stopAllTesting() {
+  if (window.confirm("Do you really want to stop all browsersync instances?")) {
+    socket.emit('stopall');
+  }
 }
 
 exports = module.exports = {

@@ -59,11 +59,11 @@ module.exports = function (app, options) {
   }
 
   app.on('update-devices', function () {
-    instancesUpdated = true;
+    devicesUpdated = true;
   });
 
   app.on('update-instances', function () {
-    devicesUpdated = true;
+    instancesUpdated = true;
   });
 
   // Namespace "devicewallapp"
@@ -243,6 +243,38 @@ module.exports = function (app, options) {
           completeMessageType: 'browserSyncExit'
         });
       }
+    });
+
+    function instanceHasStopped(userId) {
+      var deferred = Q.defer();
+      childProcesses[userId].on('message', function(message) {
+        if (message.type === 'browserSyncExit') {
+          deferred.resolve();
+        }
+      });
+      childProcesses[userId].send({
+        type: 'location',
+        url: config.deviceWallAppURL,
+        timeout: 5000,
+        completeMessageType: 'browserSyncExit'
+      });
+      return deferred.promise;
+    }
+
+    // Stop all running instances
+    socket.on('stopall', function() {
+      var promises = [];
+      for (var userId in childProcesses) {
+        promises.push(instanceHasStopped(userId));
+      }
+      Q.all(promises).fin(function() {
+        devices.forEach(function (device, index) {
+          device.userId = null;
+          device.userName = null;
+        });
+        app.emit('update-devices');
+        ns.emit('update', devices);
+      });
     });
 
     // List devices
