@@ -30,10 +30,10 @@ function deferredEmit(socket, event, data, timeout) {
 function deferredCacheWarming(url) {
   var deferred = Q.defer(),
       timeoutHandle;
-  // Hardcoded timeout of 10000ms to resolve (in case phantomjs crashes etc.)
+  // Hardcoded timeout to resolve (in case phantomjs crashes etc.)
   setTimeout(function() {
     deferred.resolve();
-  }, 4000);
+  }, 10000);
   phantom.create(function(ph) {
     ph.createPage(function (page) {
       // If we don't get new responses in 1000ms, let's resolve
@@ -47,7 +47,7 @@ function deferredCacheWarming(url) {
           }, 1000);
         }
       });
-      // Hardcoded timeout of 10000ms to resolve (in case the page takes too long to load)
+      // Hardcoded timeout to resolve (in case the page takes too long to load)
       page.open(url, function(status) {
         if(timeoutHandle) {
           setTimeout(function() {
