@@ -30,7 +30,7 @@ function deferredEmit(socket, event, data, timeout) {
 function deferredCacheWarming(url) {
   var deferred = Q.defer(),
       timeoutHandle;
-  // Hardcoded timeout of 10000ms to resolve (in case phantomjs crashes etc.)
+  // Hardcoded timeout to resolve (in case phantomjs crashes etc.)
   setTimeout(function() {
     deferred.resolve();
   }, 10000);
@@ -47,12 +47,12 @@ function deferredCacheWarming(url) {
           }, 1000);
         }
       });
-      // Hardcoded timeout of 10000ms to resolve (in case the page takes too long to load)
+      // Hardcoded timeout to resolve (in case the page takes too long to load)
       page.open(url, function(status) {
         if(timeoutHandle) {
           setTimeout(function() {
             deferred.resolve();
-          }, 10000);
+          }, 3000);
         }
       });
     });
@@ -77,9 +77,17 @@ process.on('message', function(message) {
     });
 
     bs.events.on('init', function(api) {
-      var cacheWarmed = deferredCacheWarming(api.options.urls.external);
-      cacheWarmed.then(function() {
-        process.send({type: 'browserSyncInit', browserSync: api.options.urls.external});
+      bs.pluginManager.plugins.server.checkProxyTarget({
+        target: api.options.proxy.target
+      }, function(err, status) {
+        if (err) {
+          process.send({type: 'targetUrlUnreachable'});
+        } else {
+          var cacheWarmed = deferredCacheWarming(api.options.urls.external);
+          cacheWarmed.then(function() {
+            process.send({type: 'browserSyncInit', browserSync: api.options.urls.external});
+          });
+        }
       });
     });
   } else if (message.type === 'location') {

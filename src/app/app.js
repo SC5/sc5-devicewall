@@ -29,7 +29,11 @@ function initializeSocket() {
 
   socket.on('server-stop', function(data) {
     if (data.user.id === user.id) {
-      $('#go').prop('disabled', false);
+      $('#go').prop('disabled', false).html('Go').show();
+    }
+    if (data.reason) {
+      $('#tooltip-error').html(data.reason).show();
+      $('#url').addClass('error');
     }
   });
 
@@ -236,6 +240,8 @@ function selectSubmit(event) {
       };
 
   $('#go').prop("disabled", true).html('<img src="assets/images/spiffygif_48x48.gif">');
+  $('#tooltip-error').html('').hide();
+  $('#url').removeClass('error');
 
   localStorage.setItem('url', url);
 
@@ -261,7 +267,6 @@ function getUserDevices() {
 function stopTesting() {
   socket.emit('stop', {user: user, labels: getUserDevices()});
   $('#stop-testing').hide();
-  //$('#go').prop('disabled', true).show();
 }
 
 function stopAllTesting() {

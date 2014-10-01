@@ -198,8 +198,7 @@ module.exports = function (app, options) {
             ns.emit('update', devices);
             ns.emit('start', data);
             nsApp.emit('start', data);
-          }
-          if (message.type === 'browserSyncExit') {
+          } else if (message.type === 'browserSyncExit') {
             childProcesses[user.id].send({type: 'exit'});
             if (childProcesses[user.id]) {
               delete childProcesses[user.id];
@@ -208,6 +207,14 @@ module.exports = function (app, options) {
               delete instances[user.id];
             }
             ns.emit('server-stop', {user: user});
+          } else if (message.type === 'targetUrlUnreachable') {
+            if (childProcesses[user.id]) {
+              delete childProcesses[user.id];
+            }
+            if (instances[user.id]) {
+              delete instances[user.id];
+            }
+            ns.emit('server-stop', {user: user, reason: 'Target URL unreachable.'});
           }
         });
         childProcesses[user.id].send({type: 'init', url: testUrl});
