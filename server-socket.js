@@ -140,7 +140,7 @@ module.exports = function (app, options) {
       console.log('DeviceWall control panel start.');
 
       var user = data.user,
-          testUrl = data.url,
+          testUrl = data.url.trim(),
           labels = data.labels || [];
 
       if (testUrl.match(/:\/\//)) {
