@@ -10,6 +10,7 @@ module.exports = function (app, options) {
     nsApp = io.of('/devicewallapp'),
     ns = io.of('/devicewall'),
     Q = require('q'),
+    url = require('url'),
     devices = [],
     instances = {},
     instancesUpdated = false,
@@ -58,6 +59,70 @@ module.exports = function (app, options) {
       deferred.resolve();
     }
     return deferred.promise;
+  }
+
+  function instanceHasStopped(userId) {
+    var deferred = Q.defer();
+    childProcesses[userId].on('message', function(message) {
+      if (message.type === 'browserSyncExit') {
+        deferred.resolve();
+      }
+    });
+    childProcesses[userId].send({
+      type: 'location',
+      url: config.deviceWallAppURL,
+      timeout: 5000,
+      completeMessageType: 'browserSyncExit'
+    });
+    return deferred.promise;
+  }
+
+  function createInstance(testUrl, user, data) {
+    childProcesses[user.id] = fork('./server-browsersync');
+    childProcesses[user.id].on('message', function(message) {
+      if (message.type === 'browserSyncInit') {
+        if (instances[user.id]) {
+          instances[user.id].browserSync = message.browserSync;
+          instances[user.id].updated = +new Date();
+        }
+        data.url = message.browserSync;
+        app.emit('update-instances');
+        app.emit('update-devices');
+        ns.emit('update', devices);
+        ns.emit('start', data);
+        // wait 3 seconds before sending url to devices
+        setTimeout(function(){
+          nsApp.emit('start', data);
+        }, 3000);
+      } else if (message.type === 'browserSyncExit') {
+        childProcesses[user.id].send({type: 'exit'});
+        if (childProcesses[user.id]) {
+          delete childProcesses[user.id];
+        }
+        if (instances[user.id]) {
+          delete instances[user.id];
+        }
+        ns.emit('server-stop', {user: user});
+      } else if (message.type === 'targetUrlUnreachable') {
+        if (childProcesses[user.id]) {
+          delete childProcesses[user.id];
+        }
+        if (instances[user.id]) {
+          delete instances[user.id];
+        }
+        ns.emit('server-stop', {user: user, reason: 'Target URL unreachable.'});
+      }
+    });
+    childProcesses[user.id].send({type: 'init', url: testUrl});
+  }
+
+  function updateInstance(testUrl, user, data) {
+    childProcesses[user.id].send({
+      type: 'location',
+      url: testUrl,
+      timeout: 5000
+    });
+    ns.emit('start', data);
   }
 
   app.on('update-devices', function () {
@@ -143,7 +208,8 @@ module.exports = function (app, options) {
 
       var user = data.user,
           testUrl = data.url.trim(),
-          labels = data.labels || [];
+          labels = data.labels || [],
+          sendUpdate = false;
 
       if (testUrl.match(/:\/\//)) {
         if (!testUrl.match(/^http[s]*/)) {
@@ -166,17 +232,25 @@ module.exports = function (app, options) {
       });
 
       // Updating instances
-      var updated = false;
-
       if (instances[user.id]) {
-        updated = true;
-        instances[user.id].url = testUrl;
-        instances[user.id].labels = labels;
-        instances[user.id].browserSync = null;
-        instances[user.id].updated = +new Date();
-      }
-
-      if (!updated) {
+        var previousUrlObject = url.parse(instances[user.id].url);
+        var nextUrlObject = url.parse(testUrl);
+        // If previous url host is the same as next url host
+        // => just update the location on all the clients
+        if (previousUrlObject.host === nextUrlObject.host) {
+          sendUpdate = nextUrlObject;
+        } else {
+          instances[user.id].url = testUrl;
+          instances[user.id].browserSync = null;
+          instances[user.id].updated = +new Date();
+          if (labels.length > 0) {
+            instances[user.id].labels = labels;
+          } else {
+            labels = instances[user.id].labels;
+            data.labels = instances[user.id].labels;
+          }
+        }
+      } else {
         instances[user.id] = {
           userId: user.id,
           url: testUrl,
@@ -186,44 +260,13 @@ module.exports = function (app, options) {
         };
       }
 
-      instanceCanBeStarted(user).then(function() {
-        childProcesses[user.id] = fork('./server-browsersync');
-        childProcesses[user.id].on('message', function(message) {
-          if (message.type === 'browserSyncInit') {
-            if (instances[user.id]) {
-              instances[user.id].browserSync = message.browserSync;
-              instances[user.id].updated = +new Date();
-            }
-            data.url = message.browserSync;
-            app.emit('update-instances');
-            app.emit('update-devices');
-            ns.emit('update', devices);
-            ns.emit('start', data);
-            // wait 3 seconds before sending url to devices
-            setTimeout(function(){
-              nsApp.emit('start', data);
-            }, 3000);
-          } else if (message.type === 'browserSyncExit') {
-            childProcesses[user.id].send({type: 'exit'});
-            if (childProcesses[user.id]) {
-              delete childProcesses[user.id];
-            }
-            if (instances[user.id]) {
-              delete instances[user.id];
-            }
-            ns.emit('server-stop', {user: user});
-          } else if (message.type === 'targetUrlUnreachable') {
-            if (childProcesses[user.id]) {
-              delete childProcesses[user.id];
-            }
-            if (instances[user.id]) {
-              delete instances[user.id];
-            }
-            ns.emit('server-stop', {user: user, reason: 'Target URL unreachable.'});
-          }
+      if (sendUpdate) {
+        updateInstance(sendUpdate.path, user, data);
+      } else {
+        instanceCanBeStarted(user).then(function() {
+          createInstance(testUrl, user, data);
         });
-        childProcesses[user.id].send({type: 'init', url: testUrl});
-      });
+      }
     });
 
     // Stop
@@ -256,22 +299,6 @@ module.exports = function (app, options) {
         });
       }
     });
-
-    function instanceHasStopped(userId) {
-      var deferred = Q.defer();
-      childProcesses[userId].on('message', function(message) {
-        if (message.type === 'browserSyncExit') {
-          deferred.resolve();
-        }
-      });
-      childProcesses[userId].send({
-        type: 'location',
-        url: config.deviceWallAppURL,
-        timeout: 5000,
-        completeMessageType: 'browserSyncExit'
-      });
-      return deferred.promise;
-    }
 
     // Stop all running instances
     socket.on('stopall', function() {
