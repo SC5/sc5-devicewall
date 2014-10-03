@@ -232,7 +232,7 @@ module.exports = function (app, options) {
       });
 
       // Updating instances
-      if (instances[user.id]) {
+      if (childProcesses[user.id] && instances[user.id]) {
         var previousUrlObject = url.parse(instances[user.id].url);
         var nextUrlObject = url.parse(testUrl);
         // If previous url host is the same as next url host
@@ -250,20 +250,19 @@ module.exports = function (app, options) {
             data.labels = instances[user.id].labels;
           }
         }
-      } else {
-        instances[user.id] = {
-          userId: user.id,
-          url: testUrl,
-          labels: labels,
-          browserSync: null,
-          updated: +new Date()
-        };
       }
 
       if (sendUpdate) {
         updateInstance(sendUpdate.path, user, data);
       } else {
         instanceCanBeStarted(user).then(function() {
+          instances[user.id] = {
+            userId: user.id,
+            url: testUrl,
+            labels: labels,
+            browserSync: null,
+            updated: +new Date()
+          };
           createInstance(testUrl, user, data);
         });
       }
@@ -311,6 +310,8 @@ module.exports = function (app, options) {
           device.userId = null;
           device.userName = null;
         });
+        instances = {};
+        app.emit('update-instances');
         app.emit('update-devices');
         ns.emit('update', devices);
         ns.emit('stopall');
