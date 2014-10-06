@@ -19,7 +19,8 @@
     "socket.io": "^1.0.6",
     "socket.io-client": "^1.0.6",
     "q": "~1.0.1",
-    "gulp-nodemon": "^1.0.4"
+    "gulp-nodemon": "^1.0.4",
+    "devicewallapp": "git+ssh://git@bitbucket.org:SC5/devicewallapp.git"
   },
   "devDependencies": {
     "find": "^0.1.5",
