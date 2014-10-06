@@ -3,7 +3,6 @@ angular.module('DeviceWall', [
   'ngRoute',
   'mm.foundation',
   'ngLodash',
-  'btford.socket-io',
   'templates',
   'configuration'
 ])

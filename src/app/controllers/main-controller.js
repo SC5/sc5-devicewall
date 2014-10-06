@@ -1,6 +1,29 @@
 angular.module('DeviceWall')
+  .factory("socket", function ($rootScope, SOCKET_SERVER) {
+    console.log("Load io factory");
+    var socket = io.connect(SOCKET_SERVER);
+    return {
+      on: function (eventName, callback) {
+        socket.on(eventName, function () {
+          var args = arguments;
+          socket.on(eventName, callback);
+        });
+      },
+      emit: function (eventName, data, callback) {
+        socket.emit(eventName, data, function () {
+          var args = arguments;
+          $rootScope.$apply(function () {
+            if (callback) {
+              callback.apply(socket, args);
+            }
+          });
+        });
+      }
+    };
+  })
   .controller('MainController', function($rootScope, $scope, $window, $http, $timeout, socket, lodash, LOGIN_TYPE) {
     var _ = lodash;
+
     $scope.user = null;
     $scope.content = {
       className: '',
@@ -121,7 +144,7 @@ angular.module('DeviceWall')
       }
     };
 
-    socket.then(function(socket) {
+    //socket.then(function(socket) {
       socket.on('connect',  function () {
         socket.emit('list', 'list', function(data) {
           $scope.deviceList = data;
@@ -146,7 +169,7 @@ angular.module('DeviceWall')
           }
         }
       });
-    });
+    //});
 
     angular.element($window).bind('pageshow', function() {
       if ($scope.user) {

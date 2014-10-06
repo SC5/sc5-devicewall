@@ -1,3 +1,4 @@
 angular.module('configuration', [])
-       .constant('SOCKET_SERVER', 'http://devicewall.sc5.io:3000/devicewall')
-       .constant('LOGIN_TYPE', 2); // 1 = Google Auth, 2 = Nickname
+  .constant('SOCKET_SERVER', 'http://devicewall.sc5.io:3000/devicewall')
+  .constant('LOGIN_TYPE', 2); // 1 = Google Auth, 2 = Nickname
+

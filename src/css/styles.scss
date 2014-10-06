@@ -73,7 +73,7 @@ body {
 			#devices {
 
 				.buttons {
-					margin: 30px 0;
+					margin: 20px 0;
 				}
 
 				input[type=text] {
@@ -98,7 +98,7 @@ body {
 			left: 0;
 			top: 0;
 			width: 100%;
-			height: 100%;		
+			height: 100%;
 		}
 
 		&.centerized #content {
@@ -118,7 +118,7 @@ body {
 			position: absolute;
 			left: 0;
 			bottom: 0;
-		}	
+		}
 
 	}
 
@@ -126,7 +126,7 @@ body {
 
 
 #{headings(all)} {
-	
+
 }
 
 h1 {
@@ -205,28 +205,50 @@ table {
 
 		}
 
+		&:nth-child(8),
 		&:last-child {
 			text-align: center;
 		}
 
-		&.battery {
+		&.battery,
+		&.remove {
 
 			text-align: center;
 			vertical-align: middle;
 
 			span {
 				font-family: 'Entypo';
-				font-size: 3rem;
 				line-height: 1rem;
 				vertical-align: middle;
+				padding: 0 5px;
 				color: #fff;
-				cursor: default;
+			}
+
+		}
+
+		&.battery {
+
+			span {
+				font-size: 1.6rem;
 				-webkit-background-clip: text;
 				-webkit-text-fill-color: transparent;
+				cursor: default;
 			}
 
 			&.plugged span {
 				color: #0f0;
+			}
+
+		}
+
+		&.remove {
+
+			span {
+				font-size: 1.2rem;
+				cursor: pointer;
+				background-image: -webkit-linear-gradient(left, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, .3) 80%), -webkit-linear-gradient(#fff 0%, #fff 100%);
+			  -webkit-background-clip: text;
+			  -webkit-text-fill-color: transparent;
 			}
 
 		}
@@ -250,6 +272,12 @@ button {
 		@include linear-gradient(#ddd, #fff);
 	}
 
+	&:disabled {
+	  @include linear-gradient(#ccc, #aaa);
+	  text-shadow: none;
+	  color: #666;
+	}
+
 	overflow: hidden;
 	white-space: nowrap;
 	-webkit-appearance: none;
@@ -270,12 +298,55 @@ button {
 	color: #333;
 	cursor: pointer;
 
-	&.go {
+	&.large {
 		height: 48px;
 		line-height: 48px;
 		font-size: 1.6rem;
 	}
 
+}
+
+.input {
+
+	display: inline-block;
+	vertical-align: middle;
+	position: relative;
+
+	.tooltip {
+
+		display: block;
+		position: absolute;
+		padding: 5px 10px;
+		top: -35px;
+		left: 50%;
+		transform: translate(-50%, 0);
+		background-color: #fff;
+		color: #333;
+		border-radius: 5px;
+		box-shadow: 0 0 10px rgba(0, 0, 0, .5);
+		white-space: nowrap;
+		font-size: .8rem;
+
+		&:after {
+			content: '';
+			display: block;
+			position: absolute;
+			bottom: 0;
+			left: 50%;
+			margin: 0 -6px -6px -6px;
+			border-width: 6px 6px 0 6px;
+			border-style: solid;
+			border-color: #fff transparent transparent transparent;
+			width: 0;
+			height: 0;
+		}
+
+	}
+
+}
+
+.checkbox {
+	padding: 5px;
 }
 
 input[type=text] {
@@ -298,6 +369,7 @@ input[type=checkbox]:checked {
 	margin: 0 2px;
 	padding: 0;
 	vertical-align: middle;
+	cursor: pointer;
 }
 
 input[type=checkbox]:after {
@@ -330,4 +402,8 @@ input[type=checkbox]:after,
 	border: 1px solid #777;
 	background-color: #fff;
 	@include box-shadow(inset 0 10px 10px -5px rgba(0, 0, 0, .25));
+}
+
+input[type=text].error {
+  border: 1px solid #f00;
 }
