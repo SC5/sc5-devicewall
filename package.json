@@ -19,8 +19,7 @@
     "socket.io": "^1.0.6",
     "socket.io-client": "^1.0.6",
     "q": "~1.0.1",
-    "gulp-nodemon": "^1.0.4",
-    "devicewallapp": "git+ssh://git@bitbucket.org:SC5/devicewallapp.git"
+    "sc5-devicewall-app": "git+ssh://git@bitbucket.org:SC5/devicewallapp.git"
   },
   "devDependencies": {
     "find": "^0.1.5",
@@ -47,7 +46,10 @@
     "phantomjs-server": "^1.9.2-1",
     "protractor": "^0.22.0",
     "request": "^2.34.0",
-    "selenium-webdriver": "^2.41.0"
+    "selenium-webdriver": "^2.41.0",
+    "gulp-sass": "~1.0.0",
+    "gulp-csso": "~0.2.9",
+    "gulp-nodemon": "~1.0.4"
   },
   "scripts": {
     "install": "gulp install",
