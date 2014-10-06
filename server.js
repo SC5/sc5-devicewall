@@ -8,42 +8,54 @@ var
   GoogleStrategy = require('passport-google-oauth').OAuth2Strategy,
   https = require('https'),
   http = require('http'),
-  app = express(),
   config = require('./config.json'),
-  HTTP_PORT = process.env.HTTP_PORT || 8888,
-  SOCKET_PORT = process.env.SOCKET_PORT || 3000,
-  server,
+  deviceWallApp = require('sc5-devicewall-app'),
   io;
 
 https.globalAgent.maxSockets = config.maxSockets || 5;
 http.globalAgent.maxSockets = config.maxSockets || 5;
 
-app.use(cookieParser());
-app.use(expressSession({secret: config.sessionKey, resave: true, saveUninitialized: true}));
-app.use(bodyParser.urlencoded({extended: true}));
-app.use(passport.initialize());
-app.use(passport.session());
+// Admin server starts
+var adminServer = express();
+adminServer.use(cookieParser());
+adminServer.use(expressSession({secret: config.sessionKey, resave: true, saveUninitialized: true}));
+adminServer.use(bodyParser.urlencoded({extended: true}));
+adminServer.use(passport.initialize());
+adminServer.use(passport.session());
 
-require('./routes/auth.js')(app, {
+require('./routes/auth.js')(adminServer, {
   config: config,
   passport: passport,
   GoogleStrategy: GoogleStrategy
 });
-require('./routes/user.js')(app);
+require('./routes/user.js')(adminServer);
 
-app.use(express.static(__dirname + '/dist'));
+adminServer.use(express.static(__dirname + '/dist'));
 
-server = app.listen(HTTP_PORT, function () {
-  console.log('Express server listening on port %d', server.address().port);
+var admin = adminServer.listen(config.adminPort, function () {
+  console.log('Express server listening on port %d', admin.address().port);
 });
+// Admin server ends
 
-// Socket.io server
-io = require('socket.io')(server);
-require('./server-socket.js')(app, {
+// Socket.io server starts
+io = require('socket.io')(admin);
+require('./server-socket.js')(adminServer, {
   config: config,
   io: io
 });
 
 // Start server
-io.listen(SOCKET_PORT);
-console.log('Socket.io server listening on port %d', SOCKET_PORT);
+io.listen(config.socketPort);
+console.log('Socket.io server listening on port %d', config.socketPort);
+// Socket.io server ends
+
+// App server starts
+var appServer = express();
+appServer.use(deviceWallApp);
+appServer.use('/return', deviceWallApp);
+appServer.use('/main', deviceWallApp);
+
+var app = appServer.listen(config.appPort, function () {
+  console.log('Express server listening on port %d', app.address().port);
+});
+// App server ends
