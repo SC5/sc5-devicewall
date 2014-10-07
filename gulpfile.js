@@ -238,7 +238,7 @@ gulp.task('webdriver', function(cb) {
 
 gulp.task('develop', function () {
   nodemon({ script: 'server.js', ext: "css html js", ignore: ['src/components/**/*', 'node_modules/**/*']})
-    .on('change', ['preprocess'])
+    .on('change', ['javascript'])
     .on('restart', function () {
       console.log('restarted!')
     })

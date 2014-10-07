@@ -1,29 +1,7 @@
 angular.module('DeviceWall')
-  .factory("socket", function ($rootScope, SOCKET_SERVER) {
-    console.log("Load io factory");
-    var socket = io.connect(SOCKET_SERVER);
-    return {
-      on: function (eventName, callback) {
-        socket.on(eventName, function () {
-          var args = arguments;
-          socket.on(eventName, callback);
-        });
-      },
-      emit: function (eventName, data, callback) {
-        socket.emit(eventName, data, function () {
-          var args = arguments;
-          $rootScope.$apply(function () {
-            if (callback) {
-              callback.apply(socket, args);
-            }
-          });
-        });
-      }
-    };
-  })
-  .controller('MainController', function($rootScope, $scope, $window, $http, $timeout, socket, lodash, LOGIN_TYPE) {
+  .controller('MainController', function($rootScope, $scope, $window, $http, $timeout, socket, lodash, LOGIN_TYPE, $log) {
     var _ = lodash;
-
+    $log.debug('loading main controller');
     $scope.user = null;
     $scope.content = {
       className: '',
@@ -52,9 +30,7 @@ angular.module('DeviceWall')
     $scope.go = {
       show: true
     };
-    $scope.openURL = {
-      checked: true
-    };
+
     $scope.popupWindow = null;
     $scope.deviceList = [];
     $scope.getBatteryStatusTitle = function(level, isPlugged) {
@@ -144,22 +120,26 @@ angular.module('DeviceWall')
       }
     };
 
-    //socket.then(function(socket) {
+    socket.then(function(socket) {
       socket.on('connect',  function () {
+        $log.debug("Connected");
         socket.emit('list', 'list', function(data) {
+          $log.debug("socket::list");
           $scope.deviceList = data;
         });
       });
 
       socket.on('update', function (data) {
+        $log.debug("socket::update");
         $scope.deviceList = data;
       });
 
       socket.on('start', function (data) {
+        $log.debug("socket::start");
         if (data.user.id === $scope.user.id) {
           $scope.go.show = false;
           $scope.stopTesting.show = true;
-          if ($scope.openURL.checked) {
+          if ($scope.openURL) {
             if ($scope.popupWindow && !$scope.popupWindow.closed) {
               $scope.popupWindow.location.href = data.url;
               $scope.popupWindow.focus();
@@ -169,7 +149,7 @@ angular.module('DeviceWall')
           }
         }
       });
-    //});
+    });
 
     angular.element($window).bind('pageshow', function() {
       if ($scope.user) {
@@ -244,5 +224,6 @@ angular.module('DeviceWall')
     }
 
     $rootScope.$broadcast('ready');
+    $log.debug('Broadcast ready');
     select();
   });
