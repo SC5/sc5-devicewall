@@ -197,7 +197,10 @@ module.exports = function (app, options) {
             app.emit('update-devices');
             ns.emit('update', devices);
             ns.emit('start', data);
-            nsApp.emit('start', data);
+            // wait 3 seconds before sending url to devices
+            setTimeout(function(){
+              nsApp.emit('start', data);
+            }, 3000);
           } else if (message.type === 'browserSyncExit') {
             childProcesses[user.id].send({type: 'exit'});
             if (childProcesses[user.id]) {

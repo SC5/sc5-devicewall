@@ -4,8 +4,8 @@ var browserSync = require('browser-sync'),
     url = require('url'),
     http = require('http'),
     https = require('https'),
-    Q = require('q'),
-    phantom = require('phantom');
+    Q = require('q');
+    //phantom = require('phantom');
 
 https.globalAgent.maxSockets = config.maxSockets || 5;
 http.globalAgent.maxSockets = config.maxSockets || 5;
@@ -27,6 +27,7 @@ function deferredEmit(socket, event, data, timeout) {
   return deferred.promise;
 }
 
+/*
 function deferredCacheWarming(url) {
   var deferred = Q.defer(),
       timeoutHandle;
@@ -59,6 +60,7 @@ function deferredCacheWarming(url) {
   });
   return deferred.promise;
 }
+*/
 
 process.on('message', function(message) {
   if (message.type === 'init') {
@@ -83,10 +85,12 @@ process.on('message', function(message) {
         if (err) {
           process.send({type: 'targetUrlUnreachable'});
         } else {
-          var cacheWarmed = deferredCacheWarming(api.options.urls.external);
+          /*var cacheWarmed = deferredCacheWarming(api.options.urls.external);
           cacheWarmed.then(function() {
-            process.send({type: 'browserSyncInit', browserSync: api.options.urls.external});
+          process.send({type: 'browserSyncInit', browserSync: api.options.urls.external});
           });
+          */
+          process.send({type: 'browserSyncInit', browserSync: api.options.urls.external});
         }
       });
     });

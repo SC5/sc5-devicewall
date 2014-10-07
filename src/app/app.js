@@ -8,10 +8,12 @@ var app = require('./app.js'),
 
 function initializeSocket() {
   socket = io(config.SOCKET_SERVER);
+
   socket.on('update', function (data) {
     devices = data;
     drawDevices(data);
   });
+
   socket.on('start', function (data) {
     if (data.user.id === user.id) {
       $('#go').html('Go').hide().prop('disabled', false);
@@ -196,6 +198,8 @@ function select() {
   $('#content').addClass('devices');
 
   $('#devices-form').submit(selectSubmit);
+
+  $('input[name="open-url"]').prop('checked', true);
 
   $('#url').focus(function (event) {
     if (!event.target.value) {
