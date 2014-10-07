@@ -303,7 +303,8 @@ module.exports = function (app, options) {
       });
 
       if (typeof(fn) === typeof(Function)) {
-        fn(devices);
+        console.log("run:  fn(devices");
+        //fn(devices);
       } else {
         console.log("not a function: ", fn);
       }
