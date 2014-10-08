@@ -137,12 +137,13 @@ angular.module('DeviceWall')
         $log.debug("socket::start", data);
         if (data.user.id === $scope.user.id) {
           setButtonsStatus(false);
-          if ($scope.openURL) {
+          if ($scope.openUrl) {
+            $log.debug('Opening a popup view');
             if ($scope.popupWindow && !$scope.popupWindow.closed) {
               $scope.popupWindow.location.href = data.url;
               $scope.popupWindow.focus();
             } else {
-              $scope.popupWindow = window.open(data.url, '_blank');
+              $scope.popupWindow = $window.open(data.url, '_blank');
             }
           }
         }
