@@ -53,7 +53,7 @@ angular.module('DeviceWall')
         });
         var formData = {
           url: $scope.url.value,
-          uuids: uuids,
+          labels: $scope.deviceList.map(function(o) { return o.label; }),
           user: $scope.user
         };
 
@@ -123,7 +123,7 @@ angular.module('DeviceWall')
         $log.debug("Connected");
         $scope.indicatorWaiting = {show: false};
         socket.emit('list', 'list', function(data) {
-          $log.debug("socket::list");
+          $log.debug("socket::list", data);
           $scope.deviceList = data;
         });
       });
@@ -134,9 +134,9 @@ angular.module('DeviceWall')
       });
 
       socket.on('start', function (data) {
-        $log.debug("socket::start");
+        $log.debug("socket::start", data);
         if (data.user.id === $scope.user.id) {
-          setButtonsStatus(true);
+          setButtonsStatus(false);
           if ($scope.openURL) {
             if ($scope.popupWindow && !$scope.popupWindow.closed) {
               $scope.popupWindow.location.href = data.url;
@@ -167,7 +167,7 @@ angular.module('DeviceWall')
         $log.debug('socket::stopall');
         //$('#stop-testing').hide();
         //$('#go').prop('disabled', false).html('Go').show();
-        setButtonsStatus(true)
+        setButtonsStatus(true);
       });
     });
 
@@ -247,7 +247,9 @@ angular.module('DeviceWall')
 
     $scope.stopTesting = function() {
       $log.debug('stop testing');
-      socket.emit('stop', {user: $scope.user, labels: getUserDevices()});
+      socket.then(function(socket) {
+        socket.emit('stop', {user: $scope.user, labels: getUserDevices()});
+      });
       $scope.btnStopTesting.show = false;
     };
 
@@ -257,9 +259,16 @@ angular.module('DeviceWall')
         socket.then(function(socket) {
           socket.emit('stopall');
         });
-
-
       }
+    };
+
+    $scope.removeDevice = function(device) {
+      socket.then(function(socket) {
+        socket.emit('remove', {labels: [device.label]});
+        $scope.deviceList = _.filter($scope.deviceList, function(d) {
+          return d.label === device.label;
+        });
+      });
     };
     // helper for buttons
     function setButtonsStatus(status) {

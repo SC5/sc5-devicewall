@@ -26,6 +26,7 @@
             <th>User</th>
             <th>Last used</th>
             <th>Select for testing</th>
+            <th>Remove</th>
           </tr>
           <tbody id="devices-list" ng-if="deviceList.length > 0">
             <tr ng-repeat="device in deviceList">
@@ -37,6 +38,7 @@
               <td>{{ device.userName }}</td>
               <td><time>{{ device.lastUsed | timeSince }}</time></td>
               <td><input type="checkbox" name="uuids[]" ng-model="uuids[device.uuid]" ng-checked="uuids[device.uuid]" value="{{ device.uuid }}" ng-disabled="{{ getDeviceDisabled(device.userId) }}"></td>
+              <td class="remove" data-ng-click="removeDevice(device)"><span>&#59177;</span></td>
             </tr>
           </tbody>
         </table>
