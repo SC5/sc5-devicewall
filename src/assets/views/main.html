@@ -45,16 +45,26 @@
           <button type="button" id="select-all" ng-click="selectAll.click()">Select all</button> <button type="button" id="select-none" ng-click="selectNone.click()">Select none</button>
         </div>
 
-        <h2><label for="address">Website to test</label></h2>
+        <h2><label>Website to test</label></h2>
 
-        <input type="text" name="url" size="50" placeholder="http://www.sc5.io/" id="url" ng-click="url.click()" ng-model="url.value">
-        <label><input data-ng-bind="open-url" type="checkbox" name="open-url" id="open-url" value="0" > Open URL with this browser</label>
+        <span class="input">
+          <span id="tooltip-error" class="tooltip" data-ng-show="tooltipError.show">{{tooltipError.content}}</span>
+          <input type="text" name="url" size="50" placeholder="http://www.sc5.io/" id="url" data-ng-click="url.click()" ng-model="url.value">
+        </span>
+        <div class="checkbox">
+          <label><input type="checkbox" name="open-url" id="open-url" value="1">Load url with proxy to warm-up the caches</label>
+        </div>
 
         <div class="buttons">
-          <button type="submit" id="go" ng-show="go.show" class="go">Go</button>
-          <button type="button" id="stop-testing" ng-show="stopTesting.show" class="ng-hide" ng-click="stopTesting.click()">Stop</button>
+          <button type="submit" data-ng-disabled="deviceList.length === 0" data-ng-show="btnGo.show" class="large">Go</button>
+          <button type="button" data-ng-show="btnStopTesting.show" class="large ng-hide" data-ng-click="stopTesting()">Stop</button>
+          <button type="button" data-ng-show="btnStopAllTesting.show" class="large" data-ng-click="stopAllTesting()">Stop all</button>
         </div>
       </form>
+    </section>
+    <section data-ng-show="indicatorWaiting.show" >
+        <h2>Waiting for connection...</h2>
+        <p>Please wait for Browser Sync to initialize.</p>
     </section>
   </div>
 

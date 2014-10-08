@@ -7,21 +7,21 @@ angular.module('DeviceWall', [
   'templates',
   'configuration'
 ])
-.factory('socket', function ($q, $rootScope, $timeout, socketFactory, SOCKET_SERVER, $log) {
-  var socket = $q.defer();
-
-  $rootScope.$on('ready', function() {
-    $timeout(function() {
-      var newSocket = function() {
-        return socketFactory({
-          ioSocket: io.connect(SOCKET_SERVER)
-        });
-      };
-      $log.debug("socket.io connecting to " + SOCKET_SERVER);
-      socket.resolve(newSocket());
+.factory('socket', function ($rootScope, $timeout, socketFactory, SOCKET_SERVER, $log, $q) {
+    var socket = $q.defer();
+    $rootScope.$on('ready',function() {
+      $timeout(function() {
+        var socketServer = localStorage.getItem('SOCKET_SERVER') || SOCKET_SERVER;
+        var newSocket = (function() {
+          return socketFactory({
+            ioSocket: io.connect(socketServer)
+          });
+        })();
+        socket.resolve(newSocket);
+      });
     });
-  });
-  return socket.promise;
+    return socket.promise;
+
 })
 .config(function($routeProvider, $locationProvider) {
   $routeProvider.

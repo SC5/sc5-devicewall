@@ -1,7 +1,10 @@
 angular.module('DeviceWall')
-  .controller('MainController', function($rootScope, $scope, $window, $http, $timeout, socket, lodash, LOGIN_TYPE, $log) {
+  .controller('MainController', function($rootScope, $scope, $window, $http, $timeout, lodash, LOGIN_TYPE, $log, socket) {
+
+
     var _ = lodash;
     $log.debug('loading main controller');
+    $scope.indicatorWaiting = {show: true};
     $scope.user = null;
     $scope.content = {
       className: '',
@@ -14,21 +17,14 @@ angular.module('DeviceWall')
     $scope.devices = {
       show: false
     };
-    $scope.stopTesting = {
+
+    $scope.btnGo =              {show: true};
+    $scope.btnStopAllTesting =  {show: false};
+    $scope.btnStopTesting =     {show: false};
+
+    $scope.tooltipError = {
       show: false,
-      click: function() {
-        socket.then(function(socket) {
-          socket.emit('stop', {
-            user: $scope.user,
-            uuids: getUserDevices()
-          });
-        });
-        $scope.stopTesting.show = false;
-        $scope.go.show = true;
-      }
-    };
-    $scope.go = {
-      show: true
+      content: ''
     };
 
     $scope.popupWindow = null;
@@ -48,6 +44,7 @@ angular.module('DeviceWall')
     $scope.uuids = {};
     $scope.form = {
       selectSubmit: function() {
+        $log.debug('Submit url ', $scope.url.value);
         var uuids = [];
         _.each($scope.uuids, function(val, key) {
           if(val) {
@@ -55,15 +52,16 @@ angular.module('DeviceWall')
           }
         });
         var formData = {
-              url: $scope.url.value,
-              uuids: uuids,
-              user: $scope.user
-            };
+          url: $scope.url.value,
+          uuids: uuids,
+          user: $scope.user
+        };
 
-        localStorage.setItem('url', $scope.url.value);
+        $window.localStorage.setItem('url', $scope.url.value);
 
         socket.then(function(socket) {
           socket.emit('start', formData);
+          setButtonsStatus(false);
         });
       }
     };
@@ -101,7 +99,7 @@ angular.module('DeviceWall')
     $scope.identifyButton = {
       click: function() {
         $scope.identify.show = false;
-        localStorage.setItem('name', $scope.name);
+        $window.localStorage.setItem('name', $scope.name);
 
         $scope.user = {
           id: $scope.name,
@@ -123,6 +121,7 @@ angular.module('DeviceWall')
     socket.then(function(socket) {
       socket.on('connect',  function () {
         $log.debug("Connected");
+        $scope.indicatorWaiting = {show: false};
         socket.emit('list', 'list', function(data) {
           $log.debug("socket::list");
           $scope.deviceList = data;
@@ -137,8 +136,7 @@ angular.module('DeviceWall')
       socket.on('start', function (data) {
         $log.debug("socket::start");
         if (data.user.id === $scope.user.id) {
-          $scope.go.show = false;
-          $scope.stopTesting.show = true;
+          setButtonsStatus(true);
           if ($scope.openURL) {
             if ($scope.popupWindow && !$scope.popupWindow.closed) {
               $scope.popupWindow.location.href = data.url;
@@ -148,6 +146,28 @@ angular.module('DeviceWall')
             }
           }
         }
+      });
+
+      socket.on('server-stop', function(data) {
+        $log.debug('socket::server-stop');
+        if (data.user.id === $scope.user.id) {
+          //$('#go').prop('disabled', false).html('Go').show();
+          setButtonsStatus(true);
+        }
+        if (data.reason) {
+          //$('#tooltip-error').html(data.reason).show();
+          $log.debug('some err', data.reason);
+          $scope.tooltipError.content = data.reason;
+          $scope.tooltipError.show = true;
+          //$('#url').addClass('error');
+        }
+      });
+
+        socket.on('stopall', function() {
+        $log.debug('socket::stopall');
+        //$('#stop-testing').hide();
+        //$('#go').prop('disabled', false).html('Go').show();
+        setButtonsStatus(true)
       });
     });
 
@@ -172,7 +192,7 @@ angular.module('DeviceWall')
     }
 
     function identify() {
-      var name = localStorage.getItem('name');
+      var name = $window.localStorage.getItem('name');
       $scope.identify.show = true;
 
       if (name) {
@@ -185,6 +205,7 @@ angular.module('DeviceWall')
     }
 
     function initializeUser() {
+      $log.debug('initialize user with login type ' + LOGIN_TYPE);
       if (LOGIN_TYPE === 1) {
         $http.get('/user').success(function (res) {
           if (res.user) {
@@ -202,9 +223,9 @@ angular.module('DeviceWall')
         identify();
       }
     }
-
+    // wtf?
     function select() {
-      var url = localStorage.getItem('url');
+      var url = $window.localStorage.getItem('url');
 
       if (!$scope.user) {
         initializeUser();
@@ -221,6 +242,30 @@ angular.module('DeviceWall')
       if (url) {
         $scope.url.value = url;
       }
+    }
+
+
+    $scope.stopTesting = function() {
+      $log.debug('stop testing');
+      socket.emit('stop', {user: $scope.user, labels: getUserDevices()});
+      $scope.btnStopTesting.show = false;
+    };
+
+    $scope.stopAllTesting = function() {
+      $log.debug('stop All testing');
+      if (window.confirm("Do you really want to stop all browsersync instances?")) {
+        socket.then(function(socket) {
+          socket.emit('stopall');
+        });
+
+
+      }
+    };
+    // helper for buttons
+    function setButtonsStatus(status) {
+      $scope.btnStopAllTesting.show = !status;
+      $scope.btnStopTesting.show = !status;
+      $scope.btnGo.show = status;
     }
 
     $rootScope.$broadcast('ready');

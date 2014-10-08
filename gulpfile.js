@@ -236,12 +236,17 @@ gulp.task('webdriver', function(cb) {
 
 });
 
-gulp.task('develop', function () {
-  nodemon({ script: 'server.js', ext: "css html js", ignore: ['src/components/**/*', 'node_modules/**/*']})
-    .on('change', ['javascript'])
-    .on('restart', function () {
-      console.log('restarted!')
-    })
+gulp.task('mywatch', ['integrate'], function() {
+  nodemon({script: 'server.js', watch: 'dist/**/*'})
+  .on('restart', function () {
+    console.log('restarted!')
+  });
+  gulp.watch([
+    'src/css/**/*.scss',
+    'src/app/**/*.js',
+    'src/assets/**/*',
+    'src/index.html'
+  ], ['integrate']);
 });
 
 gulp.task('test', ['webdriver'], function() {
