@@ -1,4 +1,4 @@
-angular.module('DeviceWall', [
+var module = angular.module('DeviceWall', [
   'ngResource',
   'ngRoute',
   'mm.foundation',
@@ -6,26 +6,37 @@ angular.module('DeviceWall', [
   'btford.socket-io',
   'templates',
   'configuration'
-])
-.factory('socket', function ($rootScope, $timeout, socketFactory, SOCKET_SERVER, $log, $q) {
-    var socket = $q.defer();
-    $rootScope.$on('ready',function() {
-      $timeout(function() {
-        var socketServer = localStorage.getItem('SOCKET_SERVER') || SOCKET_SERVER;
-        var newSocket = (function() {
-          return socketFactory({
-            ioSocket: io.connect(socketServer)
-          });
-        })();
-        socket.resolve(newSocket);
-      });
-    });
-    return socket.promise;
+]);
 
-})
-.config(function($routeProvider, $locationProvider) {
+module.factory('socket', function ($rootScope, $timeout, socketFactory, SOCKET_SERVER, $log, $q, $window) {
+  var socketServerUrl = $window.localStorage.getItem('SOCKET_SERVER') || SOCKET_SERVER;
+  return socketFactory({
+    ioSocket: io.connect(socketServerUrl)
+  });
+});
+
+module.factory('User', function($resource) {
+  var resource = $resource(
+    '/user',
+    {user: '@user'},
+    {
+      get: {
+        method: 'GET',
+        isArray: false,
+        cache: false
+      }
+    }
+  );
+  return resource;
+});
+
+module.config(function($routeProvider, $locationProvider) {
   $routeProvider.
     when('/', {
+      templateUrl: 'assets/views/login.html',
+      controller: 'LoginController'
+    }).
+    when('/devices', {
       templateUrl: 'assets/views/main.html',
       controller: 'MainController'
     }).
@@ -33,5 +44,6 @@ angular.module('DeviceWall', [
       redirectTo: '/'
     });
 
-    $locationProvider.html5Mode(true);
+    //$locationProvider.html5Mode(true);
+    $locationProvider.hashPrefix("!");
 });

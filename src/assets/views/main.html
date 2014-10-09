@@ -1,20 +1,10 @@
-<div id="container" class="{{ container.className }}">
+<div id="container">
 
-  <div id="content" class="{{ content.className }}">
+  <div id="content" class="devices">
     <h1>DeviceWall</h1>
 
-    <section id="login" ng-show="login.show" class="buttons ng-hide">
-      <button type="button" id="login-button" ng-click="loginButton.click()">Sign in using Google account</button>
-    </section>
-
-    <section id="identify" ng-show="identify.show" class="buttons ng-hide">
-      <label for="name">Your name:</label>
-      <input type="text" name="name" size="20" placeholder="John" id="name" ng-model="name">
-      <button type="button" id="identify-button" ng-click="identifyButton.click()">Continue</button>
-    </section>
-
-    <section id="devices" ng-show="devices.show" class="ng-hide">
-      <form id="devices-form" ng-submit="form.selectSubmit()">
+    <section id="devices">
+      <form id="devices-form">
         <h2>Available devices</h2>
         <table spellcheck="false">
           <tr>
@@ -58,7 +48,13 @@
         </div>
 
         <div class="buttons">
-          <button type="submit" data-ng-disabled="deviceList.length === 0" data-ng-show="btnGo.show" class="large">Go</button>
+          <button
+            type="button"
+            data-ng-disabled="deviceList.length === 0"
+            data-ng-show="btnGo.show"
+            class="large"
+            data-ng-click="submitUrl()"
+          >Go</button>
           <button type="button" data-ng-show="btnStopTesting.show" class="large ng-hide" data-ng-click="stopTesting()">Stop</button>
           <button type="button" data-ng-show="btnStopAllTesting.show" class="large" data-ng-click="stopAllTesting()">Stop all</button>
         </div>
