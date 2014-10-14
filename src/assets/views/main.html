@@ -1,0 +1,73 @@
+<div id="container">
+
+  <div id="content" class="devices">
+    <h1>DeviceWall</h1>
+
+    <section id="devices">
+      <form id="devices-form">
+        <h2>Available devices</h2>
+        <table spellcheck="false">
+          <tr>
+            <th>Label</th>
+            <th>Model</th>
+            <th>Platform</th>
+            <th>Version</th>
+            <th>Battery</th>
+            <th>User</th>
+            <th>Last used</th>
+            <th>Select for testing</th>
+            <th>Remove</th>
+          </tr>
+          <tbody id="devices-list" ng-if="deviceList.length > 0">
+            <tr ng-repeat="device in deviceList">
+              <td contenteditable data-key="label" title="Edit">{{ device.label }}</td>
+              <td>{{ device.model }}</td>
+              <td>{{ device.platform }}</td>
+              <td>{{ device.version }}</td>
+              <td title="{{ getBatteryStatusTitle(device.batteryStatus.level, device.batteryStatus.isPlugged) }}" class="battery {{ device.batteryStatus.isPlugged ? 'plugged' : '' }}"><span style="{{ getBatteryStatusStyle(device.batteryStatus.level, device.batteryStatus.isPlugged) }}">&#128267;</span></td>
+              <td>{{ device.userName }}</td>
+              <td><time>{{ device.lastUsed | timeSince }}</time></td>
+              <td><input type="checkbox" name="uuids[]" ng-model="uuids[device.uuid]" ng-checked="uuids[device.uuid]" value="{{ device.uuid }}" ng-disabled="{{ getDeviceDisabled(device.userId) }}"></td>
+              <td class="remove" data-ng-click="removeDevice(device)"><span>&#59177;</span></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="buttons">
+          <button type="button" id="select-all" ng-click="selectAll.click()">Select all</button> <button type="button" id="select-none" ng-click="selectNone.click()">Select none</button>
+        </div>
+
+        <h2><label>Website to test</label></h2>
+
+        <span class="input">
+          <span id="tooltip-error" class="tooltip" data-ng-show="tooltipError.show">{{tooltipError.content}}</span>
+          <input type="text" name="url" size="50" placeholder="http://www.sc5.io/" id="url" data-ng-click="url.click()" ng-model="url.value">
+        </span>
+        <div class="checkbox">
+          <label><input type="checkbox" data-ng-model="openUrl" value="1">Load url with proxy to warm-up the caches</label>
+        </div>
+
+        <div class="buttons">
+          <button
+            type="button"
+            data-ng-disabled="deviceList.length === 0"
+            data-ng-show="btnGo.show"
+            class="large"
+            data-ng-click="submitUrl()"
+          >Go</button>
+          <button type="button" data-ng-show="btnStopTesting.show" class="large ng-hide" data-ng-click="stopTesting()">Stop</button>
+          <button type="button" data-ng-show="btnStopAllTesting.show" class="large" data-ng-click="stopAllTesting()">Stop all</button>
+        </div>
+      </form>
+    </section>
+    <section data-ng-show="indicatorWaiting.show" >
+        <h2>Waiting for connection...</h2>
+        <p>Please wait for Browser Sync to initialize.</p>
+    </section>
+  </div>
+
+  <footer>
+    Copyright 2014 SC5 Online
+  </footer>
+
+</div>

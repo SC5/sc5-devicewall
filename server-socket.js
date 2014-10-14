@@ -289,7 +289,7 @@ module.exports = function (app, options) {
     });
 
     // List devices
-    socket.on('list', function (fn) {
+    socket.on('list', function (data, fn) {
       devices.sort(function (a, b) {
         if (a.location > b.location) {
           return 1;
@@ -305,7 +305,12 @@ module.exports = function (app, options) {
         return 0;
       });
 
-      fn(devices);
+      if (typeof(fn) === typeof(Function)) {
+        console.log("run:  fn(devices");
+        fn(devices);
+      } else {
+        console.log("not a function: ", fn);
+      }
     });
 
     socket.on('remove', function(data) {
