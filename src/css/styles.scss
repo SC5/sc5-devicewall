@@ -303,7 +303,6 @@ button {
 		line-height: 48px;
 		font-size: 1.6rem;
 	}
-
 }
 
 .input {
@@ -406,4 +405,9 @@ input[type=checkbox]:after,
 
 input[type=text].error {
   border: 1px solid #f00;
+}
+
+.controls {
+	margin-top: 20px;
+	text-align: center;
 }

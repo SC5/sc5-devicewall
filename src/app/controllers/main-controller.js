@@ -1,5 +1,5 @@
 angular.module('DeviceWall')
-  .controller('MainController', function($rootScope, $scope, $window, $http, $timeout, lodash, LOGIN_TYPE, $log, socket) {
+  .controller('MainController', function($rootScope, $scope, $window, $http, $timeout, lodash, APP_CONFIG, $log, socket) {
     var _ = lodash;
     $log.debug('loading main controller');
     $scope.indicatorWaiting = {show: true};
@@ -176,6 +176,10 @@ angular.module('DeviceWall')
       $scope.btnStopTesting.show = !status;
       $scope.btnGo.show = status;
     }
+
+    $scope.showDeviceView = function() {
+      $window.location.href = $window.location.protocol + '//' + $window.location.hostname +  APP_CONFIG.DEVICE_APP_PORT;
+    };
   })
 
 
@@ -197,4 +201,6 @@ angular.module('DeviceWall')
         }
         return '';
       };
+
+
   });
