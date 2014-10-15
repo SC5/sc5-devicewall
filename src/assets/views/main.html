@@ -24,10 +24,25 @@
               <td>{{ device.model }}</td>
               <td>{{ device.platform }}</td>
               <td>{{ device.version }}</td>
-              <td title="{{ getBatteryStatusTitle(device.batteryStatus.level, device.batteryStatus.isPlugged) }}" class="battery {{ device.batteryStatus.isPlugged ? 'plugged' : '' }}"><span style="{{ getBatteryStatusStyle(device.batteryStatus.level, device.batteryStatus.isPlugged) }}">&#128267;</span></td>
+              <td
+                title="{{ device.batteryStatus | batteryTitle }}"
+                style="battery"
+                data-ng-class="{plugged: device.isPlugged?true:false}"
+              >
+                <span style="{{ device.batteryStatus | batteryStyle }}">&#128267;</span>
+              </td>
               <td>{{ device.userName }}</td>
               <td><time>{{ device.lastUsed | timeSince }}</time></td>
-              <td><input type="checkbox" name="uuids[]" ng-model="uuids[device.uuid]" ng-checked="uuids[device.uuid]" value="{{ device.uuid }}" ng-disabled="{{ getDeviceDisabled(device.userId) }}"></td>
+              <td>
+                <input
+                  type="checkbox"
+                  name="uuids[]"
+                  ng-model="uuids[device.uuid]"
+                  ng-checked="uuids[device.uuid]"
+                  value="{{ device.uuid }}"
+                  ng-disabled="{{ device.userId ? true : false }}"
+                >
+              </td>
               <td class="remove" data-ng-click="removeDevice(device)"><span>&#59177;</span></td>
             </tr>
           </tbody>

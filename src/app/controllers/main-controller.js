@@ -33,17 +33,6 @@ angular.module('DeviceWall')
     // Connected devices
     $scope.deviceList = [];
 
-    // TODO maybe custom $filter
-    $scope.getBatteryStatusTitle = function(level, isPlugged) {
-      return level ? 'Level: ' + level + ' %' + (isPlugged ? ', plugged' : '') : '';
-    };
-    // TODO maybe https://docs.angularjs.org/api/ng/service/$filter
-    $scope.getBatteryStatusStyle = function(level, isPlugged) {
-      var position = (level * 0.8 + 10) + '%',
-          stop1 = (isPlugged ? '#0f0' : '#fff') + ' ' + position,
-          stop2 = (isPlugged ? '#0c0' : '#ccc') + ' ' + position;
-      return 'background-image: -webkit-linear-gradient(left, ' + stop1 + ', ' + stop2 + ');';
-    };
     // TODO maybe https://docs.angularjs.org/api/ng/service/$filter
     $scope.getDeviceDisabled = function(userId) {
       return userId ? true : false;
@@ -150,19 +139,18 @@ angular.module('DeviceWall')
       setButtonsStatus(true);
     });
 
-    // TODO maybe move this to $filter
-    function getUserDevices() {
-      var userDevices = [];
-      _.each($scope.deviceList, function(device) {
-        if (device.userId === $scope.user.id) {
-          userDevices.push(device.uuid);
-        }
-      });
-      return userDevices;
-    }
 
     $scope.stopTesting = function() {
       $log.debug('stop testing');
+      function getUserDevices() {
+        var userDevices = [];
+        _.each($scope.deviceList, function(device) {
+          if (device.userId === $scope.user.id) {
+            userDevices.push(device.uuid);
+          }
+        });
+        return userDevices;
+      }
       socket.emit('stop', {user: $scope.user, labels: getUserDevices()});
       $scope.btnStopTesting.show = false;
     };
@@ -188,4 +176,25 @@ angular.module('DeviceWall')
       $scope.btnStopTesting.show = !status;
       $scope.btnGo.show = status;
     }
+  })
+
+
+  .filter('batteryTitle', function() {
+    return function(status) {
+      var returnString = 'no battery information available';
+      if (status.level) {
+        returnString = 'Level: ' + status.level + ' %' + (status.isPlugged ? ', plugged' : '');
+      }
+      return returnString;
+    };
+  }).filter('batteryStyle', function() {
+      return function(status) {
+        if (status.level && status.isPlugged) {
+          var position = (status.level * 0.8 + 10) + '%';
+          var stop1 = (status.isPlugged ? '#0f0' : '#fff') + ' ' + position;
+          var stop2 = (status.isPlugged ? '#0c0' : '#ccc') + ' ' + position;
+          return 'background-image: -webkit-linear-gradient(left, ' + stop1 + ', ' + stop2 + ');';
+        }
+        return '';
+      };
   });
