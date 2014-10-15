@@ -176,6 +176,7 @@ gulp.task('clean', function() {
 gulp.task('integrate', ['javascript', 'stylesheets', 'assets'], function() {
   return gulp.src(['dist/*.js', 'dist/css/*.css'])
     .pipe($.inject('src/index.html', { ignorePath: ['/dist/'], addRootSlash: false }))
+    .pipe($.inject('src/favicon.ico', { ignorePath: ['/dist/'], addRootSlash: false }))
     .pipe(gulp.dest('./dist'));
 });
 
