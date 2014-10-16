@@ -53,11 +53,13 @@ angular.module('DeviceWall')
           uuids.push(key);
         }
       });
+
       var formData = {
         url: $scope.url.value,
-        labels: $scope.deviceList.map(function(o) { return o.label; }),
+        labels: _.pluck(_.where($scope.deviceList, { selected: true }), 'label'),
         user: $scope.user
       };
+
       $window.localStorage.setItem('url', $scope.url.value);
       socket.emit('start', formData);
       setButtonsStatus(false);
@@ -72,22 +74,16 @@ angular.module('DeviceWall')
       }
     };
 
-    $scope.selectAll = {
-      click: function() {
-        _.each($scope.deviceList, function(val, key) {
-          if (!val.userId || val.userId === '') {
-            $scope.uuids[val.uuid] = true;
-          }
-        });
-      }
+    $scope.selectAll = function() {
+      _.each($scope.deviceList, function(element) {
+        element.selected = true;
+      });
     };
 
-    $scope.selectNone = {
-      click: function() {
-        _.each($scope.deviceList, function(val, key) {
-          $scope.uuids[val.uuid] = false;
-        });
-      }
+    $scope.selectNone = function() {
+      _.each($scope.deviceList, function(element) {
+        element.selected = false;
+      });
     };
 
     /***************** Create service from socket actions **/
@@ -98,12 +94,17 @@ angular.module('DeviceWall')
       socket.emit('list', 'list', function(data) {
         $log.debug("socket::list", data);
         $scope.deviceList = data;
+        _.each($scope.deviceList, function(device) {
+          _.defaults(device, {selected: true});
+        });
       });
     });
 
     socket.on('update', function (data) {
       $log.debug("socket::update");
-      $scope.deviceList = data;
+      $scope.$apply(function() {
+        $scope.deviceList = mergedDeviceList(data);
+      });
     });
 
     socket.on('start', function (data) {
@@ -177,9 +178,20 @@ angular.module('DeviceWall')
       $scope.btnGo.show = status;
     }
 
+    function mergedDeviceList (data) {
+      var oldList = _.clone($scope.deviceList);
+
+      _.each(data, function(obj) {
+        var oldDevice = _.where(oldList, { label: obj.label });
+        if (oldDevice.length > 0) obj.selected = oldDevice[0].selected;
+      });
+      return _.defaults(data, { selected: false });
+    }
+
     $scope.showDeviceView = function() {
       $window.location.href = $window.location.protocol + '//' + $window.location.hostname +  APP_CONFIG.DEVICE_APP_PORT;
     };
+
   })
 
 

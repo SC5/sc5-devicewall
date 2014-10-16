@@ -26,7 +26,7 @@
               <td>{{ device.version }}</td>
               <td
                 title="{{ device.batteryStatus | batteryTitle }}"
-                style="battery"
+                class="battery"
                 data-ng-class="{plugged: device.isPlugged?true:false}"
               >
                 <span style="{{ device.batteryStatus | batteryStyle }}">&#128267;</span>
@@ -36,11 +36,8 @@
               <td>
                 <input
                   type="checkbox"
-                  name="uuids[]"
-                  ng-model="uuids[device.uuid]"
-                  ng-checked="uuids[device.uuid]"
-                  value="{{ device.uuid }}"
-                  ng-disabled="{{ device.userId ? true : false }}"
+                  ng-model="device.selected"
+                  ng-disabled="{{ device.userId ? false : false }}"
                 >
               </td>
               <td class="remove" data-ng-click="removeDevice(device)"><span>&#59177;</span></td>
@@ -49,7 +46,7 @@
         </table>
 
         <div class="buttons">
-          <button type="button" id="select-all" ng-click="selectAll.click()">Select all</button> <button type="button" id="select-none" ng-click="selectNone.click()">Select none</button>
+          <button type="button" id="select-all" ng-click="selectAll()">Select all</button> <button type="button" id="select-none" ng-click="selectNone()">Select none</button>
         </div>
 
         <h2><label>Website to test</label></h2>
@@ -70,7 +67,7 @@
             class="large"
             data-ng-click="submitUrl()"
           >Go</button>
-          <button type="button" data-ng-show="btnStopTesting.show" class="large ng-hide" data-ng-click="stopTesting()">Stop</button>
+          <button type="button" data-ng-show="btnStopTesting.show" class="large ng-hide" data-ng-click="stopTesting()" style="display:none">Stop</button>
           <button type="button" data-ng-show="btnStopAllTesting.show" class="large" data-ng-click="stopAllTesting()">Stop all</button>
         </div>
       </form>
