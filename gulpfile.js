@@ -1,4 +1,5 @@
 var path = require('path'),
+    extend = require('extend'),
     util = require('util'),
     gulp = require('gulp'),
     shell = require('gulp-shell'),
@@ -11,28 +12,32 @@ var path = require('path'),
     fs = require('fs'),
     nodemon = require('gulp-nodemon');
 
+var configLocalServer = './config/server';
+var configLocalApp = './config/app';
+
 /* Configurations. Note that most of the configuration is stored in
 the task context. These are mainly for repeating configuration items */
 var config = {
   version: package.version,
   debug: Boolean($.util.env.debug),
-  browsersync: Boolean($.util.env.browsersync)
+  browsersync: Boolean($.util.env.browsersync),
+  server: {
+    host:         process.env.npm_package_config_server_host || "localhost",
+    maxSockets:   parseInt(process.env.npm_package_config_server_maxSockets) || 100,
+    socketPort:   parseInt(process.env.npm_package_config_server_socketPort) || 3000,
+    controlPort:  parseInt(process.env.npm_package_config_server_controlPort) || 8888,
+    clientPort:   parseInt(process.env.npm_package_config_server_clientPort) || 8080
+  }
 };
 
 // Package management
 /* Install & update Bower dependencies */
-gulp.task('install', function() {
+gulp.task('install', ['config'], function() {
   // FIXME specifying the component directory broken in gulp
   // For now, use .bowerrc; No need for piping, either
   $.bower();
   // Downloads the Selenium webdriver
   $.protractor.webdriver_update(function() {});
-  if (!fs.existsSync('./config.json')) {
-    fs.writeFileSync('./config.json', fs.readFileSync('./config.json.template'));
-  }
-  if (!fs.existsSync('./src/app/config.js')) {
-    fs.writeFileSync('./src/app/config.js', fs.readFileSync('./src/app/config.js.template'));
-  }
 });
 
 /* Bump version number for package.json & bower.json */
@@ -47,6 +52,35 @@ gulp.task('bump', function() {
     .pipe(gulp.dest('./'));
 });
 
+// install will run this task _before_ bower install task
+gulp.task('config', function() {
+  // Server config
+  var serverConfig = require('./config/server/config.json');
+  serverConfig = extend(true, serverConfig, config.server);
+  // read local config
+  if (fs.existsSync(configLocalServer+'/config.local.json')) {
+    serverConfig = extend(true, serverConfig, require(configLocalServer+'/config.local.json'))
+  }
+  serverConfig = extend(true, serverConfig, config.server);
+  fs.writeFileSync('./config.json', JSON.stringify(serverConfig, null, 2));
+
+  // Control panel app config
+  var clientConfig = require('./config/app/config.json');
+  clientConfig.appConfig.clientPort = serverConfig.clientPort;
+  clientConfig.appConfig.socketServer = 'http://' + serverConfig.host + ':' + serverConfig.socketPort + '/devicewall';
+  // read local config
+  if (fs.existsSync(configLocalApp+'/config.local.json')) {
+    clientConfig = extend(true, clientConfig, require(configLocalApp+'/config.local.json'))
+  }
+  // Write angular configuration
+  return gulp.src('./config/app/config.json')
+    .pipe($.ngConstant({
+       name: 'configuration',
+       constants: clientConfig
+    }))
+    .pipe(gulp.dest('./src/app'));
+});
+
 // Cleanup
 gulp.task('clean', function() {
   gulp.src('dist', { read: false })
@@ -56,7 +90,7 @@ gulp.task('clean', function() {
 /* Serve the web site */
 gulp.task('serve', $.serve({
   root: 'dist',
-  port: process.env.PORT || 8080
+  port: config.server.controlPort
 }));
 
 
@@ -66,43 +100,6 @@ gulp.task('preprocess', function() {
     .pipe($.jshint.reporter('default'));
 });
 
-// Old javascript task
-/*
-gulp.task('javascript', ['preprocess'], function() {
-
-  // The non-MD5fied prefix, so that we know which version we are actually
-  // referring to in case of fixing bugs
-  var bundleName = util.format('bundle-%s.js', config.version),
-      componentsPath = 'src/components',
-      browserifyConfig = {
-        debug: config.debug,
-        shim: {
-          jquery: {
-            path: path.join(componentsPath, 'jquery/dist/jquery.js'),
-            exports: 'jQuery'
-          },
-          moment: {
-            path: path.join(componentsPath, 'moment/moment.js'),
-            exports: 'moment'
-          }
-        }
-      };
-
-  gulp.src(path.join(componentsPath, 'socket.io-client/socket.io.js'))
-      .pipe(gulp.dest('dist'));
-
-  return gulp.src('src/app/main.js', { read: false })
-    // Compile
-    // Unit test
-    // Integrate (link, package, concatenate)
-    .pipe($.plumber())
-    .pipe($.browserify(browserifyConfig))
-    .pipe($.concat(bundleName))
-    .pipe($.if(config.debug, $.uglify()))
-    // Integration test
-    .pipe(gulp.dest('dist'));
-});
-*/
 
 gulp.task('javascript', ['preprocess'], function() {
 

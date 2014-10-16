@@ -1,7 +1,7 @@
 angular.module('DeviceWall')
-  .controller('LoginController', function($scope, $location, $window, $log, User, APP_CONFIG) {
-
-    $scope.googleAuth = APP_CONFIG.LOGIN_TYPE === 1;
+  .controller('LoginController', function($scope, $location, $window, $log, User, appConfig) {
+    $log.debug("loginController");
+    $scope.googleAuth = appConfig.loginType === 1;
 
     // TODO google auth logic
     $scope.loginWithGoogle = function() {
@@ -14,6 +14,6 @@ angular.module('DeviceWall')
     };
 
     $scope.showDeviceView = function() {
-      $window.location.href = $window.location.protocol + '//' + $window.location.hostname +  APP_CONFIG.DEVICE_APP_PORT;
+      $window.location.href = $window.location.protocol + '//' + $window.location.hostname +  appConfig.clientPort;
     };
   });
