@@ -231,7 +231,6 @@ table {
 			span {
 				font-size: 1.6rem;
 				-webkit-background-clip: text;
-				-webkit-text-fill-color: transparent;
 				cursor: default;
 			}
 
@@ -263,6 +262,8 @@ label {
 }
 
 button {
+
+	font-family: arial, sans-serif;
 
 	@include box-sizing(content-box);
 
