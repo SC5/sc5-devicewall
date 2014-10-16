@@ -32,8 +32,8 @@ require('./routes/user.js')(adminServer);
 
 adminServer.use(express.static(__dirname + '/dist'));
 
-var admin = adminServer.listen(config.adminPort, function () {
-  console.log('Express server listening on port %d', admin.address().port);
+var admin = adminServer.listen(config.controlPort, function () {
+  console.log('Control server listening on port %d', admin.address().port);
 });
 // Admin server ends
 
@@ -55,7 +55,7 @@ appServer.use(deviceWallApp);
 appServer.use('/return', deviceWallApp);
 appServer.use('/main', deviceWallApp);
 
-var app = appServer.listen(config.appPort, function () {
-  console.log('Express server listening on port %d', app.address().port);
+var app = appServer.listen(config.clientPort, function () {
+  console.log('Client server listening on port %d', app.address().port);
 });
 // App server ends

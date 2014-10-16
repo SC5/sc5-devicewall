@@ -1,7 +1,0 @@
-angular.module('configuration', [])
-    .constant('APP_CONFIG', {
-            SOCKET_SERVER: 'http://localhost:3000/devicewall',
-            DEVICE_APP_PORT: ':8080',
-            LOGIN_TYPE: 2 // 1 = Google Auth, 2 = Nickname
-    });
-

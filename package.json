@@ -23,6 +23,7 @@
   },
   "devDependencies": {
     "event-stream": "^3.1.5",
+    "extend": "~2.0.0",
     "find": "^0.1.5",
     "gulp": "^3.6.2",
     "gulp-bower": "0.0.4",
@@ -54,12 +55,22 @@
     "selenium-webdriver": "^2.41.0",
     "gulp-sass": "~1.0.0",
     "gulp-csso": "~0.2.9",
-    "gulp-nodemon": "~1.0.4"
+    "gulp-nodemon": "~1.0.4",
+    "gulp-ng-constant": "~0.2.0"
   },
   "scripts": {
     "install": "gulp install",
     "build": "gulp",
     "test": "gulp test",
     "start": "node server.js"
+  },
+  "config": {
+    "server": {
+      "host": "devicewall.sc5.io",
+      "maxSockets": 100,
+      "socketPort": 3000,
+      "controlPort": 8888,
+      "clientPort": 8080
+    }
   }
 }
