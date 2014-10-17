@@ -7,7 +7,7 @@ phantomjs.log
 data/devices.json
 data/instances.json
 .project
-config.json
 src/app/config.js
 config/server/config.local.json
 config/app/config.local.json
+/config.json

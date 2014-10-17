@@ -1,0 +1,7 @@
+{
+  "appConfig": {
+    "socketServer": "http://localhost:3000/devicewall",
+    "clientPort": 8080,
+    "loginType": 2
+  }
+}
