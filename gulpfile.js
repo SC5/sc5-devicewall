@@ -25,8 +25,8 @@ var config = {
     host:         process.env.npm_package_config_server_host || "localhost",
     maxSockets:   parseInt(process.env.npm_package_config_server_maxSockets) || 100,
     socketPort:   parseInt(process.env.npm_package_config_server_socketPort) || 3000,
-    controlPort:  parseInt(process.env.npm_package_config_server_controlPort) || 8888,
-    clientPort:   parseInt(process.env.npm_package_config_server_clientPort) || 8080
+    controlPort:  parseInt(process.env.npm_package_config_server_controlPort) || 8080,
+    clientPort:   parseInt(process.env.npm_package_config_server_clientPort) || 8888
   }
 };
 

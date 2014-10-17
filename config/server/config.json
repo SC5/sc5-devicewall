@@ -1,11 +1,11 @@
 {
   "GOOGLE_CLIENT_ID": "<GOOGLE_CLIENT_ID>",
   "GOOGLE_CLIENT_SECRET": "<GOOGLE_CLIENT_SECRET>",
-  "GOOGLE_CALLBACK_URL": "http://devicewall.sc5.io:8888/auth/google/callback",
+  "GOOGLE_CALLBACK_URL": "http://devicewall.sc5.io:8080/auth/google/callback",
   "sessionKey": "devicewall12345",
-  "deviceWallAppURL": "http://devicewall.sc5.io:8080/return",
+  "deviceWallAppURL": "http://devicewall.sc5.io:8888/return",
   "maxSockets": 100,
   "socketPort": 3000,
-  "clientPort": 8080,
-  "controlPort": 8888
+  "clientPort": 8888,
+  "controlPort": 8080
 }
