@@ -12,8 +12,4 @@ angular.module('DeviceWall')
       $window.localStorage.setItem('name', name);
       $location.path('/devices');
     };
-
-    $scope.showDeviceView = function() {
-      $window.location.href = $window.location.protocol + '//' + $window.location.hostname +  appConfig.clientPort;
-    };
   });

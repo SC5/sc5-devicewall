@@ -33,6 +33,10 @@ module.factory('User', function($resource) {
 module.config(function($routeProvider, $locationProvider) {
   $routeProvider.
     when('/', {
+      templateUrl: 'assets/views/default.html',
+      controller: 'DefaultController'
+    }).
+    when('/login', {
       templateUrl: 'assets/views/login.html',
       controller: 'LoginController'
     }).
