@@ -1,11 +1,35 @@
-<div id="container">
+<div id="content" class="devices">
+  <section id="devices">
+    <form id="devices-form">
+      <div class="section-wrapper">
+        <h2>Test website</h2>
 
-  <div id="content" class="devices">
-    <h1>DeviceWall</h1>
+        <span class="input">
+          <span id="tooltip-error" class="tooltip" data-ng-show="tooltipError.show">{{tooltipError.content}}</span>
+          <input type="text" name="url" size="50" placeholder="http://www.sc5.io/" id="url" data-ng-click="url.click()" ng-model="url.value">
+        </span>
 
-    <section id="devices">
-      <form id="devices-form">
+        <div class="buttons">
+          <button
+            type="button"
+            data-ng-disabled="deviceList.length === 0"
+            data-ng-show="btnGo.show"
+            class="large"
+            data-ng-click="submitUrl()"
+          >Go</button>
+          <button type="button" data-ng-show="btnStopTesting.show" class="large ng-hide" data-ng-click="stopTesting()" style="display:none">Stop</button>
+          <button type="button" data-ng-show="btnStopAllTesting.show" class="large" data-ng-click="stopAllTesting()">Stop all</button>
+        </div>
+      </div>
+
+      <div class="section-wrapper">
         <h2>Available devices</h2>
+
+        <div class="buttons">
+          <button type="button" id="select-all" ng-click="selectAll()">Select all</button>
+          <button type="button" id="select-none" ng-click="selectNone()">Select none</button>
+        </div>
+
         <table spellcheck="false">
           <tr>
             <th>Label</th>
@@ -44,46 +68,29 @@
             </tr>
           </tbody>
         </table>
+      </div>
 
-        <div class="buttons">
-          <button type="button" id="select-all" ng-click="selectAll()">Select all</button> <button type="button" id="select-none" ng-click="selectNone()">Select none</button>
-        </div>
-
-        <h2><label>Website to test</label></h2>
-
-        <span class="input">
-          <span id="tooltip-error" class="tooltip" data-ng-show="tooltipError.show">{{tooltipError.content}}</span>
-          <input type="text" name="url" size="50" placeholder="http://www.sc5.io/" id="url" data-ng-click="url.click()" ng-model="url.value">
-        </span>
+      <h2>Connection setup</h2>
+      <div class="connection-setup">
         <div class="checkbox">
-          <label><input type="checkbox" data-ng-model="openUrl" value="1">Load url with proxy to warm-up the caches</label>
+          <label>
+            <input type="checkbox" data-ng-model="openUrl" value="1" name="chk-warm-cache">
+            Load url with proxy to warm-up the caches
+          </label>
         </div>
+        <fieldset class="connection">
+              <span>Simulate</span>
+              <label><input type="radio" name="connection-radio" value="3G">3G</label>
+              <label><input type="radio" name="connection-radio" value="4G">4G</label>
+              <label><input type="radio" name="connection-radio" value="Wifi" checked="checked">Wifi</label>
+      </fieldset>
+      </div>
 
-        <div class="buttons">
-          <button
-            type="button"
-            data-ng-disabled="deviceList.length === 0"
-            data-ng-show="btnGo.show"
-            class="large"
-            data-ng-click="submitUrl()"
-          >Go</button>
-          <button type="button" data-ng-show="btnStopTesting.show" class="large ng-hide" data-ng-click="stopTesting()" style="display:none">Stop</button>
-          <button type="button" data-ng-show="btnStopAllTesting.show" class="large" data-ng-click="stopAllTesting()">Stop all</button>
-        </div>
-      </form>
-    </section>
-    <section data-ng-show="indicatorWaiting.show" >
-        <h2>Waiting for connection...</h2>
-        <p>Please wait for Browser Sync to initialize.</p>
-    </section>
-  </div>
-
-  <div class="controls">
-    <button type="button" id="identify-button" ng-click="showDeviceView()">Device mode</button>
-  </div>
-
-  <footer>
-    Copyright 2014 SC5 Online
-  </footer>
-
+    </form>
+  </section>
+  <section data-ng-show="indicatorWaiting.show" >
+      <h2>Waiting for connection...</h2>
+      <p>Please wait for Browser Sync to initialize.</p>
+  </section>
 </div>
+

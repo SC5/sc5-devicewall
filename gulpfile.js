@@ -165,15 +165,19 @@ gulp.task('assets', function() {
     // Integration test
 });
 
+gulp.task('favicon', function() {
+  return gulp.src(['src/favicon.ico'])
+    .pipe(gulp.dest('dist'));
+});
+
 gulp.task('clean', function() {
   gulp.src(['dist', 'temp'], { read: false })
     .pipe($.clean());
 });
 
-gulp.task('integrate', ['javascript', 'stylesheets', 'assets'], function() {
+gulp.task('integrate', ['javascript', 'stylesheets', 'assets', 'favicon'], function() {
   return gulp.src(['dist/*.js', 'dist/css/*.css'])
     .pipe($.inject('src/index.html', { ignorePath: ['/dist/'], addRootSlash: false }))
-    .pipe($.inject('src/favicon.ico', { ignorePath: ['/dist/'], addRootSlash: false }))
     .pipe(gulp.dest('./dist'));
 });
 
