@@ -69,8 +69,8 @@
       "host": "devicewall.sc5.io",
       "maxSockets": 100,
       "socketPort": 3000,
-      "controlPort": 8888,
-      "clientPort": 8080
+      "controlPort": 8080,
+      "clientPort": 8888
     }
   }
 }
