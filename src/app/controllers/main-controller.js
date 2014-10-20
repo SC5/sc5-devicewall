@@ -192,6 +192,11 @@ angular.module('DeviceWall')
       $window.location.href = $window.location.protocol + '//' + $window.location.hostname + ':' +  appConfig.port;
     };
 
+    $scope.toggleAccordion = function($event){
+      var $el = $($event.target);
+      $el.parent().toggleClass('collapsed');
+    };
+
   })
 
 
@@ -205,7 +210,7 @@ angular.module('DeviceWall')
     };
   }).filter('batteryStyle', function() {
       return function(status) {
-        if (status.level && status.isPlugged) {
+        if (status && status.level) {
           var position = (status.level * 0.8 + 10) + '%';
           var stop1 = (status.isPlugged ? '#0f0' : '#fff') + ' ' + position;
           var stop2 = (status.isPlugged ? '#0c0' : '#ccc') + ' ' + position;
