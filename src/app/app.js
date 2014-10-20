@@ -8,10 +8,10 @@ var module = angular.module('DeviceWall', [
   'configuration'
 ]);
 
-module.factory('socket', function ($rootScope, $timeout, socketFactory, appConfig, $log, $q, $window) {
-  var socketServerUrl = $window.localStorage.getItem('SOCKET_SERVER') || appConfig.socketServer;
+module.factory('socket', function ($rootScope, $timeout, socketFactory) {
+  var mySocket = '/devicewall';
   return socketFactory({
-    ioSocket: io.connect(socketServerUrl)
+    ioSocket: io.connect(mySocket)
   });
 });
 
