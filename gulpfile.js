@@ -24,9 +24,7 @@ var config = {
   server: {
     host:         process.env.npm_package_config_server_host || "localhost",
     maxSockets:   parseInt(process.env.npm_package_config_server_maxSockets) || 100,
-    socketPort:   parseInt(process.env.npm_package_config_server_socketPort) || 3000,
-    controlPort:  parseInt(process.env.npm_package_config_server_controlPort) || 8080,
-    clientPort:   parseInt(process.env.npm_package_config_server_clientPort) || 8888
+    port:         parseInt(process.env.npm_package_config_server_port) || 8080
   }
 };
 
@@ -66,8 +64,7 @@ gulp.task('config', function() {
 
   // Control panel app config
   var clientConfig = require('./config/app/config.json');
-  clientConfig.appConfig.clientPort = serverConfig.clientPort;
-  clientConfig.appConfig.socketServer = 'http://' + serverConfig.host + ':' + serverConfig.socketPort + '/devicewall';
+  clientConfig.appConfig.socketServer = 'http://' + serverConfig.host + ':' + serverConfig.port + '/devicewall';
   // read local config
   if (fs.existsSync(configLocalApp+'/config.local.json')) {
     clientConfig = extend(true, clientConfig, require(configLocalApp+'/config.local.json'))
