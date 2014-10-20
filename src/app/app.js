@@ -30,7 +30,7 @@ module.factory('User', function($resource) {
   return resource;
 });
 
-module.config(function($routeProvider, $locationProvider) {
+module.config(function($routeProvider, $locationProvider, $logProvider, appConfig) {
   $routeProvider.
     when('/', {
       templateUrl: 'assets/views/default.html',
@@ -50,4 +50,5 @@ module.config(function($routeProvider, $locationProvider) {
 
     //$locationProvider.html5Mode(true);
     $locationProvider.hashPrefix("!");
+    $logProvider.debugEnabled(appConfig.debugEnabled);
 });

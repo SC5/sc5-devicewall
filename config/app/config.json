@@ -1,6 +1,7 @@
 {
   "appConfig": {
     "port": 80,
-    "loginType": 2
+    "loginType": 2,
+    "debugEnabled": true
   }
 }
