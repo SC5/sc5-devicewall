@@ -189,7 +189,7 @@ angular.module('DeviceWall')
     }
 
     $scope.showDeviceView = function() {
-      $window.location.href = $window.location.protocol + '//' + $window.location.hostname + ':' +  appConfig.clientPort;
+      $window.location.href = $window.location.protocol + '//' + $window.location.hostname + ':' +  appConfig.port;
     };
 
   })
