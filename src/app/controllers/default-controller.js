@@ -3,7 +3,8 @@ angular.module('DeviceWall')
     $log.debug("defaultController");
 
     $scope.onConnectDeviceClick = function() {
-      $window.location.href = $window.location.protocol + '//' + $window.location.hostname + ':' + appConfig.port;
+      $window.location.href = $window.location.protocol + '//' + $window.location.hostname +
+        ':' + appConfig.port + '/client';
     };
 
     $scope.onControlPanelClick = function() {
