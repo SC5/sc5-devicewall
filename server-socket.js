@@ -1,6 +1,8 @@
+var socketio = require('socket.io')
+
 module.exports = function (app, options) {
   var
-    io = options.io,
+    io = socketio(app),
     config = options.config,
     childProcesses = {},
     fork = require('child_process').fork,

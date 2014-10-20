@@ -3,7 +3,6 @@ var
   cookieParser = require('cookie-parser'),
   bodyParser = require('body-parser'),
   expressSession = require('express-session'),
-  browserSync = require('browser-sync'),
   passport = require('passport'),
   GoogleStrategy = require('passport-google-oauth').OAuth2Strategy,
   https = require('https'),
@@ -32,30 +31,15 @@ require('./routes/user.js')(adminServer);
 
 adminServer.use(express.static(__dirname + '/dist'));
 
-var admin = adminServer.listen(config.controlPort, function () {
+// Client App uses '/client' prefix to separate requests from control panel
+adminServer.use('/client', deviceWallApp);
+adminServer.use('/client/return', deviceWallApp);
+
+var admin = adminServer.listen(config.port, function () {
   console.log('Control server listening on port %d', admin.address().port);
 });
-// Admin server ends
 
-// Socket.io server starts
-io = require('socket.io')(admin);
-require('./server-socket.js')(adminServer, {
-  config: config,
-  io: io
+// Socket IO
+require('./server-socket.js')(admin, {
+  config: config
 });
-
-// Start server
-io.listen(config.socketPort);
-console.log('Socket.io server listening on port %d', config.socketPort);
-// Socket.io server ends
-
-// App server starts
-var appServer = express();
-appServer.use(deviceWallApp);
-appServer.use('/return', deviceWallApp);
-appServer.use('/main', deviceWallApp);
-
-var app = appServer.listen(config.clientPort, function () {
-  console.log('Client server listening on port %d', app.address().port);
-});
-// App server ends
