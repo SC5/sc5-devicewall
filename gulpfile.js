@@ -52,25 +52,29 @@ gulp.task('bump', function() {
 
 // install will run this task _before_ bower install task
 gulp.task('config', function() {
+  var data; // just a tmp variable
+
   // Server config
-  var serverConfig = require('./config/server/config.json');
+  var serverConfig = JSON.parse(fs.readFileSync(configLocalServer+'/config.json'));
   serverConfig = extend(true, serverConfig, config.server);
   // read local config
   if (fs.existsSync(configLocalServer+'/config.local.json')) {
-    serverConfig = extend(true, serverConfig, require(configLocalServer+'/config.local.json'))
+    data = JSON.parse(fs.readFileSync(configLocalServer+'/config.local.json'));
+    serverConfig = extend(true, serverConfig, data)
   }
   serverConfig = extend(true, serverConfig, config.server);
   fs.writeFileSync('./config.json', JSON.stringify(serverConfig, null, 2));
 
   // Control panel app config
-  var clientConfig = require('./config/app/config.json');
+  var clientConfig = JSON.parse(fs.readFileSync(configLocalApp + '/config.json'));
   clientConfig.appConfig.socketServer = 'http://' + serverConfig.host + ':' + serverConfig.port + '/devicewall';
   // read local config
   if (fs.existsSync(configLocalApp+'/config.local.json')) {
-    clientConfig = extend(true, clientConfig, require(configLocalApp+'/config.local.json'))
+    data = JSON.parse(fs.readFileSync(configLocalApp+'/config.local.json'));
+    clientConfig = extend(true, clientConfig, data)
   }
   // Write angular configuration
-  return gulp.src('./config/app/config.json')
+  return gulp.src(configLocalApp + '/config.json')
     .pipe($.ngConstant({
        name: 'configuration',
        constants: clientConfig
@@ -91,7 +95,7 @@ gulp.task('serve', $.serve({
 }));
 
 
-gulp.task('preprocess', function() {
+gulp.task('preprocess', ['config'], function() {
   gulp.src('src/app/**/*.js')
     .pipe($.jshint())
     .pipe($.jshint.reporter('default'));
@@ -178,18 +182,19 @@ gulp.task('integrate', ['javascript', 'stylesheets', 'assets', 'favicon'], funct
     .pipe(gulp.dest('./dist'));
 });
 
-var dependencies = (config.browsersync) ? ['integrate', 'test', 'browsersync'] : ['integrate', 'livereload', 'develop'];
+var dependencies = (config.browsersync) ?
+  ['integrate', 'test', 'browsersync'] : ['integrate', 'livereload'];
 
 gulp.task('watch', dependencies, function() {
 
-  // Watch the actual resources; Currently trigger a full rebuild
-
-  gulp.watch([
+  return gulp.watch([
+    'config/**/*.json',
     'src/css/**/*.scss',
     'src/app/**/*.js',
     'src/index.html',
     'tests/**/*.js'
   ], ['integrate']);
+
 
 });
 
@@ -240,12 +245,13 @@ gulp.task('mywatch', ['integrate'], function() {
   .on('restart', function () {
     console.log('restarted!')
   });
-  gulp.watch([
-    'src/css/**/*.scss',
-    'src/app/**/*.js',
-    'src/assets/**/*',
-    'src/index.html'
-  ], ['integrate']);
+  return gulp.watch([
+      'config/**/*.json',
+      'src/css/**/*.scss',
+      'src/app/**/*.js',
+      'src/assets/**/*',
+      'src/index.html'
+    ], ['integrate']);
 });
 
 gulp.task('test', ['webdriver'], function() {
