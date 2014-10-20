@@ -1,5 +1,8 @@
 @import "compass/css3";
 
+$app-bg: 		#0072a3;
+$section-bg: 	#0084bd;
+
 @mixin transition($value) {
 	-webkit-transition: $value;
 	-moz-transition: $value;
@@ -36,14 +39,16 @@
 
 @mixin large-icon-button($url) {
 	background-image: url($url);
-	width: 300px;
+	width: 200px;
 	height: 200px;
 	background-position: 50%;
-	background-size: 200px;
+	background-size: 100%;
 	background-repeat: no-repeat;
 	background-color: transparent;
 	border: none;
 	padding: 0;
+	margin: auto;
+	margin-bottom: 20px;
 }
 
 @font-face {
@@ -64,17 +69,17 @@ body {
 	min-height: 100%;
 	padding: 0;
 	margin: 0;
-	background-color: #005678;
+	background-color: $app-bg;
 	color: #fff;
 	font-family: arial, sans-serif;
 	font-size: 62.5%;
-	@include radial-gradient(#00a4e4 25%, #005678 100%);
 	background-attachment: fixed;
 	text-align: center;
 }
 
 .logo {
 	margin-bottom: 20px;
+	width: 150px;
 }
 
 #content {
@@ -96,13 +101,47 @@ body {
 	}
 
 	h2 {
-		margin-bottom: 10px;
+		margin-bottom: 20px;
+		margin-top: 0;
+	}
+
+	.accordion {
+		position: relative;
+		max-height: 1200px;
+		@include transition(all .5s ease-out);
+
+		h2 {
+			cursor: pointer;
+
+			&:before {
+				content: '\2796';
+				position: absolute;
+				left: 10px;
+				font-family: 'Entypo';
+				font-size: 36px;
+			}
+		}
+
+		.accordion-content {
+		}
+
+		&.collapsed {
+			overflow: hidden;
+			max-height: 40px;
+
+			h2:before {
+				content: '\2795';
+			}
+		}
 	}
 
 
 	.section-wrapper {
+		background-color: $section-bg;
 		margin: 20px;
-		border-bottom: 1px solid white;
+		border-radius: 5px;
+		padding: 10px;
+		overflow: auto;
 	}
 
 	.buttons {
@@ -181,6 +220,7 @@ h2 {
 }
 
 table {
+	margin: auto;
 	margin-bottom: 30px;
 	width: 100%;
 	max-width: 1400px;
@@ -252,6 +292,7 @@ table {
 			span {
 				font-size: 1.6rem;
 				-webkit-background-clip: text;
+				-webkit-text-fill-color: transparent;
 				cursor: default;
 			}
 
@@ -483,19 +524,62 @@ input[type=text].error {
 	}
 
 	&.button-device .icon {
-		@include large-icon-button('/assets/images/device.svg');
+		@include large-icon-button('/assets/images/device.png');
 	}
 
 	&.button-control-panel .icon {
-		@include large-icon-button('/assets/images/control_panel.svg');
+		@include large-icon-button('/assets/images/control_panel.png');
 	}
 }
 
 .home {
+	font-family: 'Entypo';
 	position: absolute;
 	left: 0;
 	top: 0;
-	background-image: url('/assets/images/exit.svg');
-	width: 50px;
-	height: 50px;
+	text-decoration: none;
+	color: white;
+	font-size: 40px;
+	margin: 0 5px;
 }
+
+@media only screen and (max-width : 775px) {
+	.small-viewport-hidden {
+		display: none;
+	}
+}
+
+@media only screen and (max-width : 600px), screen and (max-height : 700px) {
+	h1 {
+		font-size: 2.8rem;
+	}
+
+	#devices {
+		input {
+			width: 90%;
+		}
+	}
+
+	#content.centerized {
+		margin-top: 30px;
+		position: relative;
+		top: initial;
+		@include translateY(0);
+	}
+
+	.mode-button.button-control-panel, .mode-button.button-device {
+		width: 100px;
+
+		.text {
+			font-size: 20px;
+		}
+
+		.icon, .icon {
+			width: 100px;
+			height: 100px;
+		}
+	}
+}
+
+
+

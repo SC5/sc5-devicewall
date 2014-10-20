@@ -1,5 +1,5 @@
 <div id="content" class="devices">
-  <a class="home" href="/"></a>
+  <a class="home" href="/">&#128281;</a>
   <section id="devices">
     <form id="devices-form">
       <div class="section-wrapper">
@@ -23,69 +23,75 @@
         </div>
       </div>
 
-      <div class="section-wrapper">
-        <h2>Available devices</h2>
-
-        <div class="buttons">
-          <button type="button" id="select-all" ng-click="selectAll()">Select all</button>
-          <button type="button" id="select-none" ng-click="selectNone()">Select none</button>
+      <div class="section-wrapper accordion collapsed">
+        <h2 ng-click="toggleAccordion($event)">Connection setup</h2>
+        <div class="connection-setup accordion-content">
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" data-ng-model="openUrl" value="1" name="chk-warm-cache">
+              Load url with proxy to warm-up the caches
+            </label>
+          </div>
+          <fieldset class="connection">
+                <span>Simulate</span>
+                <label><input type="radio" name="connection-radio" value="3G">3G</label>
+                <label><input type="radio" name="connection-radio" value="4G">4G</label>
+                <label><input type="radio" name="connection-radio" value="Wifi" checked="checked">Wifi</label>
+          </fieldset>
         </div>
 
-        <table spellcheck="false">
-          <tr>
-            <th>Label</th>
-            <th>Model</th>
-            <th>Platform</th>
-            <th>Version</th>
-            <th>Battery</th>
-            <th>User</th>
-            <th>Last used</th>
-            <th>Select for testing</th>
-            <th>Remove</th>
-          </tr>
-          <tbody id="devices-list" ng-if="deviceList.length > 0">
-            <tr ng-repeat="device in deviceList">
-              <td contenteditable data-key="label" title="Edit">{{ device.label }}</td>
-              <td>{{ device.model }}</td>
-              <td>{{ device.platform }}</td>
-              <td>{{ device.version }}</td>
-              <td
-                title="{{ device.batteryStatus | batteryTitle }}"
-                class="battery"
-                data-ng-class="{plugged: device.isPlugged?true:false}"
-              >
-                <span style="{{ device.batteryStatus | batteryStyle }}">&#128267;</span>
-              </td>
-              <td>{{ device.userName }}</td>
-              <td><time>{{ device.lastUsed | timeSince }}</time></td>
-              <td>
-                <input
-                  type="checkbox"
-                  ng-model="device.selected"
-                  ng-disabled="{{ device.userId ? false : false }}"
-                >
-              </td>
-              <td class="remove" data-ng-click="removeDevice(device)"><span>&#59177;</span></td>
+      </div>
+
+      <div class="section-wrapper accordion">
+        <h2 ng-click="toggleAccordion($event)">Available devices</h2>
+
+        <div class="accordion-content">
+          <div class="buttons">
+            <button type="button" id="select-all" ng-click="selectAll()">Select all</button>
+            <button type="button" id="select-none" ng-click="selectNone()">Select none</button>
+          </div>
+
+          <table spellcheck="false">
+            <tr>
+              <th>Label</th>
+              <th class="small-viewport-hidden">Model</th>
+              <th class="small-viewport-hidden">Platform</th>
+              <th class="small-viewport-hidden">Version</th>
+              <th class="small-viewport-hidden">Battery</th>
+              <th class="small-viewport-hidden">User</th>
+              <th>Last used</th>
+              <th>Test</th>
+              <th></th>
             </tr>
-          </tbody>
-        </table>
+            <tbody id="devices-list" ng-if="deviceList.length > 0">
+              <tr ng-repeat="device in deviceList">
+                <td contenteditable data-key="label" title="Edit">{{ device.label }}</td>
+                <td class="small-viewport-hidden">{{ device.model }}</td>
+                <td class="small-viewport-hidden">{{ device.platform }}</td>
+                <td class="small-viewport-hidden">{{ device.version }}</td>
+                <td
+                  title="{{ device.batteryStatus | batteryTitle }}"
+                  class="battery small-viewport-hidden"
+                  data-ng-class="{plugged: device.isPlugged?true:false}"
+                >
+                  <span style="{{ device.batteryStatus | batteryStyle }}">&#128267;</span>
+                </td>
+                <td class="small-viewport-hidden">{{ device.userName }}</td>
+                <td><time>{{ device.lastUsed | timeSince }}</time></td>
+                <td>
+                  <input
+                    type="checkbox"
+                    ng-model="device.selected"
+                    ng-disabled="{{ device.userId ? false : false }}"
+                  >
+                </td>
+                <td class="remove" data-ng-click="removeDevice(device)"><span>&#59177;</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
 
-      <h2>Connection setup</h2>
-      <div class="connection-setup">
-        <div class="checkbox">
-          <label>
-            <input type="checkbox" data-ng-model="openUrl" value="1" name="chk-warm-cache">
-            Load url with proxy to warm-up the caches
-          </label>
-        </div>
-        <fieldset class="connection">
-              <span>Simulate</span>
-              <label><input type="radio" name="connection-radio" value="3G">3G</label>
-              <label><input type="radio" name="connection-radio" value="4G">4G</label>
-              <label><input type="radio" name="connection-radio" value="Wifi" checked="checked">Wifi</label>
-      </fieldset>
-      </div>
 
     </form>
   </section>
