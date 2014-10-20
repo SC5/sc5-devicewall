@@ -68,6 +68,10 @@ process.on('message', function(message) {
     bs = browserSync.init(null, {
       proxy: message.url,
       startPath: parsedUrl.path,
+      idleReturn: {
+        idleSeconds: config.clientIdleReturnSeconds,
+        returnUrl: config.deviceWallAppURL
+      },
       browser: 'disable',
       https: true,
       ghostMode: {
