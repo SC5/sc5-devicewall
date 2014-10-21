@@ -23,10 +23,11 @@
         </div>
       </div>
 
-      <div class="section-wrapper accordion collapsed">
+      <section data-ng-show="config.connectionSetupEnabled">
+        <div class="section-wrapper accordion collapsed">
         <h2 ng-click="toggleAccordion($event)">Connection setup</h2>
         <div class="connection-setup accordion-content">
-          <div class="checkbox">
+          <div data-ng-hide="true" class="checkbox">
             <label>
               <input type="checkbox" data-ng-model="openUrl" value="1" name="chk-warm-cache">
               Load url with proxy to warm-up the caches
@@ -39,8 +40,8 @@
                 <label><input type="radio" name="connection-radio" value="Wifi" checked="checked">Wifi</label>
           </fieldset>
         </div>
-
-      </div>
+        </div>
+      </section>
 
       <div class="section-wrapper accordion">
         <h2 ng-click="toggleAccordion($event)">Available devices</h2>

@@ -3,6 +3,7 @@ angular.module('DeviceWall')
     var _ = lodash;
     $log.debug('loading main controller');
     $scope.indicatorWaiting = {show: true};
+    $scope.config = appConfig;
 
     // selected device uuid list? TODO refactor whole selected devices list feature, this is not nice, really.
     $scope.uuids = {};
