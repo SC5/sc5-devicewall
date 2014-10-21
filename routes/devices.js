@@ -1,3 +1,11 @@
+/**
+ * Reads data/devices.json and searches if given deviceLabel is found from there.
+ * Used by clients to check if device is known by server.
+ *
+ * @param app
+ * @param path
+ * @param devicesFile
+ */
 var fs = require('fs');
 
 module.exports = function (app, path, devicesFile) {
@@ -17,15 +25,15 @@ module.exports = function (app, path, devicesFile) {
               var found = false;
               for (var i = 0; i < deviceList.length; ++i) {
                 if (deviceList[i].label === deviceLabel) {
-                  console.log("device found");
                   res.json(deviceList[i]);
                   found = true;
                 }
               }
               if (found === false) {
-                console.log("device NOT found");
                 send404(res, 'device not found');
               }
+            } else {
+              send404(res, 'device not found');
             }
           }
         });
