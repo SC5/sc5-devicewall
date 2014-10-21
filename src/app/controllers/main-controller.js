@@ -3,15 +3,23 @@ angular.module('DeviceWall')
     var _ = lodash;
     $log.debug('loading main controller');
     $scope.indicatorWaiting = {show: true};
+    $scope.userColumn = {show: !appConfig.singleUser};
 
     // selected device uuid list? TODO refactor whole selected devices list feature, this is not nice, really.
     $scope.uuids = {};
 
-    // this is weird, just weiirrddd, TODO refactor away
-    $scope.user = {
-      id: $window.localStorage.getItem('name'),
-      displayName: $window.localStorage.getItem('name')
-    };
+    if (appConfig.singleUser) {
+      $scope.user = {
+        id: 'johndoe',
+        displayName: 'johndoe'
+      };
+    } else {
+      // this is weird, just weiirrddd, TODO refactor away
+      $scope.user = {
+        id: $window.localStorage.getItem('name'),
+        displayName: $window.localStorage.getItem('name')
+      };
+    }
     $scope.url = '';
     // maybe there is an old url in localstorage already..
     if ($window.localStorage.getItem('url') !== null) {
@@ -104,6 +112,7 @@ angular.module('DeviceWall')
       $log.debug("socket::update");
       $scope.$apply(function() {
         $scope.deviceList = mergedDeviceList(data);
+        console.log($scope.deviceList);
       });
     });
 
@@ -181,11 +190,19 @@ angular.module('DeviceWall')
     function mergedDeviceList (data) {
       var oldList = _.clone($scope.deviceList);
 
-      _.each(data, function(obj) {
-        var oldDevice = _.where(oldList, { label: obj.label });
-        if (oldDevice.length > 0) obj.selected = oldDevice[0].selected;
+      _.each(data, function(device, key) {
+        if (appConfig.singleUser) {
+          data[key].selected = true;
+        } else {
+          var oldDevice = _.where(oldList, { label: device.label });
+          if (oldDevice.length > 0) {
+            data[key].selected = oldDevice[0].selected;
+          } else {
+            data[key].selected = false;
+          }
+        }
       });
-      return _.defaults(data, { selected: false });
+      return data;
     }
 
     $scope.showDeviceView = function() {

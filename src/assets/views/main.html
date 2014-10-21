@@ -58,7 +58,7 @@
               <th class="small-viewport-hidden">Platform</th>
               <th class="small-viewport-hidden">Version</th>
               <th class="small-viewport-hidden">Battery</th>
-              <th class="small-viewport-hidden">User</th>
+              <th class="small-viewport-hidden" ng-show="userColumn.show">User</th>
               <th>Last used</th>
               <th>Test</th>
               <th></th>
@@ -76,7 +76,7 @@
                 >
                   <span style="{{ device.batteryStatus | batteryStyle }}">&#128267;</span>
                 </td>
-                <td class="small-viewport-hidden">{{ device.userName }}</td>
+                <td class="small-viewport-hidden" ng-show="userColumn.show">{{ device.userName }}</td>
                 <td><time>{{ device.lastUsed | timeSince }}</time></td>
                 <td>
                   <input
