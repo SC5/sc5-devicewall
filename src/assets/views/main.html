@@ -58,7 +58,7 @@
               <th class="small-viewport-hidden">Model</th>
               <th class="small-viewport-hidden">Platform</th>
               <th class="small-viewport-hidden">Version</th>
-              <th class="small-viewport-hidden">Battery</th>
+              <th data-ng-hide="true" class="small-viewport-hidden">Battery</th>
               <th class="small-viewport-hidden">User</th>
               <th>Last used</th>
               <th>Test</th>
@@ -71,6 +71,7 @@
                 <td class="small-viewport-hidden">{{ device.platform }}</td>
                 <td class="small-viewport-hidden">{{ device.version }}</td>
                 <td
+                  data-ng-hide="true"
                   title="{{ device.batteryStatus | batteryTitle }}"
                   class="battery small-viewport-hidden"
                   data-ng-class="{plugged: device.isPlugged?true:false}"
