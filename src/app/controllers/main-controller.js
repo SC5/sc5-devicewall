@@ -3,15 +3,15 @@ angular.module('DeviceWall')
     var _ = lodash;
     $log.debug('loading main controller');
     $scope.indicatorWaiting = {show: true};
-    $scope.userColumn = {show: !appConfig.singleUser};
+    $scope.config = appConfig;
 
     // selected device uuid list? TODO refactor whole selected devices list feature, this is not nice, really.
     $scope.uuids = {};
 
     if (appConfig.singleUser) {
       $scope.user = {
-        id: 'johndoe',
-        displayName: 'johndoe'
+        id: 'singleuser',
+        displayName: 'singleuser'
       };
     } else {
       // this is weird, just weiirrddd, TODO refactor away
@@ -112,7 +112,6 @@ angular.module('DeviceWall')
       $log.debug("socket::update");
       $scope.$apply(function() {
         $scope.deviceList = mergedDeviceList(data);
-        console.log($scope.deviceList);
       });
     });
 

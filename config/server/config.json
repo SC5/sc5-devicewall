@@ -4,5 +4,6 @@
   "GOOGLE_CALLBACK_URL": "http://devicewall.sc5.io/auth/google/callback",
   "sessionKey": "devicewall12345",
   "deviceWallAppURL": "http://devicewall.sc5.io/client/return",
+  "clientIdleReturnSeconds": 300,
   "maxSockets": 100
 }

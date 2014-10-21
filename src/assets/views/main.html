@@ -23,10 +23,11 @@
         </div>
       </div>
 
-      <div class="section-wrapper accordion collapsed">
+      <section data-ng-show="config.connectionSetupEnabled">
+        <div class="section-wrapper accordion collapsed">
         <h2 ng-click="toggleAccordion($event)">Connection setup</h2>
         <div class="connection-setup accordion-content">
-          <div class="checkbox">
+          <div data-ng-hide="true" class="checkbox">
             <label>
               <input type="checkbox" data-ng-model="openUrl" value="1" name="chk-warm-cache">
               Load url with proxy to warm-up the caches
@@ -39,8 +40,8 @@
                 <label><input type="radio" name="connection-radio" value="Wifi" checked="checked">Wifi</label>
           </fieldset>
         </div>
-
-      </div>
+        </div>
+      </section>
 
       <div class="section-wrapper accordion">
         <h2 ng-click="toggleAccordion($event)">Available devices</h2>
@@ -57,8 +58,8 @@
               <th class="small-viewport-hidden">Model</th>
               <th class="small-viewport-hidden">Platform</th>
               <th class="small-viewport-hidden">Version</th>
-              <th class="small-viewport-hidden">Battery</th>
-              <th class="small-viewport-hidden" ng-show="userColumn.show">User</th>
+              <th data-ng-hide="true" class="small-viewport-hidden">Battery</th>
+              <th class="small-viewport-hidden" ng-hide="config.singleUser">User</th>
               <th>Last used</th>
               <th>Test</th>
               <th></th>
@@ -70,13 +71,14 @@
                 <td class="small-viewport-hidden">{{ device.platform }}</td>
                 <td class="small-viewport-hidden">{{ device.version }}</td>
                 <td
+                  data-ng-hide="true"
                   title="{{ device.batteryStatus | batteryTitle }}"
                   class="battery small-viewport-hidden"
                   data-ng-class="{plugged: device.isPlugged?true:false}"
                 >
                   <span style="{{ device.batteryStatus | batteryStyle }}">&#128267;</span>
                 </td>
-                <td class="small-viewport-hidden" ng-show="userColumn.show">{{ device.userName }}</td>
+                <td class="small-viewport-hidden" ng-hide="config.singleUser">{{ device.userName }}</td>
                 <td><time>{{ device.lastUsed | timeSince }}</time></td>
                 <td>
                   <input
