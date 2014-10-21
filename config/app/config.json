@@ -3,6 +3,7 @@
     "port": 80,
     "loginType": 2,
     "debugEnabled": true,
+    "singleUser": true,
     "connectionSetupEnabled": false
   }
 }

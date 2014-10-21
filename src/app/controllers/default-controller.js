@@ -8,6 +8,10 @@ angular.module('DeviceWall')
     };
 
     $scope.onControlPanelClick = function() {
-      $location.path('/devices');
+      if (appConfig.singleUser) {
+        $location.path('/devices');
+      } else {
+        $location.path('/login');
+      }
     };
   });
