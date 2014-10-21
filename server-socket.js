@@ -27,7 +27,7 @@ module.exports = function (app, options) {
   function updateDevices() {
     if (devicesUpdated) {
       devicesUpdated = false;
-      fs.writeFileSync('./data/devices.json', JSON.stringify(devices));
+      fs.writeFileSync('./data/devices.json', JSON.stringify(devices, null, 2));
       console.log('Updated devices.json');
     }
   }
@@ -35,7 +35,7 @@ module.exports = function (app, options) {
   function updateInstances() {
     if (instancesUpdated) {
       instancesUpdated = false;
-      fs.writeFileSync('./data/instances.json', JSON.stringify(instances));
+      fs.writeFileSync('./data/instances.json', JSON.stringify(instances, null, 2));
       console.log('Updated instances.json');
     }
   }

@@ -1,12 +1,18 @@
 angular.module('DeviceWall')
-  .controller('DefaultController', function($scope, $location, $window, $log, User, appConfig) {
+  .controller('DefaultController', function($scope, $location, $window, $log, Devices) {
     $log.debug("defaultController");
 
-    $scope.onConnectDeviceClick = function() {
-      $window.location.href = $window.location.protocol + '//' + $window.location.hostname +
-        ':' + appConfig.port + '/client';
-    };
+    function redirectToClient() {
+      var portString = $window.location.port !== '' ? ':'+$window.location.port : '';
+      $window.location.href = $window.location.protocol + '//' + $window.location.hostname + portString + '/client';
+    }
 
+    if ($window.localStorage.getItem('label') !== null) {
+      Devices.get({deviceLabel: $window.localStorage.getItem('label')})
+        .$promise.then(redirectToClient);
+    }
+
+    $scope.onConnectDeviceClick = redirectToClient;
     $scope.onControlPanelClick = function() {
       $location.path('/devices');
     };
