@@ -146,6 +146,7 @@ module.exports = function (app, options) {
           appPlatform = data.appPlatform,
           version = data.version,
           updated = false;
+      console.log("update", data);
 
       devices.forEach(function (device, index) {
         if (device.label === label) {
