@@ -183,7 +183,7 @@ angular.module('DeviceWall')
     function setButtonsStatus(status) {
       $scope.btnStopAllTesting.show = !status;
       $scope.btnStopTesting.show = !status;
-      $scope.btnGo.show = status;
+      $scope.btnGo.show = true;
     }
 
     function mergedDeviceList (data) {
