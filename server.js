@@ -28,6 +28,7 @@ require('./routes/auth.js')(adminServer, {
   GoogleStrategy: GoogleStrategy
 });
 require('./routes/user.js')(adminServer);
+require('./routes/devices.js')(adminServer, '/api/devices/:deviceLabel', './data/devices.json');
 
 adminServer.use(express.static(__dirname + '/dist'));
 

@@ -30,6 +30,21 @@ module.factory('User', function($resource) {
   return resource;
 });
 
+module.factory('Devices', function($resource) {
+  var resource = $resource(
+    '/api/devices/:deviceLabel',
+    {deviceLabel: '@id'},
+    {
+      get: {
+        method: 'GET',
+        isArray: false,
+        cache: false
+      }
+    }
+  );
+  return resource;
+});
+
 module.config(function($routeProvider, $locationProvider, $logProvider, appConfig) {
   $routeProvider.
     when('/', {
