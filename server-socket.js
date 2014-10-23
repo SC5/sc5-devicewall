@@ -99,6 +99,19 @@ module.exports = function (app, options) {
           device.batteryStatus = batteryStatus;
           device.updated = +new Date();
           updated = true;
+
+          for (var instUserId in instances) {
+            if (!instances[instUserId].stopping && instances[instUserId].browserSync) {
+              instances[instUserId].labels.forEach(function (instLabel) {
+                if (label === instLabel) {
+                  socket.emit('start', {
+                    labels: instances[instUserId].labels,
+                    url: instances[instUserId].browserSync
+                  });
+                }
+              });
+            }
+          }
         }
       });
 
@@ -182,13 +195,15 @@ module.exports = function (app, options) {
           url: testUrl,
           labels: labels,
           browserSync: null,
-          updated: +new Date()
+          updated: +new Date(),
+          stopping: false
         };
       }
 
       instanceCanBeStarted(user).then(function() {
         childProcesses[user.id] = fork('./server-browsersync');
         childProcesses[user.id].on('message', function(message) {
+
           if (message.type === 'browserSyncInit') {
             if (instances[user.id]) {
               instances[user.id].browserSync = message.browserSync;
@@ -247,18 +262,26 @@ module.exports = function (app, options) {
       ns.emit('update', devices);
       nsApp.emit('stop', data);
 
-      if (user && childProcesses[user.id]) {
-        childProcesses[user.id].send({
-          type: 'location',
-          url: config.deviceWallAppURL,
-          timeout: 5000,
-          completeMessageType: 'browserSyncExit'
-        });
+      if (user) {
+        if (instances[user.id]) {
+          instances[userId].stopping = true;
+        }
+        if (childProcesses[user.id]) {
+          childProcesses[user.id].send({
+            type: 'location',
+            url: config.deviceWallAppURL,
+            timeout: 5000,
+            completeMessageType: 'browserSyncExit'
+          });
+        }
       }
     });
 
     function instanceHasStopped(userId) {
       var deferred = Q.defer();
+      if (instances[userId]) {
+        instances[userId].stopping = true;
+      }
       childProcesses[userId].on('message', function(message) {
         if (message.type === 'browserSyncExit') {
           deferred.resolve();

@@ -64,6 +64,7 @@ function deferredCacheWarming(url) {
 
 process.on('message', function(message) {
   if (message.type === 'init') {
+    var evt = browserSync.emitter;
     var parsedUrl = url.parse(message.url);
     bs = browserSync.init(null, {
       proxy: message.url,
@@ -82,7 +83,7 @@ process.on('message', function(message) {
       }
     });
 
-    bs.events.on('init', function(api) {
+    evt.on('init', function(api) {
       bs.pluginManager.plugins.server.checkProxyTarget({
         target: api.options.proxy.target
       }, function(err, status) {
@@ -98,6 +99,7 @@ process.on('message', function(message) {
         }
       });
     });
+
   } else if (message.type === 'location') {
     var promises = [];
     bs.io.sockets.sockets.forEach(function(socket) {
