@@ -69,6 +69,7 @@ angular.module('DeviceWall')
       };
 
       $window.localStorage.setItem('url', $scope.url.value);
+      $scope.tooltipError.show = false;
       socket.emit('start', formData);
       setButtonsStatus(false);
     };
