@@ -73,7 +73,7 @@ process.on('message', function(message) {
         returnUrl: config.deviceWallAppURL
       },
       browser: 'disable',
-      https: true,
+      https: parsedUrl.protocol === "https:",
       ghostMode: {
         clicks: true,
         location: true,
