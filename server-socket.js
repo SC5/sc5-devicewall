@@ -17,18 +17,18 @@ module.exports = function (app, options) {
     devicesUpdated = false,
     updateInterval;
 
-  if (fs.existsSync('./data/devices.json')) {
-    devices = require('./data/devices.json');
+  if (fs.existsSync(config.devicesJson)) {
+    devices = require(config.devicesJson);
   }
 
-  if (fs.existsSync('./data/instances.json')) {
-    instances = require('./data/instances.json');
+  if (fs.existsSync(config.instancesJson)) {
+    instances = require(config.instancesJson);
   }
 
   function updateDevices() {
     if (devicesUpdated) {
       devicesUpdated = false;
-      fs.writeFileSync('./data/devices.json', JSON.stringify(devices, null, 2));
+      fs.writeFileSync(config.devicesJson, JSON.stringify(devices, null, 2));
       console.log('Updated devices.json');
     }
   }
@@ -36,7 +36,7 @@ module.exports = function (app, options) {
   function updateInstances() {
     if (instancesUpdated) {
       instancesUpdated = false;
-      fs.writeFileSync('./data/instances.json', JSON.stringify(instances, null, 2));
+      fs.writeFileSync(config.instancesJson, JSON.stringify(instances, null, 2));
       console.log('Updated instances.json');
     }
   }

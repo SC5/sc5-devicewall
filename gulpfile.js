@@ -2,6 +2,7 @@ var path = require('path'),
     extend = require('extend'),
     util = require('util'),
     gulp = require('gulp'),
+    gp = require('gulp-protractor'),
     shell = require('gulp-shell'),
     browsersync = require('browser-sync'),
     bowerFiles = require('main-bower-files'),
@@ -11,7 +12,10 @@ var path = require('path'),
     package = require('./package.json'),
     fs = require('fs'),
     nodemon = require('gulp-nodemon'),
-    scssLint = require('gulp-scss-lint');
+    scssLint = require('gulp-scss-lint'),
+    server = require('gulp-develop-server'),
+    find = require('find'),
+    testConfig = require('./config.test.json');
 
 var configLocalServer = './config/server';
 var configLocalApp = './config/app';
@@ -61,10 +65,19 @@ gulp.task('config', function() {
   // read local config
   if (fs.existsSync(configLocalServer+'/config.local.json')) {
     data = JSON.parse(fs.readFileSync(configLocalServer+'/config.local.json'));
-    serverConfig = extend(true, serverConfig, data)
+    serverConfig = extend(true, serverConfig, data);
   }
   serverConfig = extend(true, serverConfig, config.server);
   fs.writeFileSync('./config.json', JSON.stringify(serverConfig, null, 2));
+
+  // Server test config
+  var serverTestConfig = JSON.parse(fs.readFileSync(configLocalServer + '/config.test.json'));
+  // read local config
+  if (fs.existsSync(configLocalServer + '/config.test.local.json')) {
+    data = JSON.parse(fs.readFileSync(configLocalServer + '/config.test.local.json'));
+    serverTestConfig = extend(true, serverTestConfig, data);
+  }
+  fs.writeFileSync('./config.test.json', JSON.stringify(serverTestConfig, null, 2));
 
   // Control panel app config
   var clientConfig = JSON.parse(fs.readFileSync(configLocalApp + '/config.json'));
@@ -72,7 +85,7 @@ gulp.task('config', function() {
   // read local config
   if (fs.existsSync(configLocalApp+'/config.local.json')) {
     data = JSON.parse(fs.readFileSync(configLocalApp+'/config.local.json'));
-    clientConfig = extend(true, clientConfig, data)
+    clientConfig = extend(true, clientConfig, data);
   }
   // Write angular configuration
   return gulp.src(configLocalApp + '/config.json')
@@ -224,27 +237,6 @@ gulp.task('browsersync', function() {
 
 });
 
-gulp.task('webdriver', function(cb) {
-
-  if (config.debug) {
-    cb();
-  } else {
-
-    var phantom = require('phantomjs-server'),
-        webdriver = require('selenium-webdriver');
-
-    // Start PhantomJS
-    phantom.start().done(function() {
-      var driver = new webdriver.Builder()
-        .usingServer(phantom.address())
-        .build();
-      cb();
-    });
-
-  }
-
-});
-
 gulp.task('mywatch', ['integrate'], function() {
   nodemon({script: 'server.js', watch: 'dist/**/*'})
   .on('restart', function () {
@@ -260,29 +252,23 @@ gulp.task('mywatch', ['integrate'], function() {
     ], ['integrate']);
 });
 
-gulp.task('test', ['webdriver'], function() {
+// Tests
+gulp.task('webdriver_manager_update', gp.webdriver_update);
 
-  if (config.debug) {
-    // Find the selenium server standalone jar file. Version number in the file name
-    // is due to change
-    var find = require('find'),
-        paths = find.fileSync(/selenium-server-standalone.*\.jar/, 'node_modules/protractor/selenium'),
-        args = ['--seleniumServerJar', paths[0]];
-  } else {
-    var args = ['--seleniumAddress', 'http://localhost:4444/'];
-  }
+gulp.task('test', ['webdriver_manager_update'], function() {
+    var paths = find.fileSync(/selenium-server-standalone.*\.jar/, 'node_modules/protractor/selenium');
+    var args = ['--seleniumServerJar', paths[0], '--baseUrl', 'http://' + testConfig.host + ':' + testConfig.port];
+    var protractorConf = {
+        configFile: './protractor.config.js',
+        args: [args]
+    };
 
-  // Set baseUrl
-  args = args.concat(['--baseUrl', 'http://localhost:' + ((config.browsersync) ? 3002 : 8080) + '/']);
-
-  // Run tests
-  gulp.src('tests/**/*.js')
-    .pipe($.protractor.protractor({
-      configFile: 'protractor.config.js',
-      args: args
-    }))
-    .on('error', function(e) { throw e; });
-
+    server.listen({path: './server.js', env: {"NODE_ENV": "test"}});
+    gulp.src(['tests/e2e/**/*.js'], { read: false })
+        .pipe(gp.protractor(protractorConf)).on('error', function(e) {
+            server.kill();
+        }).on('end', function() {
+            server.kill();
+        });
 });
-
 gulp.task('default', ['integrate']);
