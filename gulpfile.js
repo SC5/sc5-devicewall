@@ -97,7 +97,7 @@ gulp.task('serve', $.serve({
 
 
 gulp.task('preprocess', ['config', 'scss-lint'], function() {
-  gulp.src('src/app/**/*.js')
+  gulp.src(['src/app/**/*.js', 'server*.js'])
     .pipe($.jshint())
     .pipe($.jshint.reporter('default'));
 });

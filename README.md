@@ -13,6 +13,7 @@ Compass framework for compiling SASS stylesheets into CSS and sprite sheets:
 
     > gem update --system
     > gem install sass
+    > gem install scss-lint
     > gem install compass
 
 Note that you may need to first uninstall other SASS versions than (3.2.x).
