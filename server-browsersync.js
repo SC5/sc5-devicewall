@@ -1,4 +1,5 @@
 var browserSync = require('browser-sync'),
+    evt = browserSync.emitter,
     config = require('./config.json'),
     bs,
     url = require('url'),
@@ -63,55 +64,84 @@ function deferredCacheWarming(url) {
 */
 
 process.on('message', function(message) {
-  if (message.type === 'init') {
-    var evt = browserSync.emitter;
-    var parsedUrl = url.parse(message.url);
-    bs = browserSync.init(null, {
-      proxy: message.url,
-      startPath: parsedUrl.path,
-      idleReturn: {
-        idleSeconds: config.clientIdleReturnSeconds,
-        returnUrl: config.deviceWallAppURL
-      },
-      browser: 'disable',
-      https: true,
-      ghostMode: {
-        clicks: true,
-        location: true,
-        forms: true,
-        scroll: true
-      }
-    });
+  switch (message.type) {
+    case 'init':
+        var parsedUrl = url.parse(message.url);
+        bs = browserSync.init(null, {
+          proxy: message.url,
+          startPath: parsedUrl.path,
+          idleReturn: {
+            idleSeconds: config.clientIdleReturnSeconds,
+            returnUrl: config.deviceWallAppURL
+          },
+          browser: 'disable',
+          https: true,
+          ghostMode: {
+            clicks: true,
+            location: true,
+            forms: true,
+            scroll: true
+          },
+          syncLocation: true
+        });
 
-    evt.on('init', function(api) {
-      bs.pluginManager.plugins.server.checkProxyTarget({
-        target: api.options.proxy.target
-      }, function(err, status) {
-        if (err) {
-          process.send({type: 'targetUrlUnreachable'});
-        } else {
-          /*var cacheWarmed = deferredCacheWarming(api.options.urls.external);
-          cacheWarmed.then(function() {
-          process.send({type: 'browserSyncInit', browserSync: api.options.urls.external});
+        evt.on('init', function(api) {
+          bs.pluginManager.plugins.server.checkProxyTarget({
+            target: api.options.proxy.target
+          }, function(err, status) {
+            if (err) {
+              process.send({type: 'targetUrlUnreachable'});
+            } else {
+              /*var cacheWarmed = deferredCacheWarming(api.options.urls.external);
+              cacheWarmed.then(function() {
+              process.send({type: 'browserSyncInit', browserSync: api.options.urls.external});
+              });
+              */
+              process.send({type: 'browserSyncInit', browserSync: api.options.urls.external});
+            }
           });
-          */
-          process.send({type: 'browserSyncInit', browserSync: api.options.urls.external});
-        }
-      });
-    });
+        });
+      break;
+    case 'location':
+        var promisesLoc = [];
+        bs.io.sockets.sockets.forEach(function(socket) {
+          promisesLoc.push(deferredEmit(socket, 'location', {url: message.url}, message.timeout || 5000));
+        });
+        Q.all(promisesLoc).fin(function(){
+          // all promises finished.
+          if (message.completeMessageType) {
+            process.send({type: message.completeMessageType});
+          }
+        });
+      break;
+   case 'syncLocations':
+        var foundLocationToSync = false;
 
-  } else if (message.type === 'location') {
-    var promises = [];
-    bs.io.sockets.sockets.forEach(function(socket) {
-      promises.push(deferredEmit(socket, 'location', {url: message.url}, message.timeout || 5000));
-    });
-    Q.all(promises).fin(function(){
-      // all promises finished.
-      if (message.completeMessageType) {
-        process.send({type: message.completeMessageType});
-      }
-    });
-  } else {
-    browserSync.exit();
+        function checkClientCurrentLocation(data) {
+          if (!foundLocationToSync && data.url !== bs.options.startPath) {
+            foundLocationToSync = true;
+            var promisesSync = [];
+            setTimeout(function() {
+              bs.io.sockets.sockets.forEach(function(socket) {
+                promisesSync.push(deferredEmit(socket, 'sync-location', {url: data.url}, message.timeout || 5000));
+              });
+              Q.all(promisesSync).fin(function(data){
+                //console.log('SYNC LOCATION FINISHED');
+              });
+            }, 3000);
+          }
+        }
+
+        var promisesGetSync = [];
+        bs.io.sockets.sockets.forEach(function(socket) {
+          socket.on('current-location', checkClientCurrentLocation);
+          promisesGetSync.push(deferredEmit(socket, 'get-location', {}, message.timeout || 5000));
+        });
+        Q.all(promisesGetSync).fin(function(data){
+          //console.log('GET LOCATION FINISHED');
+        });
+      break;
+    default:
+      browserSync.exit();
   }
 });

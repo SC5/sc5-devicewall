@@ -128,6 +128,33 @@ module.exports = function (app, options) {
     ns.emit('start', data);
   }
 
+  // restarts device to brosersync if registered to running instance
+  function restartBrowserSync(label, socket) {
+    var instanceUserId = false;
+    for (var instUserId in instances) {
+      if (!instances[instUserId].stopping && instances[instUserId].browserSync) {
+        var gotLocationResponse = false;
+        instances[instUserId].labels.forEach(function (instLabel) {
+          if (label === instLabel) {
+            // start device to browsersync mode
+            socket.emit('start', {
+              labels: instances[instUserId].labels,
+              url: instances[instUserId].browserSync
+            });
+            instanceUserId = instUserId;
+          }
+        });
+      }
+    }
+    if (instanceUserId && childProcesses[instanceUserId]) {
+      // Sync locations of devices
+      childProcesses[instanceUserId].send({
+        type: 'syncLocations',
+        timeout: 5000
+      });
+    }
+  }
+
   app.on('update-devices', function () {
     devicesUpdated = true;
   });
@@ -167,19 +194,7 @@ module.exports = function (app, options) {
           device.batteryStatus = batteryStatus;
           device.updated = +new Date();
           updated = true;
-
-          for (var instUserId in instances) {
-            if (!instances[instUserId].stopping && instances[instUserId].browserSync) {
-              instances[instUserId].labels.forEach(function (instLabel) {
-                if (label === instLabel) {
-                  socket.emit('start', {
-                    labels: instances[instUserId].labels,
-                    url: instances[instUserId].browserSync
-                  });
-                }
-              });
-            }
-          }
+          restartBrowserSync(label, socket);
         }
       });
 
