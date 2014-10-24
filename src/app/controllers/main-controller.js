@@ -1,9 +1,10 @@
 angular.module('DeviceWall')
-  .controller('MainController', function($rootScope, $scope, $window, $http, $timeout, lodash, appConfig, $log, socket) {
+  .controller('MainController', function($rootScope, $scope, $window, $http, $timeout, Devices, lodash, appConfig, $log, socket) {
     var _ = lodash;
     $log.debug('loading main controller');
     $scope.indicatorWaiting = {show: true};
     $scope.config = appConfig;
+    $scope.deviceList = Devices.toArray();
 
     // selected device uuid list? TODO refactor whole selected devices list feature, this is not nice, really.
     $scope.uuids = {};
@@ -37,9 +38,6 @@ angular.module('DeviceWall')
     };
 
     $scope.popupWindow = null;
-
-    // Connected devices
-    $scope.deviceList = [];
 
     // TODO maybe https://docs.angularjs.org/api/ng/service/$filter
     $scope.getDeviceDisabled = function(userId) {
@@ -83,17 +81,27 @@ angular.module('DeviceWall')
       }
     };
 
-    $scope.selectAll = function() {
-      _.each($scope.deviceList, function(element) {
-        element.selected = true;
+    $scope.selectAll = function(status) {
+      _.each(Devices.toArray(), function(device) {
+        device.selected = status;
+        Devices.update(device);
       });
+      $scope.deviceList = Devices.toArray();
     };
 
-    $scope.selectNone = function() {
-      _.each($scope.deviceList, function(element) {
-        element.selected = false;
+    $scope.updateDeviceList = function() {
+      $log.debug('update devices');
+      $log.debug($scope.deviceList);
+      /*
+      _.each(Devices.toArray(), function(device) {
+        socket.emit('update', device);
       });
+      */
     };
+    $scope.clientFieldChanged = function(model) {
+      socket.emit('save', model);
+    };
+
 
     /***************** Create service from socket actions **/
     // TODO move socket stuff from controller to service
@@ -102,17 +110,27 @@ angular.module('DeviceWall')
       $scope.indicatorWaiting = {show: false};
       socket.emit('list', 'list', function(data) {
         $log.debug("socket::list", data);
-        $scope.deviceList = data;
-        _.each($scope.deviceList, function(device) {
-          _.defaults(device, {selected: true});
+        _.each(data, function(device) {
+          // device selected by default
+          device.selected = true;
+          Devices.add(device);
         });
+        $scope.deviceList = Devices.toArray();
       });
     });
 
     socket.on('update', function (data) {
       $log.debug("socket::update");
       $scope.$apply(function() {
-        $scope.deviceList = mergedDeviceList(data);
+        _.each(data, function(device) {
+          if (Devices.has(device)) {
+            Devices.update(device);
+          } else {
+            device.selected = true;
+            Devices.add(device);
+          }
+        });
+        $scope.deviceList = Devices.toArray();
       });
     });
 
@@ -167,17 +185,13 @@ angular.module('DeviceWall')
 
     $scope.stopAllTesting = function() {
       $log.debug('stop All testing');
-      // TODO remove this filthy code
-      if ($window.confirm("Do you really want to stop all browsersync instances?")) {
-        socket.emit('stopall');
-      }
+      socket.emit('stopall');
     };
 
     $scope.removeDevice = function(device) {
       socket.emit('remove', {labels: [device.label]});
-      $scope.deviceList = _.filter($scope.deviceList, function(d) {
-        return d.label === device.label;
-      });
+      Devices.remove(device);
+      $scope.deviceList = Devices.toArray();
     };
 
     // simple helper for buttons
@@ -185,24 +199,6 @@ angular.module('DeviceWall')
       $scope.btnStopAllTesting.show = !status;
       $scope.btnStopTesting.show = !status;
       $scope.btnGo.show = true;
-    }
-
-    function mergedDeviceList (data) {
-      var oldList = _.clone($scope.deviceList);
-
-      _.each(data, function(device, key) {
-        if (appConfig.singleUser) {
-          data[key].selected = true;
-        } else {
-          var oldDevice = _.where(oldList, { label: device.label });
-          if (oldDevice.length > 0) {
-            data[key].selected = oldDevice[0].selected;
-          } else {
-            data[key].selected = false;
-          }
-        }
-      });
-      return data;
     }
 
     $scope.showDeviceView = function() {
@@ -237,4 +233,53 @@ angular.module('DeviceWall')
       };
 
 
+  })
+  .factory('Devices', function(lodash) {
+    var _ = lodash;
+    return {
+      deviceList: {},
+      add: function(device) {
+        if (_.has(this.deviceList, device.label)) {
+          this.update(device);
+        } else {
+          this.deviceList[device.label] = device;
+        }
+      },
+      update: function(device) {
+        if (_.has(this.deviceList, device.label)) {
+          this.deviceList[device.label] = angular.extend(this.deviceList[device.label], device);
+        }
+      },
+      remove: function(device) {
+        if (_.has(this.deviceList, device.label)) {
+          delete this.deviceList[device.label];
+        }
+      },
+      has: function(device) {
+        return _.has(this.deviceList, device.label);
+      },
+      toArray: function() {
+        var keys = Object.keys(this.deviceList);
+        var deviceList = this.deviceList;
+        return _.map(keys, function(key) {
+          return deviceList[key];
+        });
+      }
+    };
+
+  }) // catch
+    .directive('blurevent', [function() {
+      return {
+        restrict: 'A', // only activate on element attribute
+        link: function(scope, element) {
+          element.on('blur', function() {
+            scope.clientFieldChanged(scope.device);
+          });
+        }
+      };
+    }])
+  .filter('unsafe', function($sce) {
+      return function(val) {
+          return $sce.trustAsHtml(val);
+      };
   });

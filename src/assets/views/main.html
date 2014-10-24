@@ -52,8 +52,8 @@
 
         <div class="accordion-content">
           <div class="buttons">
-            <button type="button" id="select-all" ng-click="selectAll()">Select all</button>
-            <button type="button" id="select-none" ng-click="selectNone()">Select none</button>
+            <button type="button" id="select-all" ng-click="selectAll(true)">Select all</button>
+            <button type="button" id="select-none" ng-click="selectAll(false)">Select none</button>
           </div>
 
           <table spellcheck="false">
@@ -70,10 +70,10 @@
             </tr>
             <tbody id="devices-list" ng-if="deviceList.length > 0">
               <tr ng-repeat="device in deviceList">
-                <td contenteditable data-key="label" title="Edit">{{ device.label }}</td>
-                <td class="small-viewport-hidden">{{ device.model }}</td>
-                <td class="small-viewport-hidden">{{ device.platform }}</td>
-                <td class="small-viewport-hidden">{{ device.version }}</td>
+                <td>{{ device.label }}</td>
+                <td class="small-viewport-hidden"><input blurevent type="text" placeholder="<model>" data-ng-model="device.model" /></td>
+                <td class="small-viewport-hidden"><input blurevent type="text" placeholder="<platform>" data-ng-model="device.platform" /></td>
+                <td class="small-viewport-hidden"><input blurevent type="text" placeholder="<version>" data-ng-model="device.version" /></td>
                 <td
                   data-ng-hide="true"
                   title="{{ device.batteryStatus | batteryTitle }}"
@@ -97,8 +97,6 @@
           </table>
         </div>
       </div>
-
-
     </form>
   </section>
   <section data-ng-show="indicatorWaiting.show" >

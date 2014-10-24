@@ -147,6 +147,7 @@ module.exports = function (app, options) {
           version = data.version,
           updated = false;
 
+
       devices.forEach(function (device, index) {
         if (device.label === label) {
           if (model) {
@@ -357,15 +358,17 @@ module.exports = function (app, options) {
     });
 
     socket.on('save', function (data) {
-      var
-        label = data.label,
-        key = data.key,
-        value = data.value;
-
       // Update device
       devices.forEach(function (device, index) {
-        if (device.label === label) {
-          device[key] = value;
+        if (device.label === data.label) {
+          console.log("update device", data.label);
+          ['model', 'version', 'platform'].forEach(function(val) {
+            if (data[val]) {
+              device[val] = data[val];
+            }
+          });
+          devicesUpdated = true;
+          updateDevices();
         }
       });
 

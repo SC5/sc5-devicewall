@@ -162,6 +162,11 @@ body {
 		}
 
 	}
+    #devices-list {
+      td input[type=text] {
+        padding: 0;
+      }
+    }
 
 	.connection-setup {
 		text-align: left;
