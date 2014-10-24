@@ -5,5 +5,7 @@
   "sessionKey": "devicewall12345",
   "deviceWallAppURL": "http://devicewall.sc5.io/client/return",
   "clientIdleReturnSeconds": 300,
-  "maxSockets": 100
+  "maxSockets": 100,
+  "sslKey": "./node_modules/browser-sync/lib/server/certs/server.key",
+  "sslCert": "./node_modules/browser-sync/lib/server/certs/server.crt"
 }

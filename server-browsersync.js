@@ -5,7 +5,8 @@ var browserSync = require('browser-sync'),
     url = require('url'),
     http = require('http'),
     https = require('https'),
-    Q = require('q');
+    Q = require('q'),
+    path = require('path');
     //phantom = require('phantom');
 
 https.globalAgent.maxSockets = config.maxSockets || 5;
@@ -26,6 +27,52 @@ function deferredEmit(socket, event, data, timeout) {
     deferred.resolve();
   });
   return deferred.promise;
+}
+
+function checkProxyTarget(parsedUrl, cb) {
+  var chunks  = [];
+  var errored = false;
+  var options = {
+    hostname: parsedUrl.hostname,
+    port: parsedUrl.port,
+    path: parsedUrl.path,
+    rejectUnauthorized: false
+  };
+
+  function logError() {
+    if (!errored) {
+      cb("Proxy address not reachable - is your server running?");
+      errored = true;
+    }
+  }
+
+  var req = require(parsedUrl.protocol === "https:" ? "https" : "http").get(options,  function (res) {
+    if(res.statusCode === 301 || res.statusCode === 302) {
+      cb(null, url.parse(res.headers.location));
+      return;
+    }
+    res.on("data", function (data) {
+      chunks.push(data);
+    });
+    res.on("end", function() {
+      cb(null, parsedUrl);
+    });
+  }).on("error", function (err) {
+    if (err.code === "ENOTFOUND" || err.code === "ECONNREFUSED") {
+      cb("Unreachable");
+    }
+  }).on("close", function () {
+    if (!chunks.length) {
+      cb("Unreachable");
+    }
+  });
+
+  req.on("socket", function (socket) {
+    socket.setTimeout(5000);
+    socket.on("timeout", function() {
+      req.abort();
+    });
+  });
 }
 
 /*
@@ -67,39 +114,36 @@ process.on('message', function(message) {
   switch (message.type) {
     case 'init':
         var parsedUrl = url.parse(message.url);
-        bs = browserSync.init(null, {
-          proxy: message.url,
-          startPath: parsedUrl.path,
-          idleReturn: {
-            idleSeconds: config.clientIdleReturnSeconds,
-            returnUrl: config.deviceWallAppURL
-          },
-          browser: 'disable',
-          https: true,
-          ghostMode: {
-            clicks: true,
-            location: true,
-            forms: true,
-            scroll: true
-          },
-          syncLocation: true
-        });
+        checkProxyTarget(parsedUrl, function(err, parsedUrl) {
+          if (err) {
+            process.send({type: 'targetUrlUnreachable'});
+          } else {
+            bs = browserSync.init(null, {
+              proxy: parsedUrl.href,
+              startPath: parsedUrl.path,
+              idleReturn: {
+                idleSeconds: config.clientIdleReturnSeconds,
+                returnUrl: config.deviceWallAppURL
+              },
+              browser: 'disable',
+              https: parsedUrl.protocol === "https:",
+              ssl: {
+                  key: path.resolve(config.sslKey),
+                  cert: path.resolve(config.sslCert)
+              },
+              ghostMode: {
+                clicks: true,
+                location: true,
+                forms: true,
+                scroll: true
+              },
+              syncLocation: true
+            });
 
-        evt.on('init', function(api) {
-          bs.pluginManager.plugins.server.checkProxyTarget({
-            target: api.options.proxy.target
-          }, function(err, status) {
-            if (err) {
-              process.send({type: 'targetUrlUnreachable'});
-            } else {
-              /*var cacheWarmed = deferredCacheWarming(api.options.urls.external);
-              cacheWarmed.then(function() {
+            evt.on('init', function(api) {
               process.send({type: 'browserSyncInit', browserSync: api.options.urls.external});
-              });
-              */
-              process.send({type: 'browserSyncInit', browserSync: api.options.urls.external});
-            }
-          });
+            });
+          }
         });
       break;
     case 'location':

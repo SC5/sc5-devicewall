@@ -2,6 +2,7 @@
 
 $app-bg: 		#0072a3;
 $section-bg: 	#0084bd;
+$icon-bg: 		#007FB5;
 
 @mixin transition($value) {
 	-webkit-transition: $value;
@@ -37,18 +38,14 @@ $section-bg: 	#0084bd;
   	/*background-image: radial-gradient($values);*/
 }
 
-@mixin large-icon-button($url) {
-	background-image: url($url);
+@mixin large-icon-button() {
+	font-family: 'Entypo';
+	font-size: 200px;
 	width: 200px;
 	height: 200px;
-	background-position: 50%;
-	background-size: 100%;
-	background-repeat: no-repeat;
-	background-color: transparent;
 	border: none;
 	padding: 0;
 	margin: auto;
-	margin-bottom: 20px;
 }
 
 @font-face {
@@ -93,6 +90,7 @@ body {
 		position: absolute;
 		left: 0;
 		top: 50%;
+		margin-top: 20px;
 		@include translateY(-50%);
 		width: 100%;
 		&.devices {
@@ -117,8 +115,9 @@ body {
 				content: '\2796';
 				position: absolute;
 				left: 10px;
+				top: 0;
 				font-family: 'Entypo';
-				font-size: 36px;
+				font-size: 2em;
 			}
 		}
 
@@ -142,6 +141,10 @@ body {
 		border-radius: 5px;
 		padding: 10px;
 		overflow: auto;
+	}
+
+	.checkbox-container {
+	  padding: 20px 0 0;
 	}
 
 	.buttons {
@@ -192,25 +195,11 @@ footer {
 h1 {
 
 	text-transform: uppercase;
-	background-image: -webkit-linear-gradient(#fff 20%, #ddd 80%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
 	font-size: 3.2rem;
 	font-weight: bold;
 	position: relative;
 	margin: 0;
 	padding: 0;
-
-	&:after {
-		position: absolute;
-		left: 0;
-		top: 0;
-		content: 'DeviceWall';
-		text-shadow: 0 0 5px rgba(0, 0, 0, .25);
-		z-index: -1;
-		width: 100%;
-		height: 100%;
-	}
 
 }
 
@@ -305,7 +294,7 @@ table {
 		&.remove {
 
 			span {
-				font-size: 1.2rem;
+				font-size: 2.5rem;
 				cursor: pointer;
 				background-image: -webkit-linear-gradient(left, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, .3) 80%), -webkit-linear-gradient(#fff 0%, #fff 100%);
 			  -webkit-background-clip: text;
@@ -414,10 +403,9 @@ input {
 input[type=text] {
 	vertical-align: middle;
 	font-size: 1rem;
-	height: 38px;
 	border-radius: 5px;
-	padding: 0 5px;
-	line-height: 38px;
+	padding: 10px;
+	line-height: 1rem;
 }
 
 input[type=checkbox] {
@@ -444,7 +432,7 @@ input[type=checkbox] {
 		top: 0;
 		text-align: center;
 		line-height: 16px;
-		font-size: .8rem;
+		font-size: 1.5rem;
 	}
 
 	&:disabled:after {
@@ -515,20 +503,19 @@ input[type=text].error {
 .mode-button {
 	display: inline-block;
 	width: 300px;
+	height: 300px;
 	vertical-align: top;
 	cursor: pointer;
+	background-color: $icon-bg;
+	margin-right: 5px;
 
 	.text {
 		font-size: 30px;
 		text-transform: uppercase;
 	}
 
-	&.button-device .icon {
-		@include large-icon-button('/assets/images/device.png');
-	}
-
-	&.button-control-panel .icon {
-		@include large-icon-button('/assets/images/control_panel.png');
+	.icon {
+		@include large-icon-button();
 	}
 }
 
@@ -539,7 +526,7 @@ input[type=text].error {
 	top: 0;
 	text-decoration: none;
 	color: white;
-	font-size: 40px;
+	font-size: 4rem;
 	margin: 0 5px;
 }
 
@@ -569,6 +556,8 @@ input[type=text].error {
 
 	.mode-button.button-control-panel, .mode-button.button-device {
 		width: 100px;
+		height: auto;
+		padding: 20px;
 
 		.text {
 			font-size: 20px;
@@ -577,6 +566,7 @@ input[type=text].error {
 		.icon, .icon {
 			width: 100px;
 			height: 100px;
+			font-size: 100px;
 		}
 	}
 }
