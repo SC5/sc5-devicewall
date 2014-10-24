@@ -405,7 +405,7 @@ input {
 	outline: none;
 }
 
-input[type=text] {
+input[type=text], input[type=url] {
 	vertical-align: middle;
 	font-size: 1rem;
 	border-radius: 5px;
