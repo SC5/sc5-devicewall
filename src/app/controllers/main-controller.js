@@ -110,12 +110,19 @@ angular.module('DeviceWall')
       $scope.indicatorWaiting = {show: false};
       socket.emit('list', 'list', function(data) {
         $log.debug("socket::list", data);
+        var instancesRunning = false;
         _.each(data, function(device) {
           // device selected by default
           device.selected = true;
+          if (device.userId) {
+            instancesRunning = true;
+          }
           Devices.add(device);
         });
         $scope.deviceList = Devices.toArray();
+        if (instancesRunning) {
+          setButtonsStatus(false);
+        }
       });
     });
 

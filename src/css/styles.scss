@@ -163,6 +163,9 @@ body {
 
 	}
     #devices-list {
+      .is-running {
+        background-color: grey;
+      }
       td input[type=text] {
         padding: 0;
       }

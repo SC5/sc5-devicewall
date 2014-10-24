@@ -69,7 +69,7 @@
               <th></th>
             </tr>
             <tbody id="devices-list" ng-if="deviceList.length > 0">
-              <tr ng-repeat="device in deviceList">
+              <tr ng-repeat="device in deviceList" class="{{device.userId?'is-running':''}}">
                 <td>{{ device.label }}</td>
                 <td class="small-viewport-hidden"><input blurevent type="text" placeholder="<model>" data-ng-model="device.model" /></td>
                 <td class="small-viewport-hidden"><input blurevent type="text" placeholder="<platform>" data-ng-model="device.platform" /></td>
