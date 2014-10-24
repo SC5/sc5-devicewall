@@ -5,10 +5,6 @@ angular.module('DeviceWall')
     $scope.indicatorWaiting = {show: true};
     $scope.config = appConfig;
     $scope.deviceList = Devices.toArray();
-    $scope.$watch('deviceList', function (newVal, oldVal) {
-      $log.debug(oldVal);
-      $log.debug(newVal);
-    }, true);
 
     // selected device uuid list? TODO refactor whole selected devices list feature, this is not nice, really.
     $scope.uuids = {};
@@ -102,9 +98,9 @@ angular.module('DeviceWall')
       });
       */
     };
-    $scope.watchCallback = function(modelName) {
-      $log.debug("watch ", modelName);
-    }
+    $scope.clientFieldChanged = function(model) {
+      socket.emit('save', model);
+    };
 
 
     /***************** Create service from socket actions **/
@@ -117,7 +113,6 @@ angular.module('DeviceWall')
         _.each(data, function(device) {
           // device selected by default
           device.selected = true;
-          device.model = "not known";
           Devices.add(device);
         });
         $scope.deviceList = Devices.toArray();
@@ -215,10 +210,6 @@ angular.module('DeviceWall')
       $el.parent().toggleClass('collapsed');
     };
 
-    $scope.testijuttu = function(model) {
-      $log.debug(model);
-    }
-
   })
 
 
@@ -276,4 +267,19 @@ angular.module('DeviceWall')
       }
     };
 
+  }) // catch
+    .directive('blurevent', [function() {
+      return {
+        restrict: 'A', // only activate on element attribute
+        link: function(scope, element) {
+          element.on('blur', function() {
+            scope.clientFieldChanged(scope.device);
+          });
+        }
+      };
+    }])
+  .filter('unsafe', function($sce) {
+      return function(val) {
+          return $sce.trustAsHtml(val);
+      };
   });

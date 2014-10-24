@@ -246,6 +246,7 @@ gulp.task('mywatch', ['integrate'], function() {
     console.log('restarted!')
   });
   return gulp.watch([
+      'server*.js',
       'config/**/*.json',
       'src/css/**/*.scss',
       'src/app/**/*.js',

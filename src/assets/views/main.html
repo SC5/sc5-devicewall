@@ -71,9 +71,9 @@
             <tbody id="devices-list" ng-if="deviceList.length > 0">
               <tr ng-repeat="device in deviceList">
                 <td>{{ device.label }}</td>
-                <td contenteditable strip-br="true" data-ng-bind="device.model" class="small-viewport-hidden"></td>
-                <td contenteditable strip-br="true" data-ng-model="deviceList[$index].platform" class="small-viewport-hidden"></td>
-                <td contenteditable strip-br="true" data-ng-model="deviceList[$index].version" class="small-viewport-hidden"></td>
+                <td class="small-viewport-hidden"><input blurevent type="text" placeholder="<model>" data-ng-model="device.model" /></td>
+                <td class="small-viewport-hidden"><input blurevent type="text" placeholder="<platform>" data-ng-model="device.platform" /></td>
+                <td class="small-viewport-hidden"><input blurevent type="text" placeholder="<version>" data-ng-model="device.version" /></td>
                 <td
                   data-ng-hide="true"
                   title="{{ device.batteryStatus | batteryTitle }}"
@@ -97,8 +97,6 @@
           </table>
         </div>
       </div>
-
-<button data-ng-click="updateDeviceList()">Click</button>
     </form>
   </section>
   <section data-ng-show="indicatorWaiting.show" >
