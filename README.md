@@ -64,6 +64,11 @@ Gulp task will check these files and includes them when found.
     config/server/config.local.json
     config/app/config.local.json
 
+#### Local server configuration
+
+To auto-detect your IP use, "proxyHost": false in 
+config/server/config.local.json
+
 ## Building
 
 The current build compiles JS and CSS monoliths for both the debug and release builds. The big
