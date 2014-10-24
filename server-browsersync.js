@@ -4,7 +4,8 @@ var browserSync = require('browser-sync'),
     url = require('url'),
     http = require('http'),
     https = require('https'),
-    Q = require('q');
+    Q = require('q'),
+    path = require('path');
     //phantom = require('phantom');
 
 https.globalAgent.maxSockets = config.maxSockets || 5;
@@ -74,6 +75,10 @@ process.on('message', function(message) {
       },
       browser: 'disable',
       https: parsedUrl.protocol === "https:",
+      ssl: {
+          key: path.resolve(config.sslKey),
+          cert: path.resolve(config.sslCert)
+      },
       ghostMode: {
         clicks: true,
         location: true,
