@@ -10,7 +10,8 @@ var path = require('path'),
     eventStream = require('event-stream'),
     package = require('./package.json'),
     fs = require('fs'),
-    nodemon = require('gulp-nodemon');
+    nodemon = require('gulp-nodemon'),
+    scssLint = require('gulp-scss-lint');
 
 var configLocalServer = './config/server';
 var configLocalApp = './config/app';
@@ -95,12 +96,16 @@ gulp.task('serve', $.serve({
 }));
 
 
-gulp.task('preprocess', ['config'], function() {
+gulp.task('preprocess', ['config', 'scss-lint'], function() {
   gulp.src('src/app/**/*.js')
     .pipe($.jshint())
     .pipe($.jshint.reporter('default'));
 });
 
+gulp.task('scss-lint', function() {
+  gulp.src('src/css/**/*.scss')
+    .pipe(scssLint());
+});
 
 gulp.task('javascript', ['preprocess'], function() {
 
