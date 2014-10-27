@@ -118,7 +118,7 @@ process.on('message', function(message) {
           if (err) {
             process.send({type: 'targetUrlUnreachable'});
           } else {
-            bs = browserSync.init(null, {
+            var browserSyncConfig = {
               proxy: parsedUrl.href,
               startPath: parsedUrl.path,
               idleReturn: {
@@ -138,8 +138,11 @@ process.on('message', function(message) {
                 scroll: true
               },
               syncLocation: true
-            });
-
+            };
+            if (config.proxyHost) {
+              browserSyncConfig.host = config.proxyHost;
+            }
+            bs = browserSync.init(null, browserSyncConfig);
             evt.on('init', function(api) {
               process.send({type: 'browserSyncInit', browserSync: api.options.urls.external});
             });
