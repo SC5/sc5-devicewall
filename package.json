@@ -57,6 +57,7 @@
     "gulp-util": "^2.2.14",
     "gulp-watch": "^0.6.4",
     "main-bower-files": "^1.0.1",
+    "phantomjs": "^1.9.11",
     "phantomjs-server": "^1.9.2-1",
     "protractor": "^0.22.0",
     "request": "^2.34.0",
