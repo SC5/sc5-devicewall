@@ -1,10 +1,10 @@
 angular.module('DeviceWall')
-  .controller('MainController', function($rootScope, $scope, $window, $http, $timeout, Devices, lodash, appConfig, $log, socket) {
+  .controller('MainController', function($rootScope, $scope, $window, $http, $timeout, DeviceList, lodash, appConfig, $log, socket) {
     var _ = lodash;
     $log.debug('loading main controller');
     $scope.indicatorWaiting = {show: true};
     $scope.config = appConfig;
-    $scope.deviceList = Devices.toArray();
+    $scope.deviceList = DeviceList.toArray();
 
     // selected device uuid list? TODO refactor whole selected devices list feature, this is not nice, really.
     $scope.uuids = {};
@@ -82,11 +82,11 @@ angular.module('DeviceWall')
     };
 
     $scope.selectAll = function(status) {
-      _.each(Devices.toArray(), function(device) {
+      _.each(DeviceList.toArray(), function(device) {
         device.selected = status;
-        Devices.update(device);
+        DeviceList.update(device);
       });
-      $scope.deviceList = Devices.toArray();
+      $scope.deviceList = DeviceList.toArray();
     };
 
     $scope.updateDeviceList = function() {
@@ -110,12 +110,19 @@ angular.module('DeviceWall')
       $scope.indicatorWaiting = {show: false};
       socket.emit('list', 'list', function(data) {
         $log.debug("socket::list", data);
+        var instancesRunning = false;
         _.each(data, function(device) {
           // device selected by default
           device.selected = true;
-          Devices.add(device);
+          if (device.userId) {
+            instancesRunning = true;
+          }
+          DeviceList.add(device);
         });
-        $scope.deviceList = Devices.toArray();
+        $scope.deviceList = DeviceList.toArray();
+        if (instancesRunning) {
+          setButtonsStatus(false);
+        }
       });
     });
 
@@ -123,14 +130,14 @@ angular.module('DeviceWall')
       $log.debug("socket::update");
       $scope.$apply(function() {
         _.each(data, function(device) {
-          if (Devices.has(device)) {
-            Devices.update(device);
+          if (DeviceList.has(device)) {
+            DeviceList.update(device);
           } else {
             device.selected = true;
-            Devices.add(device);
+            DeviceList.add(device);
           }
         });
-        $scope.deviceList = Devices.toArray();
+        $scope.deviceList = DeviceList.toArray();
       });
     });
 
@@ -190,8 +197,8 @@ angular.module('DeviceWall')
 
     $scope.removeDevice = function(device) {
       socket.emit('remove', {labels: [device.label]});
-      Devices.remove(device);
-      $scope.deviceList = Devices.toArray();
+      DeviceList.remove(device);
+      $scope.deviceList = DeviceList.toArray();
     };
 
     // simple helper for buttons
@@ -234,7 +241,7 @@ angular.module('DeviceWall')
 
 
   })
-  .factory('Devices', function(lodash) {
+  .factory('DeviceList', function(lodash) {
     var _ = lodash;
     return {
       deviceList: {},

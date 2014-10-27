@@ -10,9 +10,10 @@
           <input type="url" name="url" size="50" placeholder="http://www.sc5.io/" id="url" data-ng-click="url.click()" ng-model="url.value">
         </span>
 
-        <div class="checkbox-container">
+
+        <label class="checkbox-container">
           <input type="checkbox" name="openUrl" id="openUrl" ng-model="openUrl"> Open website on this device
-        </div>
+        </label>
 
         <div class="buttons">
           <button
@@ -21,9 +22,10 @@
             data-ng-show="btnGo.show"
             class="large"
             data-ng-click="submitUrl()"
+            id="go-button"
           >Go</button>
-          <button type="button" data-ng-show="btnStopTesting.show" class="large ng-hide" data-ng-click="stopTesting()" style="display:none">Stop</button>
-          <button type="button" data-ng-show="btnStopAllTesting.show" class="large" data-ng-click="stopAllTesting()">Stop all</button>
+          <button type="button" data-ng-show="btnStopTesting.show" class="large ng-hide" data-ng-click="stopTesting()" style="display:none" id="stop-button">Stop</button>
+          <button type="button" data-ng-show="btnStopAllTesting.show" class="large" data-ng-click="stopAllTesting()" id="stop-all-button">Stop all</button>
         </div>
       </div>
 
@@ -47,7 +49,7 @@
         </div>
       </section>
 
-      <div class="section-wrapper accordion">
+      <div class="section-wrapper accordion" id="available-devices">
         <h2 ng-click="toggleAccordion($event)">Available devices</h2>
 
         <div class="accordion-content">
@@ -57,7 +59,7 @@
           </div>
 
           <table spellcheck="false">
-            <tr>
+            <tr id="available-devices-table-heading">
               <th>Label</th>
               <th class="small-viewport-hidden">Model</th>
               <th class="small-viewport-hidden">Platform</th>
@@ -69,11 +71,17 @@
               <th></th>
             </tr>
             <tbody id="devices-list" ng-if="deviceList.length > 0">
-              <tr ng-repeat="device in deviceList">
+              <tr ng-repeat="device in deviceList" data-ng-class="{'is-running': device.userId}">
                 <td>{{ device.label }}</td>
-                <td class="small-viewport-hidden"><input blurevent type="text" placeholder="<model>" data-ng-model="device.model" /></td>
-                <td class="small-viewport-hidden"><input blurevent type="text" placeholder="<platform>" data-ng-model="device.platform" /></td>
-                <td class="small-viewport-hidden"><input blurevent type="text" placeholder="<version>" data-ng-model="device.version" /></td>
+                <td class="small-viewport-hidden editable">
+                  <input blurevent type="text" placeholder="model" data-ng-model="device.model" />
+                </td>
+                <td class="small-viewport-hidden editable">
+                  <input blurevent type="text" placeholder="platform" data-ng-model="device.platform" />
+                </td>
+                <td class="small-viewport-hidden editable">
+                  <input blurevent type="text" placeholder="version" data-ng-model="device.version" />
+                </td>
                 <td
                   data-ng-hide="true"
                   title="{{ device.batteryStatus | batteryTitle }}"

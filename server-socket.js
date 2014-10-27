@@ -17,18 +17,18 @@ module.exports = function (app, options) {
     devicesUpdated = false,
     updateInterval;
 
-  if (fs.existsSync('./data/devices.json')) {
-    devices = require('./data/devices.json');
+  if (fs.existsSync(config.devicesJson)) {
+    devices = require(config.devicesJson);
   }
 
-  if (fs.existsSync('./data/instances.json')) {
-    instances = require('./data/instances.json');
+  if (fs.existsSync(config.instancesJson)) {
+    instances = require(config.instancesJson);
   }
 
   function updateDevices() {
     if (devicesUpdated) {
       devicesUpdated = false;
-      fs.writeFileSync('./data/devices.json', JSON.stringify(devices, null, 2));
+      fs.writeFileSync(config.devicesJson, JSON.stringify(devices, null, 2));
       console.log('Updated devices.json');
     }
   }
@@ -36,7 +36,7 @@ module.exports = function (app, options) {
   function updateInstances() {
     if (instancesUpdated) {
       instancesUpdated = false;
-      fs.writeFileSync('./data/instances.json', JSON.stringify(instances, null, 2));
+      fs.writeFileSync(config.instancesJson, JSON.stringify(instances, null, 2));
       console.log('Updated instances.json');
     }
   }
@@ -63,6 +63,9 @@ module.exports = function (app, options) {
 
   function instanceHasStopped(userId) {
     var deferred = Q.defer();
+    if (instances[userId]) {
+      instances[userId].stopping = true;
+    }
     childProcesses[userId].on('message', function(message) {
       if (message.type === 'browserSyncExit') {
         deferred.resolve();
@@ -125,6 +128,33 @@ module.exports = function (app, options) {
     ns.emit('start', data);
   }
 
+  // restarts device to brosersync if registered to running instance
+  function restartBrowserSync(label, socket) {
+    var instanceUserId = false;
+    for (var instUserId in instances) {
+      if (!instances[instUserId].stopping && instances[instUserId].browserSync) {
+        var gotLocationResponse = false;
+        instances[instUserId].labels.forEach(function (instLabel) {
+          if (label === instLabel) {
+            // start device to browsersync mode
+            socket.emit('start', {
+              labels: instances[instUserId].labels,
+              url: instances[instUserId].browserSync
+            });
+            instanceUserId = instUserId;
+          }
+        });
+      }
+    }
+    if (instanceUserId && childProcesses[instanceUserId]) {
+      // Sync locations of devices
+      childProcesses[instanceUserId].send({
+        type: 'syncLocations',
+        timeout: 5000
+      });
+    }
+  }
+
   app.on('update-devices', function () {
     devicesUpdated = true;
   });
@@ -165,6 +195,7 @@ module.exports = function (app, options) {
           device.batteryStatus = batteryStatus;
           device.updated = +new Date();
           updated = true;
+          restartBrowserSync(label, socket);
         }
       });
 
@@ -262,7 +293,8 @@ module.exports = function (app, options) {
             url: testUrl,
             labels: labels,
             browserSync: null,
-            updated: +new Date()
+            updated: +new Date(),
+            stopping: false
           };
           createInstance(testUrl, user, data);
         });
@@ -290,13 +322,18 @@ module.exports = function (app, options) {
       ns.emit('update', devices);
       nsApp.emit('stop', data);
 
-      if (user && childProcesses[user.id]) {
-        childProcesses[user.id].send({
-          type: 'location',
-          url: config.deviceWallAppURL,
-          timeout: 5000,
-          completeMessageType: 'browserSyncExit'
-        });
+      if (user) {
+        if (instances[user.id]) {
+          instances[userId].stopping = true;
+        }
+        if (childProcesses[user.id]) {
+          childProcesses[user.id].send({
+            type: 'location',
+            url: config.deviceWallAppURL,
+            timeout: 5000,
+            completeMessageType: 'browserSyncExit'
+          });
+        }
       }
     });
 

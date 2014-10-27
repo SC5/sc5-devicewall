@@ -9,7 +9,19 @@ var
   http = require('http'),
   config = require('./config.json'),
   deviceWallApp = require('sc5-devicewall-app'),
+  url = require('url'),
+  fs = require('fs'),
   io;
+
+if (process.env.NODE_ENV === "test") {
+  config = require('./config.test.json');
+  if (fs.existsSync(config.devicesJson)) {
+    fs.unlinkSync(config.devicesJson);
+  }
+  if (fs.existsSync(config.instancesJson)) {
+    fs.unlinkSync(config.instancesJson);
+  }
+}
 
 https.globalAgent.maxSockets = config.maxSockets || 5;
 http.globalAgent.maxSockets = config.maxSockets || 5;
@@ -28,7 +40,7 @@ require('./routes/auth.js')(adminServer, {
   GoogleStrategy: GoogleStrategy
 });
 require('./routes/user.js')(adminServer);
-require('./routes/devices.js')(adminServer, '/api/devices/:deviceLabel', './data/devices.json');
+require('./routes/devices.js')(adminServer, '/api/devices/:deviceLabel', config.devicesJson);
 
 adminServer.use(express.static(__dirname + '/dist'));
 

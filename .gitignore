@@ -9,5 +9,9 @@ data/instances.json
 .project
 src/app/config.js
 config/server/config.local.json
+config/server/config.test.local.json
 config/app/config.local.json
 /config.json
+/config.test.json
+tests/data/devices.json
+tests/data/instances.json
