@@ -138,6 +138,9 @@ body {
     }
 
     .accordion-content {
+      .is-running {
+        background-color: grey;
+      }
     }
 
     &.collapsed {
