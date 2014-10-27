@@ -44,3 +44,5 @@ var admin = adminServer.listen(config.port, function () {
 require('./server-socket.js')(admin, {
   config: config
 });
+
+adminServer.use('/perf-test', express.static(__dirname + '/perf-test'));
