@@ -22,6 +22,8 @@
     "sc5-devicewall-app": "git+ssh://git@bitbucket.org:SC5/devicewallapp.git"
   },
   "devDependencies": {
+    "chai": "^1.9.2",
+    "chai-as-promised": "^4.1.1",
     "event-stream": "^3.1.5",
     "extend": "~2.0.0",
     "find": "^0.1.7",

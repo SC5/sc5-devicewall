@@ -1,6 +1,8 @@
 exports.config = {
   seleniumPort: 4444,
-  seleniumArgs: ['-Djava.security.egd=file:///dev/urandom'],
+
+  // -Djava.security.egd=file:///dev/urandom needed for headless SSD configurations
+  seleniumArgs: ['-role hub', '-Djava.security.egd=file:///dev/urandom'],
 
   // Capabilities to be passed to the webdriver instance.
   capabilities: {

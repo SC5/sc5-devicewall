@@ -255,7 +255,7 @@ gulp.task('mywatch', ['integrate'], function() {
 // Tests
 gulp.task('webdriver_manager_update', gp.webdriver_update);
 
-gulp.task('test', ['webdriver_manager_update'], function() {
+gulp.task('test:e2e', ['webdriver_manager_update'], function() {
     var paths = find.fileSync(/selenium-server-standalone.*\.jar/, 'node_modules/protractor/selenium');
     var args = ['--seleniumServerJar', paths[0], '--baseUrl', 'http://' + testConfig.host + ':' + testConfig.port];
     var protractorConf = {

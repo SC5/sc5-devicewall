@@ -22,9 +22,10 @@
             data-ng-show="btnGo.show"
             class="large"
             data-ng-click="submitUrl()"
+            id="go-button"
           >Go</button>
-          <button type="button" data-ng-show="btnStopTesting.show" class="large ng-hide" data-ng-click="stopTesting()" style="display:none">Stop</button>
-          <button type="button" data-ng-show="btnStopAllTesting.show" class="large" data-ng-click="stopAllTesting()">Stop all</button>
+          <button type="button" data-ng-show="btnStopTesting.show" class="large ng-hide" data-ng-click="stopTesting()" style="display:none" id="stop-button">Stop</button>
+          <button type="button" data-ng-show="btnStopAllTesting.show" class="large" data-ng-click="stopAllTesting()" id="stop-all-button">Stop all</button>
         </div>
       </div>
 
@@ -48,7 +49,7 @@
         </div>
       </section>
 
-      <div class="section-wrapper accordion">
+      <div class="section-wrapper accordion" id="available-devices">
         <h2 ng-click="toggleAccordion($event)">Available devices</h2>
 
         <div class="accordion-content">
@@ -58,7 +59,7 @@
           </div>
 
           <table spellcheck="false">
-            <tr>
+            <tr id="available-devices-table-heading">
               <th>Label</th>
               <th class="small-viewport-hidden">Model</th>
               <th class="small-viewport-hidden">Platform</th>
