@@ -14,8 +14,7 @@ var path = require('path'),
     nodemon = require('gulp-nodemon'),
     scssLint = require('gulp-scss-lint'),
     server = require('gulp-develop-server'),
-    find = require('find'),
-    testConfig = require('./config.test.json');
+    find = require('find');
 
 var configLocalServer = './config/server';
 var configLocalApp = './config/app';
@@ -256,19 +255,20 @@ gulp.task('mywatch', ['integrate'], function() {
 gulp.task('webdriver_manager_update', gp.webdriver_update);
 
 gulp.task('test:e2e', ['webdriver_manager_update'], function() {
-    var paths = find.fileSync(/selenium-server-standalone.*\.jar/, 'node_modules/protractor/selenium');
-    var args = ['--seleniumServerJar', paths[0], '--baseUrl', 'http://' + testConfig.host + ':' + testConfig.port];
-    var protractorConf = {
-        configFile: './protractor.config.js',
-        args: [args]
-    };
+  var testConfig = require('./config.test.json');
+  var paths = find.fileSync(/selenium-server-standalone.*\.jar/, 'node_modules/protractor/selenium');
+  var args = ['--seleniumServerJar', paths[0], '--baseUrl', 'http://' + testConfig.host + ':' + testConfig.port];
+  var protractorConf = {
+    configFile: './protractor.config.js',
+    args: [args]
+  };
 
-    server.listen({path: './server.js', env: {"NODE_ENV": "test"}});
-    gulp.src(['tests/e2e/**/*.js'], { read: false })
-        .pipe(gp.protractor(protractorConf)).on('error', function(e) {
-            server.kill();
-        }).on('end', function() {
-            server.kill();
-        });
+  server.listen({path: './server.js', env: {"NODE_ENV": "test"}});
+  gulp.src(['tests/e2e/**/*.js'], { read: false })
+    .pipe(gp.protractor(protractorConf)).on('error', function(e) {
+      server.kill();
+    }).on('end', function() {
+      server.kill();
+    });
 });
 gulp.task('default', ['integrate']);
