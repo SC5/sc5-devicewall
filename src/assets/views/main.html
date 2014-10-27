@@ -10,9 +10,10 @@
           <input type="url" name="url" size="50" placeholder="http://www.sc5.io/" id="url" data-ng-click="url.click()" ng-model="url.value">
         </span>
 
-        <div class="checkbox-container">
+
+        <label class="checkbox-container">
           <input type="checkbox" name="openUrl" id="openUrl" ng-model="openUrl"> Open website on this device
-        </div>
+        </label>
 
         <div class="buttons">
           <button
@@ -71,9 +72,15 @@
             <tbody id="devices-list" ng-if="deviceList.length > 0">
               <tr ng-repeat="device in deviceList" class="{{device.userId?'is-running':''}}">
                 <td>{{ device.label }}</td>
-                <td class="small-viewport-hidden"><input blurevent type="text" placeholder="<model>" data-ng-model="device.model" /></td>
-                <td class="small-viewport-hidden"><input blurevent type="text" placeholder="<platform>" data-ng-model="device.platform" /></td>
-                <td class="small-viewport-hidden"><input blurevent type="text" placeholder="<version>" data-ng-model="device.version" /></td>
+                <td class="small-viewport-hidden editable">
+                  <input blurevent type="text" placeholder="model" data-ng-model="device.model" />
+                </td>
+                <td class="small-viewport-hidden editable">
+                  <input blurevent type="text" placeholder="platform" data-ng-model="device.platform" />
+                </td>
+                <td class="small-viewport-hidden editable">
+                  <input blurevent type="text" placeholder="version" data-ng-model="device.version" />
+                </td>
                 <td
                   data-ng-hide="true"
                   title="{{ device.batteryStatus | batteryTitle }}"

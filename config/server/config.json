@@ -7,5 +7,6 @@
   "clientIdleReturnSeconds": 300,
   "maxSockets": 100,
   "sslKey": "./node_modules/browser-sync/lib/server/certs/server.key",
-  "sslCert": "./node_modules/browser-sync/lib/server/certs/server.crt"
+  "sslCert": "./node_modules/browser-sync/lib/server/certs/server.crt",
+  "proxyHost": "devicewall.sc5.io"
 }
