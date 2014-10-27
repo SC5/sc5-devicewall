@@ -256,12 +256,17 @@ gulp.task('webdriver_manager_update', gp.webdriver_update);
 
 gulp.task('test:e2e', ['webdriver_manager_update'], function() {
   var testConfig = require('./config.test.json');
+  var testDataDir = path.dirname(path.resolve(testConfig.devicesJson));
   var paths = find.fileSync(/selenium-server-standalone.*\.jar/, 'node_modules/protractor/selenium');
   var args = ['--seleniumServerJar', paths[0], '--baseUrl', 'http://' + testConfig.host + ':' + testConfig.port];
   var protractorConf = {
     configFile: './protractor.config.js',
     args: [args]
   };
+
+  if (!fs.existsSync(testDataDir)) {
+    fs.mkdirSync(testDataDir);
+  }
 
   server.listen({path: './server.js', env: {"NODE_ENV": "test"}});
   gulp.src(['tests/e2e/**/*.js'], { read: false })
