@@ -6,7 +6,7 @@ exports.config = {
 
   // Capabilities to be passed to the webdriver instance.
   capabilities: {
-    'browserName': 'phantomjs',
+    'browserName': 'chrome',
     'phantomjs.binary.path': require('phantomjs').path
   },
   rootElement: 'html',

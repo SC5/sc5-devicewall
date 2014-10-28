@@ -1,6 +1,7 @@
 var expect = require('./expect');
 var config = require('../../config.test.json');
 var utils = require('./utils');
+var socket = require('./socket');
 
 describe('Control panel', function() {
   var ptor;
@@ -15,6 +16,7 @@ describe('Control panel', function() {
   });
 
   afterEach(function() {
+    utils.clearAfterEach();
     browser.executeScript('localStorage.clear();');
   });
 
@@ -37,6 +39,50 @@ describe('Control panel', function() {
   });
 
   it('should enable Go button if Open website on this browser checkbox is checked', function() {});
-  it('should enable Go button if at least one device is selected', function() {});
-  it('should show Stop buttons if Go button is clicked', function() {});
+
+  // PhantomJS not supporting sockets
+  it('should show device in the device list', function() {
+    utils.addSingleTestDevice("testdevice1");
+    browser.driver.wait(function() {
+      return browser.driver.isElementPresent(by.xpath("//td[text()='testdevice1']"));
+    });
+    expect(element.all(by.css('#available-devices table tr')).count()).to.eventually.equal(2);
+  });
+
+  it('should show devices in the device list', function() {
+    utils.addMultipleTestDevices(["testdevice2", "testdevice1"]);
+    browser.driver.wait(function() {
+      return browser.driver.isElementPresent(by.xpath("//td[text()='testdevice2']"));
+    });
+    expect(element.all(by.css('#available-devices table tr')).count()).to.eventually.equal(3);
+  });
+
+  it('should enable Go button if at least one device is selected', function() {
+    utils.addSingleTestDevice("testdevice");
+    browser.driver.wait(function() {
+      return browser.driver.isElementPresent(by.xpath("//td[text()='testdevice']"));
+    });
+    expect(element(by.id('go-button')).isEnabled()).to.eventually.equal(true);
+  });
+
+  it('should have user inputted URL in the input field', function() {
+    element(by.id('url')).click();
+    element(by.id('url')).sendKeys('google.fi');
+    expect(element(by.id('url')).getAttribute('value')).to.eventually.equal('http://www.google.fi');
+  });
+
+  iit('should show Stop buttons if Go button is clicked', function() {
+    utils.addSingleTestDevice("testdevice");
+    browser.driver.wait(function() {
+      return browser.driver.isElementPresent(by.xpath("//td[text()='testdevice']"));
+    });
+    expect(element(by.id('go-button')).isEnabled()).to.eventually.equal(true);
+    expect(element(by.css('#available-devices table input[type=checkbox]')).isSelected()).to.eventually.equal(true);
+    element(by.id('url')).click();
+    element(by.id('url')).sendKeys('google.fi');
+    element(by.id("go-button")).click();
+    //expect(element(by.id('tooltip-error')).isDisplayed()).to.eventually.equal(false);
+    //expect(element(by.id('stop-button')).isDisplayed()).to.eventually.equal(true);
+    expect(element(by.id('stop-all-button')).isDisplayed()).to.eventually.equal(true);
+  });
 });

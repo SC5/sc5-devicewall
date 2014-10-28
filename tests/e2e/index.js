@@ -15,6 +15,7 @@ describe('Frontpage', function() {
   });
 
   afterEach(function() {
+    utils.clearAfterEach();
     browser.executeScript('localStorage.clear();');
   });
 
@@ -36,7 +37,7 @@ describe('Frontpage', function() {
 
   it('should show device mode if device label in localStorage', function() {
     var label = 'testdevice';
-    utils.addSingleTestDevice(label);
+    utils.writeSingleTestDevice(label);
     browser.executeScript('localStorage.setItem("label", "' + label + '");');
     browser.get('http://' + config.host + ':' + config.port + '/');
     expect(ptor.getCurrentUrl()).to.eventually.contain('/client/#!/');
