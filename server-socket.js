@@ -134,16 +134,14 @@ module.exports = function (app, options) {
     for (var instUserId in instances) {
       if (!instances[instUserId].stopping && instances[instUserId].browserSync) {
         var gotLocationResponse = false;
-        instances[instUserId].labels.forEach(function (instLabel) {
-          if (label === instLabel) {
-            // start device to browsersync mode
-            socket.emit('start', {
-              labels: instances[instUserId].labels,
-              url: instances[instUserId].browserSync
-            });
-            instanceUserId = instUserId;
-          }
-        });
+        if (instances[instUserId].labels.indexOf(label) !== -1) {
+          // start device to browsersync mode
+          socket.emit('start', {
+            labels: instances[instUserId].labels,
+            url: instances[instUserId].browserSync
+          });
+          instanceUserId = instUserId;
+        }
       }
     }
     if (instanceUserId && childProcesses[instanceUserId]) {
