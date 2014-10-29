@@ -1,5 +1,5 @@
 {
-  "name": "devicewall",
+  "name": "sc5-devicewall",
   "version": "0.2.1",
   "engines": {
     "node": ">=0.10.10",
