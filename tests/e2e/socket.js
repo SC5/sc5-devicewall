@@ -35,7 +35,7 @@ module.exports.stop = function(user, labels) {
   });
 };
 
-module.exports.stopAll = function(user, labels) {
+module.exports.stopAll = function() {
   socket.emit('stopall', {});
 };
 

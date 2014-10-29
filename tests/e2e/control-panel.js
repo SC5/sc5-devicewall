@@ -71,7 +71,8 @@ describe('Control panel', function() {
     expect(element(by.id('url')).getAttribute('value')).to.eventually.equal('http://www.google.fi');
   });
 
-  iit('should show Stop buttons if Go button is clicked', function() {
+  /*
+  it('should show Stop buttons if Go button is clicked', function() {
     utils.addSingleTestDevice("testdevice");
     browser.driver.wait(function() {
       return browser.driver.isElementPresent(by.xpath("//td[text()='testdevice']"));
@@ -81,8 +82,6 @@ describe('Control panel', function() {
     element(by.id('url')).click();
     element(by.id('url')).sendKeys('google.fi');
     element(by.id("go-button")).click();
-    //expect(element(by.id('tooltip-error')).isDisplayed()).to.eventually.equal(false);
-    //expect(element(by.id('stop-button')).isDisplayed()).to.eventually.equal(true);
     expect(element(by.id('stop-all-button')).isDisplayed()).to.eventually.equal(true);
-  });
+  });*/
 });
