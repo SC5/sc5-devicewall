@@ -115,8 +115,12 @@ gulp.task('preprocess', ['config', 'scss-lint'], function() {
 });
 
 gulp.task('scss-lint', function() {
-  gulp.src('src/css/**/*.scss')
+  var lintTask = gulp.src('src/css/**/*.scss')
     .pipe(scssLint());
+  // without --force flag scss-lint fails the task
+  if (!$.util.env.force) {
+    lintTask.pipe(scssLint.failReporter());
+  }
 });
 
 gulp.task('javascript', ['preprocess'], function() {
