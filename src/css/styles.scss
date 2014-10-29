@@ -567,7 +567,7 @@ input[type=text].error {
   }
 
   #devices {
-    input {
+    input[type=text] {
       width: 90%;
     }
   }
