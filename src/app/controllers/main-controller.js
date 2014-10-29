@@ -223,7 +223,7 @@ angular.module('DeviceWall')
   .filter('batteryTitle', function() {
     return function(status) {
       var returnString = 'no battery information available';
-      if (status.level) {
+      if (status && status.level) {
         returnString = 'Level: ' + status.level + ' %' + (status.isPlugged ? ', plugged' : '');
       }
       return returnString;
