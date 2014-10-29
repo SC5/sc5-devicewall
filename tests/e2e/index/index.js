@@ -1,6 +1,6 @@
-var expect = require('./expect');
-var config = require('../../config.test.json');
-var utils = require('./utils');
+var expect = require('../expect');
+var config = require('../../../config.test.json');
+var utils = require('../utils');
 
 describe('Frontpage', function() {
   var ptor;
