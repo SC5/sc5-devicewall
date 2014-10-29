@@ -34,7 +34,7 @@ var config = {
 
 // Package management
 /* Install & update Bower dependencies */
-gulp.task('install', ['config'], function() {
+gulp.task('install', ['config', 'integrate'], function() {
   // FIXME specifying the component directory broken in gulp
   // For now, use .bowerrc; No need for piping, either
   $.bower();
