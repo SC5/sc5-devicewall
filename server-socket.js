@@ -158,6 +158,7 @@ module.exports = function (app, options) {
         timeout: 5000
       });
     }
+    return !!instanceUserId;
   }
 
   function checkProxyTarget(parsedUrl, cb) {
@@ -246,7 +247,11 @@ module.exports = function (app, options) {
           device.batteryStatus = batteryStatus;
           device.updated = +new Date();
           updated = true;
-          restartBrowserSync(label, socket);
+          if (restartBrowserSync(label, socket)) {
+            device.status = 'starting';
+          } else {
+            device.status = 'idle';
+          }
         }
       });
 
@@ -258,6 +263,7 @@ module.exports = function (app, options) {
           appPlatform: appPlatform,
           version: version,
           batteryStatus: batteryStatus,
+          status: 'idle',
           updated: +new Date()
         });
       }
@@ -274,6 +280,38 @@ module.exports = function (app, options) {
         }
       });
       fn({appPlatform: appPlatform});
+    });
+
+    socket.on('started', function (label) {
+      var updated = false;
+      devices.forEach(function (device, index) {
+        if (label === device.label) {
+          //console.log('Device running', label);
+          device.status = 'running';
+          device.updated = +new Date();
+          updated = true;
+        }
+      });
+      if (updated) {
+        app.emit('update-devices');
+        ns.emit('update', devices);
+      }
+    });
+
+    socket.on('idling', function (label) {
+      var updated = false;
+      devices.forEach(function (device, index) {
+        if (label === device.label) {
+          //console.log('Device idling', label);
+          device.status = 'idle';
+          device.updated = +new Date();
+          updated = true;
+        }
+      });
+      if (updated) {
+        app.emit('update-devices');
+        ns.emit('update', devices);
+      }
     });
 
     socket.on('disconnect', function () {
@@ -309,6 +347,7 @@ module.exports = function (app, options) {
           if (device.label === label && (!device.userId || device.userId === user.id)) {
             device.userId = user.id;
             device.userName = user.displayName;
+            device.status = 'starting';
             device.lastUsed = +new Date();
           }
         });
