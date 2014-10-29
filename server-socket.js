@@ -81,42 +81,49 @@ module.exports = function (app, options) {
   }
 
   function createInstance(testUrl, user, data) {
-    childProcesses[user.id] = fork('./server-browsersync');
-    childProcesses[user.id].on('message', function(message) {
-      if (message.type === 'browserSyncInit') {
-        if (instances[user.id]) {
-          instances[user.id].browserSync = message.browserSync;
-          instances[user.id].updated = +new Date();
-        }
-        data.url = message.browserSync;
-        app.emit('update-instances');
-        app.emit('update-devices');
-        ns.emit('update', devices);
-        ns.emit('start', data);
-        // wait 3 seconds before sending url to devices
-        setTimeout(function(){
-          nsApp.emit('start', data);
-        }, 3000);
-      } else if (message.type === 'browserSyncExit') {
-        childProcesses[user.id].send({type: 'exit'});
-        if (childProcesses[user.id]) {
-          delete childProcesses[user.id];
-        }
-        if (instances[user.id]) {
-          delete instances[user.id];
-        }
-        ns.emit('server-stop', {user: user});
-      } else if (message.type === 'targetUrlUnreachable') {
-        if (childProcesses[user.id]) {
-          delete childProcesses[user.id];
-        }
-        if (instances[user.id]) {
-          delete instances[user.id];
-        }
+    var parsedUrl = url.parse(testUrl);
+    checkProxyTarget(parsedUrl, function(err, parsedUrl) {
+      if (err) {
         ns.emit('server-stop', {user: user, reason: 'Target URL unreachable.'});
+      } else {
+        childProcesses[user.id] = fork('./server-browsersync');
+        childProcesses[user.id].on('message', function(message) {
+          if (message.type === 'browserSyncInit') {
+            if (instances[user.id]) {
+              instances[user.id].browserSync = message.browserSync;
+              instances[user.id].updated = +new Date();
+            }
+            data.url = message.browserSync;
+            app.emit('update-instances');
+            app.emit('update-devices');
+            ns.emit('update', devices);
+            ns.emit('start', data);
+            // wait 3 seconds before sending url to devices
+            setTimeout(function(){
+              nsApp.emit('start', data);
+            }, 3000);
+          } else if (message.type === 'browserSyncExit') {
+            childProcesses[user.id].send({type: 'exit'});
+            if (childProcesses[user.id]) {
+              delete childProcesses[user.id];
+            }
+            if (instances[user.id]) {
+              delete instances[user.id];
+            }
+            ns.emit('server-stop', {user: user});
+          } else if (message.type === 'targetUrlUnreachable') {
+            if (childProcesses[user.id]) {
+              delete childProcesses[user.id];
+            }
+            if (instances[user.id]) {
+              delete instances[user.id];
+            }
+            ns.emit('server-stop', {user: user, reason: 'Target URL unreachable.'});
+          }
+        });
+        childProcesses[user.id].send({type: 'init', url: testUrl});
       }
     });
-    childProcesses[user.id].send({type: 'init', url: testUrl});
   }
 
   function updateInstance(testUrl, user, data) {
@@ -152,6 +159,52 @@ module.exports = function (app, options) {
       });
     }
     return !!instanceUserId;
+  }
+
+  function checkProxyTarget(parsedUrl, cb) {
+    var chunks  = [];
+    var errored = false;
+    var options = {
+      hostname: parsedUrl.hostname,
+      port: parsedUrl.port,
+      path: parsedUrl.path,
+      rejectUnauthorized: false
+    };
+
+    function logError() {
+      if (!errored) {
+        cb("Proxy address not reachable - is your server running?");
+        errored = true;
+      }
+    }
+
+    var req = require(parsedUrl.protocol === "https:" ? "https" : "http").get(options,  function (res) {
+      if(res.statusCode === 301 || res.statusCode === 302) {
+        cb(null, url.parse(res.headers.location));
+        return;
+      }
+      res.on("data", function (data) {
+        chunks.push(data);
+      });
+      res.on("end", function() {
+        cb(null, parsedUrl);
+      });
+    }).on("error", function (err) {
+      if (err.code === "ENOTFOUND" || err.code === "ECONNREFUSED") {
+        cb("Unreachable");
+      }
+    }).on("close", function () {
+      if (!chunks.length) {
+        cb("Unreachable");
+      }
+    });
+
+    req.on("socket", function (socket) {
+      socket.setTimeout(5000);
+      socket.on("timeout", function() {
+        req.abort();
+      });
+    });
   }
 
   app.on('update-devices', function () {

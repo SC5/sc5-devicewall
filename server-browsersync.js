@@ -29,52 +29,6 @@ function deferredEmit(socket, event, data, timeout) {
   return deferred.promise;
 }
 
-function checkProxyTarget(parsedUrl, cb) {
-  var chunks  = [];
-  var errored = false;
-  var options = {
-    hostname: parsedUrl.hostname,
-    port: parsedUrl.port,
-    path: parsedUrl.path,
-    rejectUnauthorized: false
-  };
-
-  function logError() {
-    if (!errored) {
-      cb("Proxy address not reachable - is your server running?");
-      errored = true;
-    }
-  }
-
-  var req = require(parsedUrl.protocol === "https:" ? "https" : "http").get(options,  function (res) {
-    if(res.statusCode === 301 || res.statusCode === 302) {
-      cb(null, url.parse(res.headers.location));
-      return;
-    }
-    res.on("data", function (data) {
-      chunks.push(data);
-    });
-    res.on("end", function() {
-      cb(null, parsedUrl);
-    });
-  }).on("error", function (err) {
-    if (err.code === "ENOTFOUND" || err.code === "ECONNREFUSED") {
-      cb("Unreachable");
-    }
-  }).on("close", function () {
-    if (!chunks.length) {
-      cb("Unreachable");
-    }
-  });
-
-  req.on("socket", function (socket) {
-    socket.setTimeout(5000);
-    socket.on("timeout", function() {
-      req.abort();
-    });
-  });
-}
-
 /*
 function deferredCacheWarming(url) {
   var deferred = Q.defer(),
@@ -114,39 +68,33 @@ process.on('message', function(message) {
   switch (message.type) {
     case 'init':
         var parsedUrl = url.parse(message.url);
-        checkProxyTarget(parsedUrl, function(err, parsedUrl) {
-          if (err) {
-            process.send({type: 'targetUrlUnreachable'});
-          } else {
-            var browserSyncConfig = {
-              proxy: parsedUrl.href,
-              startPath: parsedUrl.path,
-              idleReturn: {
-                idleSeconds: config.clientIdleReturnSeconds,
-                returnUrl: config.deviceWallAppURL
-              },
-              browser: 'disable',
-              https: parsedUrl.protocol === "https:",
-              ssl: {
-                  key: path.resolve(config.sslKey),
-                  cert: path.resolve(config.sslCert)
-              },
-              ghostMode: {
-                clicks: true,
-                location: true,
-                forms: true,
-                scroll: true
-              },
-              syncLocation: true
-            };
-            if (config.proxyHost) {
-              browserSyncConfig.host = config.proxyHost;
-            }
-            bs = browserSync.init(null, browserSyncConfig);
-            evt.on('init', function(api) {
-              process.send({type: 'browserSyncInit', browserSync: api.options.urls.external});
-            });
-          }
+        var browserSyncConfig = {
+          proxy: parsedUrl.href,
+          startPath: parsedUrl.path,
+          idleReturn: {
+            idleSeconds: config.clientIdleReturnSeconds,
+            returnUrl: config.deviceWallAppURL
+          },
+          browser: 'disable',
+          https: parsedUrl.protocol === "https:",
+          ssl: {
+              key: path.resolve(config.sslKey),
+              cert: path.resolve(config.sslCert)
+          },
+          ghostMode: {
+            clicks: true,
+            location: true,
+            forms: true,
+            scroll: true
+          },
+          syncLocation: true
+        };
+        if (config.proxyHost) {
+          browserSyncConfig.host = config.proxyHost;
+        }
+        bs = browserSync.init(null, browserSyncConfig);
+        evt.on('init', function(api) {
+          process.send({type: 'browserSyncInit', browserSync: api.options.urls.external});
         });
       break;
     case 'location':

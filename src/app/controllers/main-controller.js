@@ -5,6 +5,7 @@ angular.module('DeviceWall')
     $scope.indicatorWaiting = {show: true};
     $scope.config = appConfig;
     $scope.deviceList = DeviceList.toArray();
+    $scope.serverStatus = 'stopped';
 
     // selected device uuid list? TODO refactor whole selected devices list feature, this is not nice, really.
     $scope.uuids = {};
@@ -68,6 +69,7 @@ angular.module('DeviceWall')
 
       $window.localStorage.setItem('url', $scope.url.value);
       $scope.tooltipError.show = false;
+      $scope.tooltipError.content = '';
       socket.emit('start', formData);
       setButtonsStatus(false);
     };
@@ -145,6 +147,7 @@ angular.module('DeviceWall')
       $log.debug("socket::start", data);
       if (data.user.id === $scope.user.id) {
         setButtonsStatus(false);
+        $scope.serverStatus = 'running';
         if ($scope.openUrl) {
           $log.debug('Opening a popup view');
           if ($scope.popupWindow && !$scope.popupWindow.closed) {
@@ -160,6 +163,7 @@ angular.module('DeviceWall')
     socket.on('server-stop', function(data) {
       $log.debug('socket::server-stop');
       if (data.user.id === $scope.user.id) {
+        $scope.serverStatus = 'stopped';
         setButtonsStatus(true);
       }
       if (data.reason) {
@@ -171,6 +175,7 @@ angular.module('DeviceWall')
 
     socket.on('stopall', function() {
       $log.debug('socket::stopall');
+      $scope.serverStatus = 'stopped';
       setButtonsStatus(true);
     });
 
@@ -223,7 +228,7 @@ angular.module('DeviceWall')
   .filter('batteryTitle', function() {
     return function(status) {
       var returnString = 'no battery information available';
-      if (status.level) {
+      if (status && status.level) {
         returnString = 'Level: ' + status.level + ' %' + (status.isPlugged ? ', plugged' : '');
       }
       return returnString;
