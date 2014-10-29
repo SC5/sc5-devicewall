@@ -64,7 +64,7 @@
     "selenium-webdriver": "^2.41.0"
   },
   "scripts": {
-    "install": "gulp install",
+    "install": "bundle install && gulp install",
     "build": "gulp",
     "test": "gulp test",
     "start": "node server.js"
