@@ -217,6 +217,21 @@ angular.module('DeviceWall')
       $el.parent().toggleClass('collapsed');
     };
 
+    $scope.$watch('deviceList', checkGoButtonStatus, true);
+    $scope.$watch('openUrl', checkGoButtonStatus);
+
+    function checkGoButtonStatus(oldVal, newVal, scope) {
+      var enabledGoButton = false;
+      _.each(scope.deviceList, function(device) {
+        if (device.selected) {
+          enabledGoButton = true;
+        }
+        if (enabledGoButton === false && scope.openUrl) {
+          enabledGoButton = true;
+        }
+      });
+      $scope.btnGo.disabled = !enabledGoButton;
+    }
   })
 
 
