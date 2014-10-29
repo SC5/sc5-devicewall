@@ -4,6 +4,7 @@ var utils = require('../utils');
 
 describe('Frontpage', function() {
   var ptor;
+  var label = 'testdevice';
 
   beforeEach(function() {
     ptor = protractor.getInstance();
@@ -11,6 +12,8 @@ describe('Frontpage', function() {
     // PhantomJS crashing randomly if this was not set
     browser.ignoreSynchronization = true;
 
+    browser.get('http://' + config.host + ':' + config.port + '/');
+    browser.executeScript('localStorage.clear();');
     browser.get('http://' + config.host + ':' + config.port + '/');
   });
 
@@ -23,6 +26,7 @@ describe('Frontpage', function() {
     expect(element(by.id('container')).getText()).to.eventually.have.length.above(0);
     expect(element(by.css('.button-device')).getText()).to.eventually.contain('USE AS TEST DEVICE');
     expect(element(by.css('.button-control-panel')).getText()).to.eventually.contain('CONTROL DEVICE WALL');
+    expect(ptor.getCurrentUrl()).to.eventually.contain('/#!/');
   });
 
   it('should show device mode if device button clicked', function() {
@@ -36,7 +40,6 @@ describe('Frontpage', function() {
   });
 
   it('should show device mode if device label in localStorage', function() {
-    var label = 'testdevice';
     utils.writeSingleTestDevice(label);
     browser.executeScript('localStorage.setItem("label", "' + label + '");');
     browser.get('http://' + config.host + ':' + config.port + '/');

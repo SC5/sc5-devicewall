@@ -5,6 +5,7 @@ var socket = require('../socket');
 
 describe('Control panel', function() {
   var ptor;
+  var perfTestUrl = 'http://' + config.host + ':' + config.port + '/perf-test';
 
   beforeEach(function() {
     ptor = protractor.getInstance();
@@ -81,7 +82,8 @@ describe('Control panel', function() {
     expect(element(by.id('go-button')).isEnabled()).to.eventually.equal(true);
     expect(element(by.css('#available-devices table input[type=checkbox]')).isSelected()).to.eventually.equal(true);
     element(by.id('url')).click();
-    element(by.id('url')).sendKeys('google.com');
+    utils.clear(element(by.id('url')));
+    element(by.id('url')).sendKeys(perfTestUrl);
     element(by.id("go-button")).click();
     browser.driver.wait(function() {
       return browser.driver.isElementPresent(by.xpath("//div[@id='server-status' and text()='running']"));
@@ -95,7 +97,8 @@ describe('Control panel', function() {
       return browser.driver.isElementPresent(by.xpath("//td[text()='testdevice']"));
     });
     element(by.id('url')).click();
-    element(by.id('url')).sendKeys('google.com');
+    utils.clear(element(by.id('url')));
+    element(by.id('url')).sendKeys(perfTestUrl);
     element(by.id("go-button")).click();
     browser.driver.wait(function() {
       return browser.driver.isElementPresent(by.xpath("//div[@id='server-status' and text()='running']"));

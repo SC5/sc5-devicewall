@@ -46,3 +46,16 @@ module.exports.hasClass = function (element, cls) {
     return classes.split(' ').indexOf(cls) !== -1;
   });
 };
+
+module.exports.clear = function (element) {
+  return element.getAttribute('value').then(function (text) {
+    var backspaceSeries = '',
+        textLength = text.length;
+
+    for(var i = 0; i < textLength; i++) {
+      backspaceSeries += protractor.Key.BACK_SPACE;
+    }
+
+    return element.sendKeys(backspaceSeries);
+  });
+};
