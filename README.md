@@ -109,13 +109,20 @@ changes as needed.
 
 ## Testing
 
-Run tests with PhantomJS:
+Run tests with chromedriver:
 
-    > gulp test
+    > gulp test:e2e
 
-Or in debug mode with chromedriver in a browser:
+### Testing in headless environment
 
-    > gulp test --debug
+Install Xvfb or similar.
+
+Simplified instructions:
+
+    > sudo apt-get install xvfb
+    > sudo Xvfb :10 -ac
+    > export DISPLAY=:10
+    > gulp test:e2e
 
 ## License
 
