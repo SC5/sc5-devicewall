@@ -1,6 +1,6 @@
 {
   "name": "sc5-devicewall",
-  "version": "0.2.1",
+  "version": "1.0.0-rc1",
   "engines": {
     "node": ">=0.10.10",
     "npm": ">=1.2.15"
