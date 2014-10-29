@@ -1,7 +1,7 @@
-var expect = require('./expect');
-var config = require('../../config.test.json');
-var utils = require('./utils');
-var socket = require('./socket');
+var expect = require('../expect');
+var config = require('../../../config.test.json');
+var utils = require('../utils');
+var socket = require('../socket');
 
 describe('Device', function() {
   var ptor;
