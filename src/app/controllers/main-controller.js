@@ -221,16 +221,16 @@ angular.module('DeviceWall')
     $scope.$watch('openUrl', checkGoButtonStatus);
 
     function checkGoButtonStatus(oldVal, newVal, scope) {
-      var enabledGoButton = false;
+      var disableGoButton = true;
       _.each(scope.deviceList, function(device) {
         if (device.selected) {
-          enabledGoButton = true;
-        }
-        if (enabledGoButton === false && scope.openUrl) {
-          enabledGoButton = true;
+          disableGoButton = false;
         }
       });
-      $scope.btnGo.disabled = !enabledGoButton;
+      if (disableGoButton && scope.openUrl) {
+        disableGoButton = false;
+      }
+      $scope.btnGo.disabled = disableGoButton;
     }
   })
 
