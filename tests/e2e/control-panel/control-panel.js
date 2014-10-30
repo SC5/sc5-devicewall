@@ -6,6 +6,7 @@ var socket = require('../socket');
 describe('Control panel', function() {
   var ptor;
   var perfTestUrl = 'http://' + config.host + ':' + config.port + '/perf-test';
+  var devicesUrl = 'http://' + config.host + ':' + config.port + '/#!/devices';
 
   beforeEach(function() {
     ptor = protractor.getInstance();
@@ -13,7 +14,7 @@ describe('Control panel', function() {
     // PhantomJS crashing randomly if this was not set
     browser.ignoreSynchronization = true;
 
-    browser.get('http://' + config.host + ':' + config.port + '/#!/devices');
+    browser.get(devicesUrl);
   });
 
   afterEach(function() {
@@ -173,5 +174,26 @@ describe('Control panel', function() {
     });
     element(by.css('#devices-list tr .remove')).click();
     expect(element.all(by.css('#devices-list tr')).count()).to.eventually.equal(0);
+  });
+
+  it('should persist added model, platform and version data input by user', function() {
+    utils.addSingleTestDevice("testdevice");
+    browser.driver.wait(function() {
+      return browser.driver.isElementPresent(by.xpath("//td[text()='testdevice']"));
+    });
+    element(by.css('#devices-list input[data-ng-model="device.model"]')).click();
+    element(by.css('#devices-list input[data-ng-model="device.model"]')).sendKeys('iPhone');
+    element(by.css('#devices-list input[data-ng-model="device.platform"]')).click();
+    element(by.css('#devices-list input[data-ng-model="device.platform"]')).sendKeys('iOS');
+    element(by.css('#devices-list input[data-ng-model="device.version"]')).click();
+    element(by.css('#devices-list input[data-ng-model="device.version"]')).sendKeys('6.1');
+    element(by.css('#devices-list input[data-ng-model="device.model"]')).click();
+    browser.get(devicesUrl);
+    browser.driver.wait(function() {
+      return browser.driver.isElementPresent(by.xpath("//td[text()='testdevice']"));
+    });
+    expect(element(by.css('#devices-list input[data-ng-model="device.model"]')).getAttribute('value')).to.eventually.equal('iPhone');
+    expect(element(by.css('#devices-list input[data-ng-model="device.platform"]')).getAttribute('value')).to.eventually.equal('iOS');
+    expect(element(by.css('#devices-list input[data-ng-model="device.version"]')).getAttribute('value')).to.eventually.equal('6.1');
   });
 });
