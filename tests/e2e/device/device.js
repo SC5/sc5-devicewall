@@ -37,7 +37,15 @@ describe('Device', function() {
     expect(element(by.css('#label h2')).getText()).to.eventually.contain('Manage device');
   });
 
-  it('should show ready for testing if label typed and go clicked', function() {});
+  it('should show ready for testing if label typed and go clicked', function() {
+    browser.executeScript('localStorage.clear();');
+    browser.get(clientUrl);
+    element(by.id('device_label')).click();
+    element(by.id('device_label')).sendKeys('testdevice');
+    element(by.css('#label button')).click();
+    expect(utils.hasClass(element(by.id('label')), 'ng-hide')).to.eventually.equal(true);
+    expect(utils.hasClass(element(by.id('connection')), 'ng-hide')).to.eventually.equal(false);
+  });
 
   it('should show ready for testing if label in localStorage', function() {
     utils.writeSingleTestDevice(label);
