@@ -165,4 +165,13 @@ describe('Control panel', function() {
     });
     expect(element(by.id('stop-all-button')).isDisplayed()).to.eventually.equal(false);
   });
+
+  it('should remove device when trash icon clicked', function() {
+    utils.addSingleTestDevice("testdevice");
+    browser.driver.wait(function() {
+      return browser.driver.isElementPresent(by.xpath("//td[text()='testdevice']"));
+    });
+    element(by.css('#devices-list tr .remove')).click();
+    expect(element.all(by.css('#devices-list tr')).count()).to.eventually.equal(0);
+  });
 });
