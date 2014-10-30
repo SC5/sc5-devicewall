@@ -47,6 +47,15 @@
                 <label><input type="radio" name="connection-radio" value="4G">4G</label>
                 <label><input type="radio" name="connection-radio" value="Wifi" checked="checked">Wifi</label>
           </fieldset>
+          <fieldset class="user-agent">
+            <span>Change default user agent</span>
+                <span class="input">
+                  <select ng-model="userAgent.selected" ng-options="ua.name for ua in userAgents"></select><br>
+                </span>
+                <span>
+                  <label><input type="text" data-ng-model="userAgent.selected.name">Selected</label>
+                </span>
+          </fieldset>
         </div>
         </div>
       </section>
