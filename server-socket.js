@@ -82,7 +82,9 @@ module.exports = function (app, options) {
 
   function createInstance(testUrl, user, data) {
     var parsedUrl = url.parse(testUrl);
-    checkProxyTarget(parsedUrl, function(err, parsedUrl) {
+    checkProxyTarget({
+      parsedUrl: parsedUrl
+    }, function(err, parsedUrl) {
       if (err) {
         ns.emit('server-stop', {user: user, reason: 'Target URL unreachable.'});
       } else {
@@ -161,15 +163,21 @@ module.exports = function (app, options) {
     return !!instanceUserId;
   }
 
-  function checkProxyTarget(parsedUrl, cb) {
+  function checkProxyTarget(options, cb) {
     var chunks  = [];
     var errored = false;
-    var options = {
+    var parsedUrl = options.parsedUrl;
+    var requestOptions = {
       hostname: parsedUrl.hostname,
       port: parsedUrl.port,
       path: parsedUrl.path,
       rejectUnauthorized: false
     };
+    if (options.userAgentHeader) {
+      requestOptions.headers = {
+        'User-Agent': options.userAgentHeader
+      };
+    }
 
     function logError() {
       if (!errored) {
@@ -178,7 +186,7 @@ module.exports = function (app, options) {
       }
     }
 
-    var req = require(parsedUrl.protocol === "https:" ? "https" : "http").get(options,  function (res) {
+    var req = require(parsedUrl.protocol === "https:" ? "https" : "http").get(requestOptions,  function (res) {
       if(res.statusCode === 301 || res.statusCode === 302) {
         cb(null, url.parse(res.headers.location));
         return;
