@@ -1,4 +1,5 @@
 @import 'compass/css3';
+@import '_entypo.scss';
 
 $app-bg:    #0072a3;
 $section-bg:  #0084bd;
@@ -38,7 +39,7 @@ $icon-bg:   #007fb5;
 }
 
 @mixin large-icon-button() {
-  font-family: 'Entypo';
+  font-family: 'entypo';
   font-size: 200px;
   width: 200px;
   height: 200px;
@@ -66,12 +67,12 @@ $icon-bg:   #007fb5;
 }
 
 @font-face {
-  font-family: 'Entypo';
+  font-family: 'entypo';
   src: url('/assets/fonts/entypo.eot');
   src: url('/assets/fonts/entypo.eot?#iefix') format('embedded-opentype'),
      url('/assets/fonts/entypo.woff') format('woff'),
      url('/assets/fonts/entypo.ttf') format('truetype'),
-     url('/assets/fonts/entypo.svg#Entypo') format('svg');
+     url('/assets/fonts/entypo.svg#entypo') format('svg');
 }
 
 html {
@@ -129,13 +130,13 @@ body {
       cursor: pointer;
 
       &:before {
-        content: '\2796';
+        content: '\e822';
         position: absolute;
         left: 10px;
         top: 0;
-        font-family: 'Entypo';
-        font-size: 2em;
-        line-height: 1em;
+        font-family: 'entypo';
+        font-size: 1em;
+        line-height: 2em;
       }
     }
 
@@ -148,7 +149,7 @@ body {
       max-height: 40px;
 
       h2:before {
-        content: '\2795';
+        content: '\e825';
       }
     }
   }
@@ -291,7 +292,7 @@ table {
       vertical-align: middle;
 
       span {
-        font-family: 'Entypo';
+        font-family: 'entypo';
         line-height: 1rem;
         vertical-align: middle;
         padding: 0 5px;
@@ -317,8 +318,8 @@ table {
 
     &.remove {
 
-      span {
-        font-size: 2.5rem;
+      span:before {
+        font-size: 1.25rem;
         cursor: pointer;
         background-image: -webkit-linear-gradient(left, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, .3) 80%), -webkit-linear-gradient(#fff 0%, #fff 100%);
         -webkit-background-clip: text;
@@ -429,7 +430,7 @@ input[type=url] {
 }
 
 input[type=checkbox] {
-  font-family: 'Entypo';
+  font-family: 'entypo';
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
@@ -466,7 +467,7 @@ input[type=checkbox] {
 }
 
 input[type=radio] {
-  font-family: 'Entypo';
+  font-family: 'entypo';
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
@@ -539,7 +540,7 @@ input[type=text].error {
 }
 
 .home {
-  font-family: 'Entypo';
+  font-family: 'entypo';
   position: absolute;
   left: 0;
   top: 0;
@@ -590,6 +591,10 @@ input[type=text].error {
       height: 100px;
       font-size: 100px;
     }
+  }
+
+  .home {
+    left: 18px;
   }
 }
 
