@@ -63,6 +63,18 @@ describe('Control panel', function() {
     expect(element(by.id('go-button')).isEnabled()).to.eventually.equal(true);
   });
 
+  it('should enable Go button if Open website on this browser checkbox is checked', function() {
+    utils.addSingleTestDevice("testdevice");
+    browser.driver.wait(function() {
+      return browser.driver.isElementPresent(by.xpath("//td[text()='testdevice']"));
+    });
+    element(by.css('#devices-list tr:nth-child(1) input[type="checkbox"]')).click();
+    expect(element(by.id('go-button')).isEnabled()).to.eventually.equal(false);
+    element(by.id('openUrl')).click();
+    expect(element(by.id('openUrl')).isSelected()).to.eventually.equal(true);
+    expect(element(by.id('go-button')).isEnabled()).to.eventually.equal(true);
+  });
+
   it('should set url value to http://www when clicked', function() {
     element(by.id('url')).click();
     expect(element(by.id('url')).getAttribute('value')).to.eventually.equal('http://www.');
@@ -153,6 +165,4 @@ describe('Control panel', function() {
     });
     expect(element(by.id('stop-all-button')).isDisplayed()).to.eventually.equal(false);
   });
-
-  it('should enable Go button if Open website on this browser checkbox is checked', function() {});
 });
