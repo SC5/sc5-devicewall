@@ -20,6 +20,8 @@ describe('Device', function() {
     browser.ignoreSynchronization = true;
 
     browser.get(clientUrl);
+    browser.executeScript('localStorage.clear();');
+    browser.get(clientUrl);
   });
 
   afterEach(function() {

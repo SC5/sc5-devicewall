@@ -15,6 +15,8 @@ describe('Control panel', function() {
     browser.ignoreSynchronization = true;
 
     browser.get(devicesUrl);
+    browser.executeScript('localStorage.clear();');
+    browser.get(devicesUrl);
   });
 
   afterEach(function() {
