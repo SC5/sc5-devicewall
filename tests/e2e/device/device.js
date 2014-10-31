@@ -100,4 +100,35 @@ describe('Device', function() {
       });
     });
   });
+
+  it('should restart testing if device navigates back to device mode page when testing is on going', function() {
+    utils.writeSingleTestDevice(label);
+    browser.executeScript('localStorage.setItem("label", "' + label + '");');
+    browser.get(clientUrl);
+    socket.start(user, [label], 'http://' + config.host + ':' + config.port + '/perf-test');
+    browser.driver.wait(function() {
+      return browser.driver.getCurrentUrl().then(function (url) {
+          return url !== clientUrl;
+      });
+    }).then(function() {
+      expect(ptor.getCurrentUrl()).to.eventually.contain('/perf-test');
+      browser.get(clientUrl);
+      expect(ptor.getCurrentUrl()).to.eventually.contain(clientUrl);
+      browser.driver.wait(function() {
+        return browser.driver.getCurrentUrl().then(function (url) {
+            return url !== clientUrl;
+        });
+      }).then(function() {
+        expect(ptor.getCurrentUrl()).to.eventually.contain('/perf-test');
+        socket.stopAll();
+        browser.driver.wait(function() {
+          return browser.driver.getCurrentUrl().then(function (url) {
+            return url.indexOf(clientReturnUrl) > -1;
+          });
+        }).then(function() {
+          expect(ptor.getCurrentUrl()).to.eventually.contain(clientReturnUrl);
+        });
+      });
+    });
+  });
 });
