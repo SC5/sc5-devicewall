@@ -87,7 +87,8 @@ process.on('message', function(message) {
             forms: true,
             scroll: true
           },
-          syncLocation: true
+          syncLocation: true,
+          onBeforeUnload: true
         };
         if (config.proxyHost) {
           browserSyncConfig.host = config.proxyHost;
