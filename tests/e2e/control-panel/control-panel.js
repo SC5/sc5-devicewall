@@ -5,7 +5,7 @@ var socket = require('../socket');
 
 describe('Control panel', function() {
   var ptor;
-  var perfTestUrl = 'http://' + config.host + ':' + config.port + '/perf-test';
+  var testUrl = 'http://' + config.host + ':' + config.port + '/test';
   var devicesUrl = 'http://' + config.host + ':' + config.port + '/#!/devices';
 
   beforeEach(function() {
@@ -98,7 +98,7 @@ describe('Control panel', function() {
     expect(element(by.css('#available-devices table input[type=checkbox]')).isSelected()).to.eventually.equal(true);
     element(by.id('url')).click();
     utils.clear(element(by.id('url')));
-    element(by.id('url')).sendKeys(perfTestUrl);
+    element(by.id('url')).sendKeys(testUrl);
     element(by.id("go-button")).click();
     browser.driver.wait(function() {
       return browser.driver.isElementPresent(by.xpath("//div[@id='server-status' and text()='running']"));
@@ -113,7 +113,7 @@ describe('Control panel', function() {
     });
     element(by.id('url')).click();
     utils.clear(element(by.id('url')));
-    element(by.id('url')).sendKeys(perfTestUrl);
+    element(by.id('url')).sendKeys(testUrl);
     element(by.id("go-button")).click();
     browser.driver.wait(function() {
       return browser.driver.isElementPresent(by.xpath("//div[@id='server-status' and text()='running']"));
