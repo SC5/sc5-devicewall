@@ -21,10 +21,11 @@ function deferredEmit(socket, event, data, timeout) {
   return deferred.promise;
 }
 
-module.exports.start = function(user, labels) {
+module.exports.start = function(user, labels, url) {
   socket.emit('start', {
     "user": user,
-    "labels": labels
+    "labels": labels,
+    "url": url
   });
 };
 

@@ -121,7 +121,7 @@ module.exports = function (app, options) {
             ns.emit('server-stop', {user: user, reason: 'Target URL unreachable.'});
           }
         });
-        childProcesses[user.id].send({type: 'init', url: testUrl});
+        childProcesses[user.id].send({type: 'init', url: parsedUrl.href});
       }
     });
   }

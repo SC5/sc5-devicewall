@@ -1,8 +1,9 @@
-@import "compass/css3";
+@import 'compass/css3';
+@import '_entypo.scss';
 
 $app-bg:    #0072a3;
 $section-bg:  #0084bd;
-$icon-bg:     #007FB5;
+$icon-bg:   #007fb5;
 
 @mixin transition($value) {
   -webkit-transition: $value;
@@ -25,25 +26,24 @@ $icon-bg:     #007FB5;
 }
 
 @mixin linear-gradient($values...) {
-    background-image: -webkit-linear-gradient($values);
-    background-image: -moz-linear-gradient($values);
-    background-image: -ms-linear-gradient($values);
-    background-image: linear-gradient($values);
+  background-image: -webkit-linear-gradient($values);
+  background-image: -moz-linear-gradient($values);
+  background-image: -ms-linear-gradient($values);
+  background-image: linear-gradient($values);
 }
 
 @mixin radial-gradient($values...) {
-    background-image: -webkit-radial-gradient($values);
-    background-image: -moz-radial-gradient($values);
-    background-image: -ms-radial-gradient($values);
-    /*background-image: radial-gradient($values);*/
+  background-image: -webkit-radial-gradient($values);
+  background-image: -moz-radial-gradient($values);
+  background-image: -ms-radial-gradient($values);
 }
 
 @mixin large-icon-button() {
-  font-family: 'Entypo';
+  font-family: 'entypo';
   font-size: 200px;
   width: 200px;
   height: 200px;
-  border: none;
+  border: 0;
   padding: 0;
   margin: auto;
 }
@@ -52,24 +52,27 @@ $icon-bg:     #007FB5;
   &::-webkit-input-placeholder {
     color: $color;
   }
-  &::-moz-placeholder { /* Firefox 19+ */
+
+  &::-moz-placeholder { // Firefox 19+
     color: $color;
   }
+
   &:-ms-input-placeholder {
     color: $color;
   }
-  &:-moz-placeholder { /* Firefox 18- */
+
+  &:-moz-placeholder { // Firefox 18-
     color: $color;
   }
 }
 
 @font-face {
-  font-family: 'Entypo';
+  font-family: 'entypo';
   src: url('/assets/fonts/entypo.eot');
   src: url('/assets/fonts/entypo.eot?#iefix') format('embedded-opentype'),
-       url('/assets/fonts/entypo.woff') format('woff'),
-       url('/assets/fonts/entypo.ttf') format('truetype'),
-       url('/assets/fonts/entypo.svg#Entypo') format('svg');
+     url('/assets/fonts/entypo.woff') format('woff'),
+     url('/assets/fonts/entypo.ttf') format('truetype'),
+     url('/assets/fonts/entypo.svg#entypo') format('svg');
 }
 
 html {
@@ -77,10 +80,9 @@ html {
 }
 
 body {
-
-  min-height: 100%;
-  padding: 0;
   margin: 0;
+  padding: 0;
+  min-height: 100%;
   background-color: $app-bg;
   color: #fff;
   font-family: arial, sans-serif;
@@ -96,7 +98,7 @@ body {
 
 #content {
 
-  padding: 0 0 20px 0;
+  padding: 0 0 20px;
   text-align: center;
   font-size: 1rem;
   @include transition(top .3s ease-out);
@@ -108,6 +110,7 @@ body {
     margin-top: 20px;
     @include translateY(-50%);
     width: 100%;
+
     &.devices {
       top: 120px;
     }
@@ -127,20 +130,18 @@ body {
       cursor: pointer;
 
       &:before {
-        content: '\2796';
+        content: '\e822';
         position: absolute;
         left: 10px;
         top: 0;
-        font-family: 'Entypo';
-        font-size: 2em;
-        line-height: 1em;
+        font-family: 'entypo';
+        font-size: 1em;
+        line-height: 2em;
       }
     }
 
-    .accordion-content {
-      .is-running {
-        background-color: grey;
-      }
+    .is-running {
+      background-color: #808080;
     }
 
     &.collapsed {
@@ -148,7 +149,7 @@ body {
       max-height: 40px;
 
       h2:before {
-        content: '\2795';
+        content: '\e825';
       }
     }
   }
@@ -174,7 +175,7 @@ body {
   #devices {
 
     .buttons {
-      margin: 0 0 20px 0;
+      margin: 0 0 20px;
     }
   }
 
@@ -183,7 +184,7 @@ body {
     margin: 0 20px;
 
     fieldset.connection {
-      border: none;
+      border: 0;
       padding: 0;
       margin: 15px 0;
     }
@@ -208,14 +209,12 @@ footer {
 }
 
 h1 {
-
   text-transform: uppercase;
   font-size: 3.2rem;
   font-weight: bold;
   position: relative;
   margin: 0;
   padding: 0;
-
 }
 
 h2 {
@@ -232,7 +231,8 @@ table {
   font-size: .9rem;
   border: 1px solid rgba(0, 0, 0, .1);
 
-  th, td {
+  th,
+  td {
     white-space: nowrap;
     text-align: left;
     border: 1px solid rgba(0, 0, 0, .1);
@@ -249,7 +249,7 @@ table {
         height: 100%;
         width: 100%;
         border: 0;
-        color: white;
+        color: #fff;
         text-align: left;
         padding: 5px;
         font-size: .9rem;
@@ -258,8 +258,8 @@ table {
         @include placeholder-color(transparent);
 
         &:focus {
-          @include placeholder-color(silver);
-          background-color: white;
+          @include placeholder-color(#c0c0c0);
+          background-color: #fff;
           color: $app-bg;
         }
       }
@@ -292,7 +292,7 @@ table {
       vertical-align: middle;
 
       span {
-        font-family: 'Entypo';
+        font-family: 'entypo';
         line-height: 1rem;
         vertical-align: middle;
         padding: 0 5px;
@@ -318,8 +318,8 @@ table {
 
     &.remove {
 
-      span {
-        font-size: 2.5rem;
+      span:before {
+        font-size: 1.25rem;
         cursor: pointer;
         background-image: -webkit-linear-gradient(left, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, .3) 80%), -webkit-linear-gradient(#fff 0%, #fff 100%);
         -webkit-background-clip: text;
@@ -328,9 +328,9 @@ table {
 
     }
 
-  }
+  } // th td
 
-}
+} // table
 
 label {
   display: inline-block;
@@ -338,23 +338,9 @@ label {
 }
 
 button {
-
-  font-family: arial, sans-serif;
-
   @include box-sizing(content-box);
-
   @include linear-gradient(#fff, #ddd);
-
-  &:active {
-    @include linear-gradient(#ddd, #fff);
-  }
-
-  &:disabled {
-    @include linear-gradient(#ccc, #aaa);
-    text-shadow: none;
-    color: #666;
-  }
-
+  font-family: arial, sans-serif;
   overflow: hidden;
   white-space: nowrap;
   -webkit-appearance: none;
@@ -364,7 +350,6 @@ button {
   border: 1px solid #777;
   border-radius: 5px;
   background-color: #eee;
-  color: #333;
   padding: 0 20px;
   height: 38px;
   line-height: 38px;
@@ -379,6 +364,16 @@ button {
     height: 48px;
     line-height: 48px;
     font-size: 1.6rem;
+  }
+
+  &:active {
+    @include linear-gradient(#ddd, #fff);
+  }
+
+  &:disabled {
+    @include linear-gradient(#ccc, #aaa);
+    text-shadow: none;
+    color: #666;
   }
 }
 
@@ -409,10 +404,10 @@ button {
       position: absolute;
       bottom: 0;
       left: 50%;
-      margin: 0 -6px -6px -6px;
-      border-width: 6px 6px 0 6px;
+      margin: 0 -6px -6px;
+      border-width: 6px 6px 0;
       border-style: solid;
-      border-color: #fff transparent transparent transparent;
+      border-color: #fff transparent transparent;
       width: 0;
       height: 0;
     }
@@ -425,7 +420,8 @@ input {
   outline: none;
 }
 
-input[type=text], input[type=url] {
+input[type=text],
+input[type=url] {
   vertical-align: middle;
   font-size: 1rem;
   border-radius: 5px;
@@ -434,7 +430,7 @@ input[type=text], input[type=url] {
 }
 
 input[type=checkbox] {
-  font-family: 'Entypo';
+  font-family: 'entypo';
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
@@ -471,7 +467,7 @@ input[type=checkbox] {
 }
 
 input[type=radio] {
-  font-family: 'Entypo';
+  font-family: 'entypo';
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
@@ -544,12 +540,12 @@ input[type=text].error {
 }
 
 .home {
-  font-family: 'Entypo';
+  font-family: 'entypo';
   position: absolute;
   left: 0;
   top: 0;
   text-decoration: none;
-  color: white;
+  color: #fff;
   font-size: 4rem;
   line-height: 2rem;
   margin: 0 5px;
@@ -567,19 +563,20 @@ input[type=text].error {
   }
 
   #devices {
-    input {
+    input[type=text] {
       width: 90%;
     }
   }
 
-  #content.centerized {
+  #content {
     margin-top: 30px;
     position: relative;
     top: initial;
     @include translateY(0);
   }
 
-  .mode-button.button-control-panel, .mode-button.button-device {
+  .mode-button.button-control-panel,
+  .mode-button.button-device {
     width: 100px;
     height: auto;
     padding: 20px;
@@ -588,11 +585,16 @@ input[type=text].error {
       font-size: 20px;
     }
 
-    .icon, .icon {
+    .icon,
+    .icon {
       width: 100px;
       height: 100px;
       font-size: 100px;
     }
+  }
+
+  .home {
+    left: 18px;
   }
 }
 
