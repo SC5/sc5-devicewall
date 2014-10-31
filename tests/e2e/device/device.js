@@ -120,10 +120,9 @@ describe('Device', function() {
       expect(ptor.getCurrentUrl()).to.eventually.contain(clientUrl);
       browser.driver.wait(function() {
         return browser.driver.getCurrentUrl().then(function (url) {
-            return url !== clientUrl;
+            return url !== clientUrl && /\/test/.test(url);
         });
       }).then(function() {
-        expect(ptor.getCurrentUrl()).to.eventually.contain('/test');
         socket.stopAll();
         browser.driver.wait(function() {
           return browser.driver.getCurrentUrl().then(function (url) {
@@ -146,8 +145,6 @@ describe('Device', function() {
           return url !== clientUrl;
       });
     }).then(function() {
-      expect(ptor.getCurrentUrl()).to.eventually.contain('/test');
-      expect(ptor.getCurrentUrl()).to.not.eventually.contain(anotherTestUrl);
       socket.stopAll();
       browser.driver.wait(function() {
         return browser.driver.getCurrentUrl().then(function (url) {
@@ -169,8 +166,6 @@ describe('Device', function() {
           return url !== clientUrl;
       });
     }).then(function() {
-      expect(ptor.getCurrentUrl()).to.eventually.contain('/test');
-      expect(ptor.getCurrentUrl()).to.not.eventually.contain(anotherTestUrl);
       socket.stopAll();
       browser.driver.wait(function() {
         return browser.driver.getCurrentUrl().then(function (url) {
