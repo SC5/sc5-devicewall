@@ -12,6 +12,8 @@ describe('Device', function() {
   };
   var clientUrl = 'http://' + config.host + ':' + config.port + '/client/#!/';
   var clientReturnUrl = '/client/return/#!';
+  var testUrl = 'http://' + config.host + ':' + config.port + '/test';
+  var anotherTestUrl = 'http://' + config.host + ':' + config.testServerPort + '/test';
 
   beforeEach(function() {
     ptor = protractor.getInstance();
@@ -19,6 +21,8 @@ describe('Device', function() {
     // PhantomJS crashing randomly if this was not set
     browser.ignoreSynchronization = true;
 
+    browser.get(clientUrl);
+    browser.executeScript('localStorage.clear();');
     browser.get(clientUrl);
   });
 
@@ -78,16 +82,16 @@ describe('Device', function() {
     utils.writeSingleTestDevice(label);
     browser.executeScript('localStorage.setItem("label", "' + label + '");');
     browser.get(clientUrl);
-    socket.start(user, [label], 'http://' + config.host + ':' + config.port + '/perf-test');
+    socket.start(user, [label], testUrl);
     browser.driver.wait(function() {
       return browser.driver.getCurrentUrl().then(function (url) {
           return url !== clientUrl;
       });
     }).then(function() {
-      expect(ptor.getCurrentUrl()).to.eventually.contain('/perf-test');
-      expect(element(by.id('perf-test')).isPresent()).to.eventually.equal(true);
+      expect(ptor.getCurrentUrl()).to.eventually.contain('/test');
+      expect(element(by.id('test')).isPresent()).to.eventually.equal(true);
       browser.driver.wait(function() {
-        return browser.driver.isElementPresent(by.xpath("//div[@id='done']"));
+        return browser.driver.isElementPresent(by.xpath("//div[@id='test']"));
       }).then(function() {
         socket.stopAll();
         browser.driver.wait(function() {
@@ -97,6 +101,78 @@ describe('Device', function() {
         }).then(function() {
           expect(ptor.getCurrentUrl()).to.eventually.contain(clientReturnUrl);
         });
+      });
+    });
+  });
+
+  it('should restart testing if device navigates back to device mode page when testing is on going', function() {
+    utils.writeSingleTestDevice(label);
+    browser.executeScript('localStorage.setItem("label", "' + label + '");');
+    browser.get(clientUrl);
+    socket.start(user, [label], testUrl);
+    browser.driver.wait(function() {
+      return browser.driver.getCurrentUrl().then(function (url) {
+          return url !== clientUrl;
+      });
+    }).then(function() {
+      expect(ptor.getCurrentUrl()).to.eventually.contain('/test');
+      browser.get(clientUrl);
+      expect(ptor.getCurrentUrl()).to.eventually.contain(clientUrl);
+      browser.driver.wait(function() {
+        return browser.driver.getCurrentUrl().then(function (url) {
+            return url !== clientUrl && /\/test/.test(url);
+        });
+      }).then(function() {
+        socket.stopAll();
+        browser.driver.wait(function() {
+          return browser.driver.getCurrentUrl().then(function (url) {
+            return url.indexOf(clientReturnUrl) > -1;
+          });
+        }).then(function() {
+          expect(ptor.getCurrentUrl()).to.eventually.contain(clientReturnUrl);
+        });
+      });
+    });
+  });
+
+  it('should handle 301 redirects properly when testing started', function() {
+    utils.writeSingleTestDevice(label);
+    browser.executeScript('localStorage.setItem("label", "' + label + '");');
+    browser.get(clientUrl);
+    socket.start(user, [label], anotherTestUrl + '/301');
+    browser.driver.wait(function() {
+      return browser.driver.getCurrentUrl().then(function (url) {
+          return url !== clientUrl;
+      });
+    }).then(function() {
+      socket.stopAll();
+      browser.driver.wait(function() {
+        return browser.driver.getCurrentUrl().then(function (url) {
+          return url.indexOf(clientReturnUrl) > -1;
+        });
+      }).then(function() {
+        expect(ptor.getCurrentUrl()).to.eventually.contain(clientReturnUrl);
+      });
+    });
+  });
+
+  it('should handle 302 redirects properly when testing started', function() {
+    utils.writeSingleTestDevice(label);
+    browser.executeScript('localStorage.setItem("label", "' + label + '");');
+    browser.get(clientUrl);
+    socket.start(user, [label], anotherTestUrl + '/302');
+    browser.driver.wait(function() {
+      return browser.driver.getCurrentUrl().then(function (url) {
+          return url !== clientUrl;
+      });
+    }).then(function() {
+      socket.stopAll();
+      browser.driver.wait(function() {
+        return browser.driver.getCurrentUrl().then(function (url) {
+          return url.indexOf(clientReturnUrl) > -1;
+        });
+      }).then(function() {
+        expect(ptor.getCurrentUrl()).to.eventually.contain(clientReturnUrl);
       });
     });
   });
