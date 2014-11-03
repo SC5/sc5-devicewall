@@ -187,6 +187,37 @@ body {
       padding: 0;
       margin: 15px 0;
     }
+
+    .row {
+      float: left;
+      display: block;
+      width: 100%;
+      clear: both;
+      margin: 5px;
+
+      .col-2 {
+        float: left;
+        display: block;
+        width: 20%;
+      }
+
+      .col-8 {
+        float: left;
+        width: 80%;
+        display: block;
+
+        select,
+        input {
+          width: 96%;
+          padding: 15px;
+          line-height: 1rem;
+        }
+
+        select {
+          width: auto;
+        }
+      }
+    }
   }
 
 }
