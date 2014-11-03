@@ -53,7 +53,7 @@ var admin = adminServer.listen(config.port, function () {
 });
 
 // Socket IO
-require('./server-socket.js')(admin, {
+require('./server-main.js')(admin, {
   config: config
 });
 
