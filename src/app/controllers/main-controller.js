@@ -79,15 +79,6 @@ angular.module('DeviceWall')
       $scope.deviceList = DeviceList.toArray();
     };
 
-    $scope.updateDeviceList = function() {
-      $log.debug('update devices');
-      $log.debug($scope.deviceList);
-      /*
-      _.each(Devices.toArray(), function(device) {
-        socket.emit('update', device);
-      });
-      */
-    };
     $scope.clientFieldChanged = function(model) {
       socket.emit('save', model);
     };
@@ -189,7 +180,6 @@ angular.module('DeviceWall')
       $scope.setButtonsStatus(true);
     });
 
-
     // simple helper for buttons
     $scope.setButtonsStatus = function(status) {
       $scope.btnStopAllTesting.show = !status;
@@ -212,11 +202,6 @@ angular.module('DeviceWall')
 
     $scope.showDeviceView = function() {
       $window.location.href = $window.location.protocol + '//' + $window.location.hostname + ':' +  appConfig.port;
-    };
-
-    $scope.toggleAccordion = function($event){
-      var $el = $($event.target);
-      $el.parent().toggleClass('collapsed');
     };
 
     $scope.$watch('deviceList', $scope.checkGoButtonStatus, true);
