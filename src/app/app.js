@@ -1,49 +1,11 @@
 var module = angular.module('DeviceWall', [
   'ngResource',
   'ngRoute',
-  'mm.foundation',
   'ngLodash',
   'btford.socket-io',
-  'templates',
   'configuration'
 ]);
 
-module.factory('socket', function ($rootScope, $timeout, socketFactory) {
-  var mySocket = '/devicewall';
-  return socketFactory({
-    ioSocket: io.connect(mySocket)
-  });
-});
-
-module.factory('User', function($resource) {
-  var resource = $resource(
-    '/user',
-    {user: '@user'},
-    {
-      get: {
-        method: 'GET',
-        isArray: false,
-        cache: false
-      }
-    }
-  );
-  return resource;
-});
-
-module.factory('Devices', function($resource) {
-  var resource = $resource(
-    '/api/devices/:deviceLabel',
-    {deviceLabel: '@id'},
-    {
-      get: {
-        method: 'GET',
-        isArray: false,
-        cache: false
-      }
-    }
-  );
-  return resource;
-});
 
 module.config(function($routeProvider, $locationProvider, $logProvider, appConfig) {
   $routeProvider.
@@ -63,7 +25,6 @@ module.config(function($routeProvider, $locationProvider, $logProvider, appConfi
       redirectTo: '/'
     });
 
-    //$locationProvider.html5Mode(true);
-    $locationProvider.hashPrefix("!");
-    $logProvider.debugEnabled(appConfig.debugEnabled);
+  $locationProvider.hashPrefix("!");
+  $logProvider.debugEnabled(appConfig.debugEnabled);
 });
