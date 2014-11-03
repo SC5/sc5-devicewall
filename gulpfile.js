@@ -1,20 +1,19 @@
+"use strict";
 var path = require('path'),
     extend = require('extend'),
     util = require('util'),
     gulp = require('gulp'),
-    gp = require('gulp-protractor'),
-    shell = require('gulp-shell'),
     browsersync = require('browser-sync'),
     bowerFiles = require('main-bower-files'),
     $ = require('gulp-load-plugins')(),
     templateCache = require('gulp-angular-templatecache'),
     eventStream = require('event-stream'),
-    package = require('./package.json'),
+    packagejson = require('./package.json'),
     fs = require('fs'),
-    nodemon = require('gulp-nodemon'),
     scssLint = require('gulp-scss-lint'),
     server = require('gulp-develop-server'),
-    find = require('find');
+    find = require('find'),
+    del = require('del');
 
 var configLocalServer = './config/server';
 var configLocalApp = './config/app';
@@ -22,7 +21,7 @@ var configLocalApp = './config/app';
 /* Configurations. Note that most of the configuration is stored in
 the task context. These are mainly for repeating configuration items */
 var config = {
-  version: package.version,
+  version: packagejson.version,
   debug: Boolean($.util.env.debug),
   browsersync: Boolean($.util.env.browsersync),
   server: {
@@ -42,7 +41,7 @@ gulp.task('install', ['config', 'integrate'], function() {
   $.protractor.webdriver_update(function() {});
 });
 
-/* Bump version number for package.json & bower.json */
+/* Bump version number for packagejson.json & bower.json */
 // TODO Provide means for appending a patch id based on git commit id or md5 hash
 gulp.task('bump', function() {
   // Fetch whether we're bumping major, minor or patch; default to minor
@@ -96,9 +95,8 @@ gulp.task('config', function() {
 });
 
 // Cleanup
-gulp.task('clean', function() {
-  gulp.src('dist', { read: false })
-    .pipe($.clean());
+gulp.task('clean', function(cb) {
+  del(['dist/**', 'temp/**'], cb);
 });
 
 /* Serve the web site */
@@ -172,7 +170,7 @@ gulp.task('stylesheets', function() {
         css: '../temp/css'
     }))
     // Unit test
-    // Integrate (link, package, concatenate)
+    // Integrate (link, packagejson, concatenate)
     .pipe($.concat(bundleName))
     // Integrate
     .pipe(gulp.dest('dist/css'));
@@ -190,11 +188,6 @@ gulp.task('assets', function() {
 gulp.task('favicon', function() {
   return gulp.src(['src/favicon.ico'])
     .pipe(gulp.dest('dist'));
-});
-
-gulp.task('clean', function() {
-  gulp.src(['dist', 'temp'], { read: false })
-    .pipe($.clean());
 });
 
 gulp.task('integrate', ['javascript', 'stylesheets', 'assets', 'favicon'], function() {
@@ -241,9 +234,9 @@ gulp.task('browsersync', function() {
 });
 
 gulp.task('mywatch', ['integrate'], function() {
-  nodemon({script: 'server.js', watch: 'dist/**/*'})
+  $.nodemon({script: 'server.js', watch: 'dist/**/*'})
   .on('restart', function () {
-    console.log('restarted!')
+    console.log('restarted!');
   });
   return gulp.watch([
       'server*.js',
@@ -256,7 +249,7 @@ gulp.task('mywatch', ['integrate'], function() {
 });
 
 // Tests
-gulp.task('webdriver_manager_update', gp.webdriver_update);
+gulp.task('webdriver_manager_update', $.protractor.webdriver_update);
 
 gulp.task('test:e2e', ['webdriver_manager_update'], function() {
   var testConfig = require('./config.test.json');
@@ -274,7 +267,7 @@ gulp.task('test:e2e', ['webdriver_manager_update'], function() {
 
   server.listen({path: './server.js', env: {"NODE_ENV": "test"}});
   gulp.src(['tests/e2e/**/*.js'], { read: false })
-    .pipe(gp.protractor(protractorConf)).on('error', function(e) {
+    .pipe($.protractor.protractor(protractorConf)).on('error', function(e) {
       server.kill();
     }).on('end', function() {
       server.kill();
