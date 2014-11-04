@@ -95,7 +95,7 @@ Instance.prototype.startBrowserSyncProcess = function(url, data) {
     switch (message.type) {
       case 'browserSyncInit':
           that.set('startUrl', message.browserSync);
-          that.startDeferred.resolve();
+          that.startDeferred.resolve({startUrl: message.browserSync});
         break;
       case 'browserSyncExit':
           that.process.send({type: 'exit'});
