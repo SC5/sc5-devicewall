@@ -34,7 +34,7 @@ var config = {
 
 // Package management
 /* Install & update Bower dependencies */
-gulp.task('install', ['config'], function() {
+gulp.task('install', ['config', 'integrate'], function() {
   // FIXME specifying the component directory broken in gulp
   // For now, use .bowerrc; No need for piping, either
   $.bower();
@@ -115,8 +115,12 @@ gulp.task('preprocess', ['config', 'scss-lint'], function() {
 });
 
 gulp.task('scss-lint', function() {
-  gulp.src('src/css/**/*.scss')
+  var lintTask = gulp.src('src/css/**/*.scss')
     .pipe(scssLint());
+  // without --force flag scss-lint fails the task
+  if (!$.util.env.force) {
+    lintTask.pipe(scssLint.failReporter());
+  }
 });
 
 gulp.task('javascript', ['preprocess'], function() {

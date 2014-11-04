@@ -1,5 +1,5 @@
 $(document).ready(function() {
-  
+
   var count = 0;
 
   function setBg(color) {
@@ -13,6 +13,7 @@ $(document).ready(function() {
     }
     if (count === 20) {
       setBg('green');
+      $('body').html('<div id="done" style="display: none;">');
     } else {
       $.get('1.dat?_='+Math.random()).done(downloadDone);
     }

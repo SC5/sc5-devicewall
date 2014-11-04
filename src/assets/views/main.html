@@ -1,5 +1,5 @@
 <div id="content" class="devices">
-  <a class="home" href="/">&#128281;</a>
+  <a class="home icon-back" href="/"></a>
   <section id="devices">
     <form id="devices-form">
       <div class="section-wrapper">
@@ -20,7 +20,7 @@
         <div class="buttons">
           <button
             type="button"
-            data-ng-disabled="deviceList.length === 0"
+            data-ng-disabled="btnGo.disabled"
             data-ng-show="btnGo.show"
             class="large"
             data-ng-click="submitUrl()"
@@ -101,7 +101,7 @@
                     ng-disabled="{{ device.userId ? false : false }}"
                   >
                 </td>
-                <td class="remove" data-ng-click="removeDevice(device)"><span>&#59177;</span></td>
+                <td class="remove" data-ng-click="removeDevice(device)"><span class="icon-trash"></span></td>
               </tr>
             </tbody>
           </table>

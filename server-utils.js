@@ -1,3 +1,5 @@
+var url = require('url');
+
 module.exports = {
   checkProxyTarget: function (parsedUrl, cb) {
     var chunks  = [];
