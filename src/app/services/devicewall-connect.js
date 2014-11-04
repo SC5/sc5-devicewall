@@ -8,7 +8,8 @@
       var factory = socketFactory({
         ioSocket: io.connect(mySocket)
       });
-
+      return factory;
+      /*
       return {
         on: function(eventName, cb) {
           factory.on(eventName, function(data) {
@@ -23,6 +24,7 @@
           factory.emit.apply(factory, arguments);
         }
       };
+      */
     });
 
 })();
