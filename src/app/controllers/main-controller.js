@@ -16,7 +16,6 @@ angular.module('DeviceWall')
         displayName: 'singleuser'
       };
     } else {
-      // this is weird, just weiirrddd, TODO refactor away
       $scope.user = {
         id: $window.localStorage.getItem('name'),
         displayName: $window.localStorage.getItem('name')
@@ -33,7 +32,7 @@ angular.module('DeviceWall')
 
     // maybe there is an old url in localstorage already..
     if ($window.localStorage.getItem('url') !== null) {
-      $scope.url = $window.localStorage.getItem('url');
+      $scope.url.value = $window.localStorage.getItem('url');
     }
 
     $scope.btnGo =              {show: true};
