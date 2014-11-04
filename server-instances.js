@@ -35,9 +35,7 @@ var Instances = {
       instance = new Instance(data, {config: this.config, devices: this.devices});
       this.instances.push(instance);
       instance.start(data).then(
-        function() {
-          deferred.resolve();
-        },
+        deferred.resolve,
         function(reason) {
           that.stop(data.user.id).then(function() {
             deferred.reject(reason);

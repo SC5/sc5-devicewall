@@ -35,7 +35,8 @@ module.exports = function (app, options) {
     socket.on('start', function (data) {
       console.log('DeviceWall control panel start.');
       instances.start(data).then(
-        function() {
+        function(startData) {
+          data.url = startData.startUrl;
           nsCtrl.emit('update', devices.toJSON());
           nsCtrl.emit('start', data);
           nsApp.emit('start', data);
