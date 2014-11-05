@@ -1,4 +1,4 @@
-var config = require('../config.test.json');
+var config = require('../../config.test.json');
 module.exports = function (app) {
   app.get('/test', function (req, res) {
     res.set('Content-Type', 'text/html');
