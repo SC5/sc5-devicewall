@@ -26,6 +26,11 @@ module.exports = function (app, options) {
         nsCtrl.emit('update', devices.toJSON());
       }
     });
+
+    socket.on('disconnect', function () {
+      console.log('DeviceWall device disconnected.');
+    });
+
   });
 
   // Control panel
@@ -61,6 +66,10 @@ module.exports = function (app, options) {
         nsCtrl.emit('update', devices.toJSON());
         nsCtrl.emit('stopall');
       });
+    });
+
+    socket.on('disconnect', function () {
+      console.log('DeviceWall control panel disconnected.');
     });
 
   });
