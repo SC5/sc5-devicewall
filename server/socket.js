@@ -1,12 +1,12 @@
 var socketio = require('socket.io');
 
 module.exports = function (app, options) {
+  'use strict';
   var
     io = socketio(app),
     config = options.config,
     nsApp = io.of('/devicewallapp'),
     nsCtrl = io.of('/devicewall'),
-    Q = require('q'),
     devices = require('./devices'),
     instances = require('./instances');
 
@@ -100,7 +100,6 @@ module.exports = function (app, options) {
     }
 
     function list(data, fn) {
-      console.log('list');
       devices.sort();
       if (typeof(fn) === typeof(Function)) {
         fn(devices.toJSON());
@@ -112,10 +111,10 @@ module.exports = function (app, options) {
     function save(data) {
       var device = devices.find(data.label);
       if (device) {
-        console.log("update device", device.label);
+        console.log("update device", device.get('label'));
         ['model', 'version', 'platform'].forEach(function(val) {
           if (data[val]) {
-            device.set(val, val);
+            device.set(val, data[val]);
           }
         });
         devices.update(device.toJSON());
