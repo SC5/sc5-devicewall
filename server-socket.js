@@ -80,11 +80,13 @@ module.exports = function (app, options) {
     return deferred.promise;
   }
 
-  function createInstance(testUrl, user, data) {
+  function createInstance(testUrl, user, data, options) {
     var parsedUrl = url.parse(testUrl);
-    checkProxyTarget({
-      parsedUrl: parsedUrl
-    }, function(err, parsedUrl) {
+    var proxyOptions = {parsedUrl: parsedUrl};
+    if (options.userAgentHeader) {
+      proxyOptions.userAgentHeader = options.userAgentHeader;
+    }
+    checkProxyTarget(proxyOptions, function(err, parsedUrl) {
       if (err) {
         ns.emit('server-stop', {user: user, reason: 'Target URL unreachable.'});
       } else {
@@ -123,7 +125,8 @@ module.exports = function (app, options) {
             ns.emit('server-stop', {user: user, reason: 'Target URL unreachable.'});
           }
         });
-        childProcesses[user.id].send({type: 'init', url: parsedUrl.href});
+        console.log("optionsssit", options);
+        childProcesses[user.id].send({type: 'init', url: parsedUrl.href, userAgentHeader: options.userAgentHeader});
       }
     });
   }
@@ -338,7 +341,8 @@ module.exports = function (app, options) {
       var user = data.user,
           testUrl = data.url.trim(),
           labels = data.labels || [],
-          sendUpdate = false;
+          sendUpdate = false,
+          userAgentHeader = data.userAgentHeader || false;
 
       if (testUrl.match(/:\/\//)) {
         if (!testUrl.match(/^http[s]*/)) {
@@ -394,7 +398,7 @@ module.exports = function (app, options) {
             updated: +new Date(),
             stopping: false
           };
-          createInstance(testUrl, user, data);
+          createInstance(testUrl, user, data, {userAgentHeader: userAgentHeader});
         });
       }
     });

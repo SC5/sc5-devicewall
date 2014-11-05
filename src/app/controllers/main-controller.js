@@ -10,6 +10,7 @@ angular.module('DeviceWall')
     // TODO move these somewhere
     $scope.userAgent = {selected: {}};
     $scope.userAgents = [
+      {},
       {name: 'desktop (OS X)', value: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062.124 Safari/537.36"},
       {name: 'desktop (Windows)', value: "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; WOW64; Trident/6.0)"},
       {name: 'mobile (Android)', value: "Mozilla/5.0 (Linux; Android 4.0.4; Galaxy Nexus Build/IMM76B) AppleWebKit/535.36 (KHTML, like Gecko) Chrome/40.0.2194.2 Mobile Safari/535.36"},
