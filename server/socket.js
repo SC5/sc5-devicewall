@@ -7,8 +7,8 @@ module.exports = function (app, options) {
     nsApp = io.of('/devicewallapp'),
     nsCtrl = io.of('/devicewall'),
     Q = require('q'),
-    devices = require('./server-devices'),
-    instances = require('./server-instances');
+    devices = require('./devices'),
+    instances = require('./instances');
 
   // Device
   nsApp.on('connection', function (socket) {
@@ -29,6 +29,15 @@ module.exports = function (app, options) {
 
     socket.on('disconnect', function () {
       console.log('DeviceWall device disconnected.');
+    });
+
+    socket.on('check-platform', function(data, fn) {
+      var appPlatform = '';
+      var device = devices.find(data.label);
+      if (device) {
+        appPlatform = device.appPlatform;
+      }
+      fn({appPlatform: appPlatform});
     });
 
   });
