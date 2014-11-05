@@ -196,22 +196,6 @@ gulp.task('integrate', ['javascript', 'stylesheets', 'assets', 'favicon'], funct
     .pipe(gulp.dest('./dist'));
 });
 
-var dependencies = (config.browsersync) ?
-  ['integrate', 'test', 'browsersync'] : ['integrate', 'livereload'];
-
-gulp.task('watch', dependencies, function() {
-
-  return gulp.watch([
-    'config/**/*.json',
-    'src/css/**/*.scss',
-    'src/app/**/*.js',
-    'src/index.html',
-    'tests/**/*.js'
-  ], ['integrate']);
-
-
-});
-
 gulp.task('livereload', function() {
 
   // Only livereload if the HTML (or other static assets) are changed, because
@@ -233,19 +217,20 @@ gulp.task('browsersync', function() {
 
 });
 
-gulp.task('mywatch', ['integrate'], function() {
-  $.nodemon({script: 'server/server.js', watch: 'dist/**/*'})
+gulp.task('watch', ['build'], function() {
+  $.nodemon({script: 'server/server.js', watch: 'server/**/*.js'})
   .on('restart', function () {
-    console.log('restarted!');
+    console.log('express restarted!');
   });
   return gulp.watch([
-      'server*.js',
-      'config/**/*.json',
-      'src/css/**/*.scss',
-      'src/app/**/*.js',
-      'src/assets/**/*',
-      'src/index.html'
-    ], ['integrate']);
+    'server/**/*.js',
+    'config/**/*.json',
+    'src/css/**/*.scss',
+    'src/app/**/*.js',
+    'src/assets/**/*',
+    'src/index.html',
+    '!src/app/config.js', // do not listen files which are modified during build process
+    ], ['build']);
 });
 
 // Tests
@@ -274,3 +259,8 @@ gulp.task('test:e2e', ['webdriver_manager_update'], function() {
     });
 });
 gulp.task('default', ['integrate']);
+gulp.task('build', ['clean'], function() {
+  gulp.start('integrate');
+});
+
+
