@@ -15,6 +15,10 @@ var Instance =  function (data, options) {
 };
 
 Instance.prototype.start = function(data) {
+  'use strict';
+  this.startDeferred = Q.defer();
+  this.stopDeferred = Q.defer();
+
   var that = this,
       deferred = Q.defer(),
       testUrl = data.url.trim(),
@@ -61,17 +65,19 @@ Instance.prototype.start = function(data) {
 };
 
 Instance.prototype.stop = function() {
-  var that = this,
-      deferred = Q.defer();
+  'use strict';
+  var that = this;
 
   this.set('status', 'stopping');
 
-  this.process.send({
-    type: 'location',
-    url: this.config.deviceWallAppURL,
-    timeout: 5000,
-    completeMessageType: 'browserSyncExit'
-  });
+  if (this.isConnected()) {
+    this.process.send({
+      type: 'location',
+      url: this.config.deviceWallAppURL,
+      timeout: 5000,
+      completeMessageType: 'browserSyncExit'
+    });
+  }
 
   _.each(that.getDevices(), function(device) {
     device.update({
@@ -87,8 +93,6 @@ Instance.prototype.stop = function() {
 
 Instance.prototype.startBrowserSyncProcess = function(url, data) {
   var that = this;
-  this.startDeferred = Q.defer();
-  this.stopDeferred = Q.defer();
   this.process = fork('./server/browsersync.js');
 
   this.process.on('message', function(message) {
@@ -118,6 +122,11 @@ Instance.prototype.update = function(data) {
     updated: +new Date()
   });
 };
+
+Instance.prototype.isConnected = function() {
+  'use strict';
+  return this.process && this.process.connected;
+}
 
 Instance.prototype.set = function(property, value) {
   this.properties[property] = value;
