@@ -33,7 +33,7 @@
 
       <section data-ng-show="config.connectionSetupEnabled">
         <div class="section-wrapper accordion collapsed">
-        <h2 ng-click="toggleAccordion($event)">Connection setup</h2>
+        <h2 toggle-accordion>Connection setup</h2>
         <div class="connection-setup accordion-content">
           <div data-ng-hide="true" class="checkbox">
             <label>
@@ -52,7 +52,7 @@
       </section>
 
       <div class="section-wrapper accordion" id="available-devices">
-        <h2 ng-click="toggleAccordion($event)">Available devices</h2>
+        <h2 toggle-accordion>Available devices</h2>
 
         <div class="accordion-content">
           <div class="buttons">
