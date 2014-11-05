@@ -42,7 +42,7 @@ require('./routes/auth.js')(adminServer, {
 require('./routes/user.js')(adminServer);
 require('./routes/devices.js')(adminServer, '/api/devices/:deviceLabel', config.devicesJson);
 
-adminServer.use(express.static(__dirname + '/dist'));
+adminServer.use(express.static(__dirname + '/../dist'));
 
 // Client App uses '/client' prefix to separate requests from control panel
 adminServer.use('/client', deviceWallApp);

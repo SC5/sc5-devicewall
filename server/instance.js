@@ -89,7 +89,7 @@ Instance.prototype.startBrowserSyncProcess = function(url, data) {
   var that = this;
   this.startDeferred = Q.defer();
   this.stopDeferred = Q.defer();
-  this.process = fork('./server-browsersync.js');
+  this.process = fork('./server/browsersync.js');
 
   this.process.on('message', function(message) {
     switch (message.type) {
