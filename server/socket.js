@@ -57,7 +57,14 @@ module.exports = function (app, options) {
   nsCtrl.on('connection', function (socket) {
     console.log('DeviceWall control panel connected!');
     // Start
-    socket.on('start', function (data) {
+    socket.on('start', start);
+    socket.on('stop', stop);
+    socket.on('stopall', stopAll);
+    socket.on('disconnect', disconnect);
+    socket.on('list', list);
+    socket.on('save', save);
+
+    function start (data) {
       console.log('DeviceWall control panel start.');
       instances.start(data).then(
         function(startData) {
@@ -70,27 +77,52 @@ module.exports = function (app, options) {
           nsCtrl.emit('server-stop', {user: data.user, reason: reason});
         }
       );
-    });
+    }
 
-    socket.on('stop', function (data) {
+    function stop(data) {
       console.log('DeviceWall control panel stop.');
       instances.stop(data.user.id).then(function() {
         nsCtrl.emit('update', devices.toJSON());
         nsCtrl.emit('stop', data);
       });
-    });
+    }
 
-    socket.on('stopall', function () {
+    function stopAll() {
       console.log('DeviceWall control panel stop all.');
       instances.stopAll().then(function() {
         nsCtrl.emit('update', devices.toJSON());
         nsCtrl.emit('stopall');
       });
-    });
+    }
 
-    socket.on('disconnect', function () {
+    function disconnect () {
       console.log('DeviceWall control panel disconnected.');
-    });
+    }
+
+    function list(data, fn) {
+      console.log('list');
+      devices.sort();
+      if (typeof(fn) === typeof(Function)) {
+        fn(devices.toJSON());
+      } else {
+        console.log("not a function: ", fn);
+      }
+    }
+
+    function save(data) {
+      var device = devices.find(data.label);
+      if (device) {
+        console.log("update device", device.label);
+        ['model', 'version', 'platform'].forEach(function(val) {
+          if (data[val]) {
+            device.set(val, val);
+          }
+        });
+        devices.update(device.toJSON());
+      }
+      app.emit('update-devices');
+      socket.broadcast.emit('update', devices);
+    }
 
   });
 
