@@ -6,6 +6,7 @@ var _ = require('lodash'),
 var Devices = {
   init: function(options) {
     this.config = options.config;
+    this.devices = [];
     this.updated = false;
     this.read();
   },
@@ -40,9 +41,9 @@ var Devices = {
   read: function() {
     var that = this, 
         devices;
-    this.devices = [];
     if (fs.existsSync(this.config.devicesJson)) {
       devices = require(this.config.devicesJson);
+      this.devices = [];
       _.each(devices, function(data) {
         that.devices.push(new Device(data));
       });

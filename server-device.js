@@ -14,6 +14,11 @@ Device.prototype.update = function(data) {
   });
 };
 
+Device.prototype.set = function(property, value) {
+  this.properties[property] = value;
+  this.properties.updated = +new Date();
+};
+
 Device.prototype.get = function(property) {
   return this.properties[property] || null;
 };
