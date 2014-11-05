@@ -1,6 +1,6 @@
 var browserSync = require('browser-sync'),
     evt = browserSync.emitter,
-    config = require('./config.json'),
+    config = require('../config.json'),
     bs,
     url = require('url'),
     http = require('http'),

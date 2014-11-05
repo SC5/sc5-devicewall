@@ -9,6 +9,6 @@
   "sslKey": "./node_modules/browser-sync/lib/server/certs/server.key",
   "sslCert": "./node_modules/browser-sync/lib/server/certs/server.crt",
   "proxyHost": "devicewall.sc5.io",
-  "devicesJson": "./data/devices.json",
-  "instancesJson": "./data/instances.json"
+  "devicesJson": "data/devices.json",
+  "instancesJson": "data/instances.json"
 }
