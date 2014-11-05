@@ -2,7 +2,7 @@
 var _ = require('lodash'),
     fork = require('child_process').fork,
     url = require('url'),
-    utils = require('./server-utils'),
+    utils = require('./utils'),
     Q = require('q');
 
 var Instance =  function (data, options) {

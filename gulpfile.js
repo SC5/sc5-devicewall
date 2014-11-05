@@ -234,7 +234,7 @@ gulp.task('browsersync', function() {
 });
 
 gulp.task('mywatch', ['integrate'], function() {
-  $.nodemon({script: 'server.js', watch: 'dist/**/*'})
+  $.nodemon({script: 'server/server.js', watch: 'dist/**/*'})
   .on('restart', function () {
     console.log('restarted!');
   });
@@ -265,7 +265,7 @@ gulp.task('test:e2e', ['webdriver_manager_update'], function() {
     fs.mkdirSync(testDataDir);
   }
 
-  server.listen({path: './server.js', env: {"NODE_ENV": "test"}});
+  server.listen({path: './server/server.js', env: {"NODE_ENV": "test"}});
   gulp.src(['tests/e2e/**/*.js'], { read: false })
     .pipe($.protractor.protractor(protractorConf)).on('error', function(e) {
       server.kill();

@@ -1,7 +1,7 @@
 // Devices object
 var _ = require('lodash'),
     fs = require('fs'),
-    Device = require('./server-device');
+    Device = require('./device');
 
 var Devices = {
   init: function(options) {
