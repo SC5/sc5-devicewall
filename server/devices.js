@@ -42,7 +42,7 @@ var Devices = {
     var that = this, 
         devices;
     if (fs.existsSync(this.config.devicesJson)) {
-      devices = require(this.config.devicesJson);
+      devices = JSON.parse(fs.readFileSync(this.config.devicesJson, 'utf8'));
       this.devices = [];
       _.each(devices, function(data) {
         that.devices.push(new Device(data));
