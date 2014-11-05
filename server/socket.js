@@ -12,7 +12,7 @@ module.exports = function (app, options) {
 
   // Device
   nsApp.on('connection', function (socket) {
-    console.log('DeviceWall device connected!');
+    console.log('Test device connected!');
 
     socket.on('update', function (data) {
       devices.update(data);
@@ -23,6 +23,17 @@ module.exports = function (app, options) {
       var device = devices.find(label);
       if (device) {
         device.set('status', 'running');
+        nsCtrl.emit('update', devices.toJSON());
+      }
+    });
+
+    socket.on('idling', function (label) {
+      var device = devices.find(label);
+      if (device) {
+        device.set('status', 'idle');
+        device.set('updated', +new Date());
+        devices.update(device.toJSON());
+        app.emit('update-devices');
         nsCtrl.emit('update', devices.toJSON());
       }
     });
