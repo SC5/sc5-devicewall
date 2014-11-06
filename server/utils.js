@@ -1,6 +1,17 @@
 var url = require('url');
 
 module.exports = {
+  parseUrl: function(url) {
+    url = url.trim();
+    if (url.match(/:\/\//)) {
+      if (!url.match(/^http[s]*/)) {
+        url.replace(/.*:\/\//, 'http://');
+      }
+    } else {
+      url = 'http://' + url;
+    }
+    return url;
+  },
   checkProxyTarget: function (parsedUrl, cb) {
     var chunks  = [];
     var errored = false;

@@ -10,6 +10,7 @@ var Devices = {
     this.updated = false;
     this.read();
   },
+  // if needle is array, return is array of matched objects
   find: function(needle) {
     if (_.isArray(needle)) {
       return _.filter(this.devices, function(device) {

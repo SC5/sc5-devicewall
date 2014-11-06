@@ -138,6 +138,7 @@ process.on('message', function(message) {
         });
       break;
     default:
+      console.log('BrowserSync exited');
       browserSync.exit();
   }
 });
