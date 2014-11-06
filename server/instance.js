@@ -59,7 +59,7 @@ Instance.prototype.stop = function() {
     that.set('status', 'stopping');
 
     if (that.isConnected()) {
-      that.process.send({
+      that.childProcess.send({
         type: 'location',
         url: that.config.deviceWallAppURL,
         timeout: 5000,
@@ -86,7 +86,7 @@ Instance.prototype.location = function(data) {
   this.startDeferred = Q.defer();
   this.stopDeferred = Q.defer();
 
-  this.process.send({
+  this.childProcess.send({
     type: 'location',
     url: path,
     timeout: 5000,
@@ -101,13 +101,14 @@ Instance.prototype.startBrowserSyncProcess = function(data) {
   var debug = process.execArgv.indexOf('--debug') !== -1;
   var forkArgs = {};
   if (debug) {
+    console.log("debug enabled");
     // use different debug port for fork, so it does not override main debugger
     // http://stackoverflow.com/questions/16840623/how-to-debug-node-js-child-forked-process
     forkArgs.execArgv = ['--debug-brk=6001'];
   }
-  this.process = fork('./server/browsersync.js', forkArgs);
+  this.childProcess = fork('./server/browsersync.js', forkArgs);
 
-  this.process.on('message', function(message) {
+  this.childProcess.on('message', function(message) {
     switch (message.type) {
       case 'browserSyncInit':
           that.update({
@@ -124,13 +125,13 @@ Instance.prototype.startBrowserSyncProcess = function(data) {
       case 'browserSyncExit':
           that.set('status', 'stopped');
           console.log('instance.js: browsersync stop');
-          that.process.send({type: 'exit'});
+          that.childProcess.send({type: 'exit'});
           that.stopDeferred.resolve();
         break;
     }
   });
 
-  this.process.send({type: 'init', url: data.url});
+  this.childProcess.send({type: 'init', url: data.url});
 
   return this.startDeferred.promise;
 };
@@ -164,7 +165,7 @@ Instance.prototype.update = function(data) {
 
 Instance.prototype.isConnected = function() {
   'use strict';
-  return this.process && this.process.connected;
+  return this.childProcess && this.childProcess.connected;
 };
 
 Instance.prototype.set = function(property, value) {
