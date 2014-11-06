@@ -15,20 +15,26 @@ module.exports = function (app, options) {
   nsApp.on('connection', function (socket) {
     console.log('Test device connected!');
 
-    socket.on('update', function (data) {
+    socket.on('update', update);
+    socket.on('started', started);
+    socket.on('idling', idling);
+    socket.on('disconnect', disconnect);
+    socket.on('check-platform', checkPlatform);
+
+    function update(data) {
       devices.update(data);
       nsCtrl.emit('update', devices.toJSON());
-    });
+    }
 
-    socket.on('started', function (label) {
+    function started(label) {
       var device = devices.find(label);
       if (device) {
         device.set('status', 'running');
         nsCtrl.emit('update', devices.toJSON());
       }
-    });
+    }
 
-    socket.on('idling', function (label) {
+    function idling(label) {
       var device = devices.find(label);
       if (device) {
         device.set('status', 'idle');
@@ -37,20 +43,20 @@ module.exports = function (app, options) {
         app.emit('update-devices');
         nsCtrl.emit('update', devices.toJSON());
       }
-    });
+    }
 
-    socket.on('disconnect', function () {
+    function disconnect() {
       console.log('DeviceWall device disconnected.');
-    });
+    }
 
-    socket.on('check-platform', function(data, fn) {
+    function checkPlatform(data, fn) {
       var appPlatform = '';
       var device = devices.find(data.label);
       if (device) {
         appPlatform = device.appPlatform;
       }
       fn({appPlatform: appPlatform});
-    });
+    }
 
   });
 
