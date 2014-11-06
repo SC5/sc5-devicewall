@@ -56,6 +56,22 @@ var Devices = {
       fs.writeFileSync(this.config.devicesJson, JSON.stringify(this.toJSON(), null, 2));
       console.log('Updated devices.json');
     }
+  },
+  sort: function() {
+    this.devices.sort(function (a, b) {
+      if (a.location > b.location) {
+        return 1;
+      } else if (a.location < b.location) {
+        return -1;
+      } else {
+        if (a.label > b.label) {
+          return 1;
+        } else if (a.label < b.label) {
+          return -1;
+        }
+      }
+      return 0;
+    });
   }
 };
 

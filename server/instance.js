@@ -16,6 +16,10 @@ var Instance =  function (data, options) {
 };
 
 Instance.prototype.start = function(data) {
+  'use strict';
+  this.startDeferred = Q.defer();
+  this.stopDeferred = Q.defer();
+
   var that = this,
       deferred = Q.defer();
 
@@ -47,6 +51,7 @@ Instance.prototype.start = function(data) {
 };
 
 Instance.prototype.stop = function() {
+  'use strict';
   var that = this;
 
   this.whenReady().then(function() {
@@ -58,6 +63,15 @@ Instance.prototype.stop = function() {
       timeout: 5000,
       completeMessageType: 'browserSyncExit'
     });
+
+    if (that.isConnected()) {
+      that.process.send({
+        type: 'location',
+        url: that.config.deviceWallAppURL,
+        timeout: 5000,
+        completeMessageType: 'browserSyncExit'
+      });
+    }
 
     _.each(that.getDevices(), function(device) {
       device.update({
@@ -147,6 +161,11 @@ Instance.prototype.update = function(data) {
   _.extend(this.properties, data, {
     updated: +new Date()
   });
+};
+
+Instance.prototype.isConnected = function() {
+  'use strict';
+  return this.process && this.process.connected;
 };
 
 Instance.prototype.set = function(property, value) {
