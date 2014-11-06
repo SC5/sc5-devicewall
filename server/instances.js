@@ -36,16 +36,19 @@ var Instances = {
 
     data.url = utils.parseUrl(data.url);
 
+console.log('dataurl: ', data.url);
+
     utils.checkProxyTarget(url.parse(data.url), function(err) {
       if (err) {
         deferred.reject('Target URL unreachable.');
       } else {
         if (instance) {
-          console.log('START old found: ', instance.get('status'));
           var previousUrlObject = url.parse(instance.get('url'));
           var nextUrlObject = url.parse(data.url);
+          console.log('START old found: ', previousUrlObject.host, nextUrlObject.host);
           if (previousUrlObject.host === nextUrlObject.host) {
             // same host, just send new location
+            instance.set('url', data.url);
             instance.location(data).then(deferred.resolve);
             locationChange = true;
           } else {

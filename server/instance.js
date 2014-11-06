@@ -57,13 +57,6 @@ Instance.prototype.stop = function() {
   this.whenReady().then(function() {
     that.set('status', 'stopping');
 
-    that.process.send({
-      type: 'location',
-      url: that.config.deviceWallAppURL,
-      timeout: 5000,
-      completeMessageType: 'browserSyncExit'
-    });
-
     if (that.isConnected()) {
       that.process.send({
         type: 'location',
@@ -110,15 +103,13 @@ Instance.prototype.startBrowserSyncProcess = function(data) {
     switch (message.type) {
       case 'browserSyncInit':
           that.update({
-            'status': 'running',
-            'startUrl': message.browserSync
+            'status': 'running'
           });
           that.startDeferred.resolve({startUrl: message.browserSync});
         break;
       case 'browserSyncUpdate':
           that.update({
-            'status': 'running',
-            'startUrl': data.url
+            'status': 'running'
           });
           that.startDeferred.resolve({startUrl: data.url});
         break;
