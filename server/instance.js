@@ -98,7 +98,14 @@ Instance.prototype.location = function(data) {
 
 Instance.prototype.startBrowserSyncProcess = function(data) {
   var that = this;
-  this.process = fork('./server/browsersync.js');
+  var debug = process.execArgv.indexOf('--debug') !== -1;
+  var forkArgs = {};
+  if (debug) {
+    // use different debug port for fork, so it does not override main debugger
+    // http://stackoverflow.com/questions/16840623/how-to-debug-node-js-child-forked-process
+    forkArgs.execArgv = ['--debug-brk=6001'];
+  }
+  this.process = fork('./server/browsersync.js', forkArgs);
 
   this.process.on('message', function(message) {
     switch (message.type) {

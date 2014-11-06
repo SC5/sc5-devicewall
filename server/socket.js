@@ -71,6 +71,7 @@ module.exports = function (app, options) {
         function(startData) {
           var appdata = _.clone(data);
           appdata.url = startData.startUrl;
+
           nsCtrl.emit('update', devices.toJSON());
           nsCtrl.emit('start', data);
           nsApp.emit('start', appdata);
