@@ -70,6 +70,7 @@ module.exports = function (app, options) {
     socket.on('disconnect', disconnect);
     socket.on('list', list);
     socket.on('save', save);
+    socket.on('remove', removeDevices);
 
     function start (data) {
       console.log('DeviceWall control panel start.');
@@ -128,6 +129,15 @@ module.exports = function (app, options) {
         });
         devices.update(device.toJSON());
       }
+      app.emit('update-devices');
+      socket.broadcast.emit('update', devices);
+    }
+
+    function removeDevices(data) {
+      data.labels.forEach(function(label) {
+        console.log('remove device ' + label);
+        devices.remove(label);
+      });
       app.emit('update-devices');
       socket.broadcast.emit('update', devices);
     }

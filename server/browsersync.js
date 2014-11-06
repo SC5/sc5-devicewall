@@ -79,28 +79,25 @@ process.on('message', function(message) {
       break;
     case 'syncLocations':
       var foundLocationToSync = false;
-
-      function checkClientCurrentLocation(data) {
-        if (!foundLocationToSync && data.url !== bs.options.startPath) {
-          foundLocationToSync = true;
-          var promisesSync = [];
-          setTimeout(function() {
-            bs.io.sockets.sockets.forEach(function(socket) {
-              promisesSync.push(deferredEmit(socket, 'sync-location', {url: data.url}, message.timeout || 5000));
-            });
-            Q.all(promisesSync).fin(function(data){
-              //console.log('SYNC LOCATION FINISHED');
-            });
-          }, 3000);
-        }
-      }
-
       var promisesGetSync = [];
       bs.io.sockets.sockets.forEach(function(socket) {
-        socket.on('current-location', checkClientCurrentLocation);
+        socket.on('current-location', function (data) {
+          if (!foundLocationToSync && data.url !== bs.options.startPath) {
+            foundLocationToSync = true;
+            var promisesSync = [];
+            setTimeout(function() {
+              bs.io.sockets.sockets.forEach(function(socket) {
+                promisesSync.push(deferredEmit(socket, 'sync-location', {url: data.url}, message.timeout || 5000));
+              });
+              Q.all(promisesSync).fin(function() {
+                //console.log('SYNC LOCATION FINISHED');
+              });
+            }, 3000);
+          }
+        });
         promisesGetSync.push(deferredEmit(socket, 'get-location', {}, message.timeout || 5000));
       });
-      Q.all(promisesGetSync).fin(function(data){
+      Q.all(promisesGetSync).fin(function() {
         //console.log('GET LOCATION FINISHED');
       });
       break;

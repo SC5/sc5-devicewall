@@ -32,6 +32,20 @@ var Devices = {
     }
     this.updated = true;
   },
+  remove: function(label) {
+    'use strict';
+    var removeIndex = -1;
+    this.devices.forEach(function(device, index) {
+      if (device.get('label') === label) {
+        removeIndex = index;
+      }
+    });
+    if (removeIndex >= 0) {
+      this.devices.splice(removeIndex, 1);
+      return true;
+    }
+    return false;
+  },
   toJSON: function() {
     var json = [];
     _.each(this.devices, function (device) {
