@@ -1,4 +1,5 @@
-var socketio = require('socket.io');
+var _ = require('lodash'),
+    socketio = require('socket.io');
 
 module.exports = function (app, options) {
   'use strict';
@@ -68,10 +69,11 @@ module.exports = function (app, options) {
       console.log('DeviceWall control panel start.');
       instances.start(data).then(
         function(startData) {
-          data.url = startData.startUrl;
+          var appdata = _.clone(data);
+          appdata.url = startData.startUrl;
           nsCtrl.emit('update', devices.toJSON());
           nsCtrl.emit('start', data);
-          nsApp.emit('start', data);
+          nsApp.emit('start', appdata);
         },
         function(reason) {
           nsCtrl.emit('server-stop', {user: data.user, reason: reason});

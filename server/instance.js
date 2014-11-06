@@ -2,6 +2,7 @@
 var _ = require('lodash'),
     fork = require('child_process').fork,
     utils = require('./utils'),
+    url = require('url'),
     Q = require('q');
 
 var Instance =  function (data, options) {
@@ -85,7 +86,7 @@ Instance.prototype.location = function(data) {
   this.startDeferred = Q.defer();
   this.stopDeferred = Q.defer();
 
-  instance.process.send({
+  this.process.send({
     type: 'location',
     url: path,
     timeout: 5000,
