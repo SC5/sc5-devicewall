@@ -5,6 +5,8 @@ var socket = require('../socket');
 
 describe('Control panel', function() {
   var ptor;
+  var testUrl = 'http://' + config.host + ':' + config.port + '/test';
+  var devicesUrl = 'http://' + config.host + ':' + config.port + '/#!/devices';
 
   beforeEach(function() {
     ptor = protractor.getInstance();
@@ -12,7 +14,9 @@ describe('Control panel', function() {
     // PhantomJS crashing randomly if this was not set
     browser.ignoreSynchronization = true;
 
-    browser.get('http://' + config.host + ':' + config.port + '/#!/devices');
+    browser.get(devicesUrl);
+    browser.executeScript('localStorage.clear();');
+    browser.get(devicesUrl);
   });
 
   afterEach(function() {
@@ -62,6 +66,18 @@ describe('Control panel', function() {
     expect(element(by.id('go-button')).isEnabled()).to.eventually.equal(true);
   });
 
+  it('should enable Go button if Open website on this browser checkbox is checked', function() {
+    utils.addSingleTestDevice("testdevice");
+    browser.driver.wait(function() {
+      return browser.driver.isElementPresent(by.xpath("//td[text()='testdevice']"));
+    });
+    element(by.css('#devices-list tr:nth-child(1) input[type="checkbox"]')).click();
+    expect(element(by.id('go-button')).isEnabled()).to.eventually.equal(false);
+    element(by.id('openUrl')).click();
+    expect(element(by.id('openUrl')).isSelected()).to.eventually.equal(true);
+    expect(element(by.id('go-button')).isEnabled()).to.eventually.equal(true);
+  });
+
   it('should set url value to http://www when clicked', function() {
     element(by.id('url')).click();
     expect(element(by.id('url')).getAttribute('value')).to.eventually.equal('http://www.');
@@ -81,7 +97,8 @@ describe('Control panel', function() {
     expect(element(by.id('go-button')).isEnabled()).to.eventually.equal(true);
     expect(element(by.css('#available-devices table input[type=checkbox]')).isSelected()).to.eventually.equal(true);
     element(by.id('url')).click();
-    element(by.id('url')).sendKeys('google.com');
+    utils.clear(element(by.id('url')));
+    element(by.id('url')).sendKeys(testUrl);
     element(by.id("go-button")).click();
     browser.driver.wait(function() {
       return browser.driver.isElementPresent(by.xpath("//div[@id='server-status' and text()='running']"));
@@ -95,7 +112,8 @@ describe('Control panel', function() {
       return browser.driver.isElementPresent(by.xpath("//td[text()='testdevice']"));
     });
     element(by.id('url')).click();
-    element(by.id('url')).sendKeys('google.com');
+    utils.clear(element(by.id('url')));
+    element(by.id('url')).sendKeys(testUrl);
     element(by.id("go-button")).click();
     browser.driver.wait(function() {
       return browser.driver.isElementPresent(by.xpath("//div[@id='server-status' and text()='running']"));
@@ -151,5 +169,33 @@ describe('Control panel', function() {
     expect(element(by.id('stop-all-button')).isDisplayed()).to.eventually.equal(false);
   });
 
-  it('should enable Go button if Open website on this browser checkbox is checked', function() {});
+  it('should remove device when trash icon clicked', function() {
+    utils.addSingleTestDevice("testdevice");
+    browser.driver.wait(function() {
+      return browser.driver.isElementPresent(by.xpath("//td[text()='testdevice']"));
+    });
+    element(by.css('#devices-list tr .remove')).click();
+    expect(element.all(by.css('#devices-list tr')).count()).to.eventually.equal(0);
+  });
+
+  it('should persist added model, platform and version data input by user', function() {
+    utils.addSingleTestDevice("testdevice");
+    browser.driver.wait(function() {
+      return browser.driver.isElementPresent(by.xpath("//td[text()='testdevice']"));
+    });
+    element(by.css('#devices-list input[data-ng-model="device.model"]')).click();
+    element(by.css('#devices-list input[data-ng-model="device.model"]')).sendKeys('iPhone');
+    element(by.css('#devices-list input[data-ng-model="device.platform"]')).click();
+    element(by.css('#devices-list input[data-ng-model="device.platform"]')).sendKeys('iOS');
+    element(by.css('#devices-list input[data-ng-model="device.version"]')).click();
+    element(by.css('#devices-list input[data-ng-model="device.version"]')).sendKeys('6.1');
+    element(by.css('#devices-list input[data-ng-model="device.model"]')).click();
+    browser.get(devicesUrl);
+    browser.driver.wait(function() {
+      return browser.driver.isElementPresent(by.xpath("//td[text()='testdevice']"));
+    });
+    expect(element(by.css('#devices-list input[data-ng-model="device.model"]')).getAttribute('value')).to.eventually.equal('iPhone');
+    expect(element(by.css('#devices-list input[data-ng-model="device.platform"]')).getAttribute('value')).to.eventually.equal('iOS');
+    expect(element(by.css('#devices-list input[data-ng-model="device.version"]')).getAttribute('value')).to.eventually.equal('6.1');
+  });
 });

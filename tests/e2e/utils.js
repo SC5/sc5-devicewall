@@ -21,7 +21,7 @@ module.exports.writeSingleTestDevice = function(label) {
       "appPlatform": "browser"
     });
   }
-  fs.writeFileSync(devicesJson, JSON.stringify(devices));
+  fs.writeFileSync(devicesJson, JSON.stringify(devices, null, 2));
 };
 
 module.exports.addSingleTestDevice = function(label) {
@@ -44,5 +44,18 @@ module.exports.clearAfterEach = function() {
 module.exports.hasClass = function (element, cls) {
   return element.getAttribute('class').then(function (classes) {
     return classes.split(' ').indexOf(cls) !== -1;
+  });
+};
+
+module.exports.clear = function (element) {
+  return element.getAttribute('value').then(function (text) {
+    var backspaceSeries = '',
+        textLength = text.length;
+
+    for(var i = 0; i < textLength; i++) {
+      backspaceSeries += protractor.Key.BACK_SPACE;
+    }
+
+    return element.sendKeys(backspaceSeries);
   });
 };

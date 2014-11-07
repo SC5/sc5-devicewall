@@ -15,6 +15,7 @@ Compass framework for compiling SASS stylesheets into CSS and sprite sheets:
     > gem install sass
     > gem install scss-lint
     > gem install compass
+    > gem install bundler
 
 Note that you may need to first uninstall other SASS versions than (3.2.x).
 
@@ -100,6 +101,8 @@ Most likely the normal *gulp serve* task will not suffice, and you want to run y
 server, instead. The task below, will default to 'gulp serve' by default until you change it:
 
     > npm start
+    or
+    > node server/server.js
 
 ### Live reloading the changes
 

@@ -1,5 +1,5 @@
 <div id="content" class="devices">
-  <a class="home" href="/">&#128281;</a>
+  <a class="home icon-back" href="/"></a>
   <section id="devices">
     <form id="devices-form">
       <div class="section-wrapper">
@@ -33,7 +33,7 @@
 
       <section data-ng-show="config.connectionSetup.enabled">
         <div class="section-wrapper accordion collapsed">
-        <h2 ng-click="toggleAccordion($event)">Connection setup</h2>
+        <h2 toggle-accordion>Connection setup</h2>
         <div class="connection-setup accordion-content">
           <div data-ng-hide="true" class="checkbox">
             <label>
@@ -71,7 +71,7 @@
       </section>
 
       <div class="section-wrapper accordion" id="available-devices">
-        <h2 ng-click="toggleAccordion($event)">Available devices</h2>
+        <h2 toggle-accordion>Available devices</h2>
 
         <div class="accordion-content">
           <div class="buttons">
@@ -120,7 +120,7 @@
                     ng-disabled="{{ device.userId ? false : false }}"
                   >
                 </td>
-                <td class="remove" data-ng-click="removeDevice(device)"><span>&#59177;</span></td>
+                <td class="remove" data-ng-click="removeDevice(device)"><span class="icon-trash"></span></td>
               </tr>
             </tbody>
           </table>

@@ -7,14 +7,14 @@ var
   GoogleStrategy = require('passport-google-oauth').OAuth2Strategy,
   https = require('https'),
   http = require('http'),
-  config = require('./config.json'),
+  config = require('../config.json'),
   deviceWallApp = require('sc5-devicewall-app'),
   url = require('url'),
   fs = require('fs'),
   io;
 
 if (process.env.NODE_ENV === "test") {
-  config = require('./config.test.json');
+  config = require('../config.test.json');
   if (fs.existsSync(config.devicesJson)) {
     fs.unlinkSync(config.devicesJson);
   }
@@ -42,19 +42,32 @@ require('./routes/auth.js')(adminServer, {
 require('./routes/user.js')(adminServer);
 require('./routes/devices.js')(adminServer, '/api/devices/:deviceLabel', config.devicesJson);
 
-adminServer.use(express.static(__dirname + '/dist'));
+adminServer.use(express.static(__dirname + '/../dist'));
 
 // Client App uses '/client' prefix to separate requests from control panel
 adminServer.use('/client', deviceWallApp);
 adminServer.use('/client/return', deviceWallApp);
+
+// Performance testing
+adminServer.use('/perf-test', express.static(__dirname + '/perf-test'));
+
+// Testing
+if (process.env.NODE_ENV === "test") {
+  var testServer = express();
+
+  require('./routes/test.js')(adminServer);
+  require('./routes/test.js')(testServer);
+
+  var test = testServer.listen(config.testServerPort, function () {
+    console.log('Test server listening on port %d', test.address().port);
+  });
+}
 
 var admin = adminServer.listen(config.port, function () {
   console.log('Control server listening on port %d', admin.address().port);
 });
 
 // Socket IO
-require('./server-socket.js')(admin, {
+require('./socket.js')(admin, {
   config: config
 });
-
-adminServer.use('/perf-test', express.static(__dirname + '/perf-test'));
