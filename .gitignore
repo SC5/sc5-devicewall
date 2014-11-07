@@ -4,8 +4,8 @@ node_modules
 src/components
 src/.sass-cache
 phantomjs.log
-data/devices.json
-data/instances.json
+devices.json
+instances.json
 .project
 src/app/config.js
 config/server/config.local.json
