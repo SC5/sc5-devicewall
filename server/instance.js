@@ -23,9 +23,10 @@ Instance.prototype.start = function(data) {
 
   var that = this,
       deferred = Q.defer();
-
+  
   this.whenReady().then(function() {
     that.set('status', 'starting');
+
     // Set and update devices for the instance
     var instanceLabels = [];
     _.each(that.getDevices(), function(device) {
@@ -39,13 +40,20 @@ Instance.prototype.start = function(data) {
         instanceLabels.push(device.get('label'));
       }
     });
+    /*
     if (!instanceLabels.length) {
+      console.warn('no devices selected, so rejecting start');
       deferred.reject('No devices selected');
       return deferred.promise;
     }
-    that.set('labels', instanceLabels);
+    */
+    that.set('labels', data.labels);
 
     that.startBrowserSyncProcess(data).then(deferred.resolve, deferred.reject);
+  }).fail(function(reason) {
+    console.err('whenReady failed: ', reason);
+  }).catch(function(err) {
+    console.error(err);
   });
 
   return deferred.promise;
@@ -100,6 +108,7 @@ Instance.prototype.startBrowserSyncProcess = function(data) {
   var that = this;
   var debug = process.execArgv.indexOf('--debug') !== -1;
   var forkArgs = {};
+  console.log('Starting new browserSync process');
   if (debug) {
     console.log("debug enabled");
     // use different debug port for fork, so it does not override main debugger
@@ -111,26 +120,27 @@ Instance.prototype.startBrowserSyncProcess = function(data) {
   this.childProcess.on('message', function(message) {
     switch (message.type) {
       case 'browserSyncInit':
-          that.update({
-            'status': 'running'
-          });
-          that.startDeferred.resolve({startUrl: message.browserSync});
+        console.log('instance: browserSync init confirm');
+        that.update({
+          'status': 'running'
+        });
+        that.startDeferred.resolve({startUrl: message.browserSync});
         break;
       case 'browserSyncUpdate':
-          that.update({
-            'status': 'running'
-          });
-          that.startDeferred.resolve({startUrl: data.url});
+        that.update({
+          'status': 'running'
+        });
+        that.startDeferred.resolve({startUrl: data.url});
         break;
       case 'browserSyncExit':
-          that.set('status', 'stopped');
-          console.log('instance.js: browsersync stop');
-          that.childProcess.send({type: 'exit'});
-          that.stopDeferred.resolve();
+        that.set('status', 'stopped');
+        console.log('instance.js: browsersync stop');
+        that.childProcess.send({type: 'exit'});
+        that.stopDeferred.resolve();
         break;
     }
   });
-
+  console.info(">> childProcess init url:", data.url);
   this.childProcess.send({type: 'init', url: data.url});
 
   return this.startDeferred.promise;

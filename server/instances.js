@@ -36,13 +36,13 @@ var Instances = {
 
     data.url = utils.parseUrl(data.url);
 
-console.log('dataurl: ', data.url);
 
     utils.checkProxyTarget(url.parse(data.url), function(err) {
       if (err) {
+        console.warn('Target URL unreachable.');
         deferred.reject('Target URL unreachable.');
       } else {
-        if (instance) {
+        if (instance && instance.isConnected()) {
           var previousUrlObject = url.parse(instance.get('url'));
           var nextUrlObject = url.parse(data.url);
           console.log('START old found: ', previousUrlObject.host, nextUrlObject.host);
@@ -56,21 +56,20 @@ console.log('dataurl: ', data.url);
             instance.stop();
           }
         } else {
-          console.log('START new!');
           // make new instance
           instance = new Instance(data, {config: that.config, devices: that.devices});
           that.instances.push(instance);
         }
 
         if (!locationChange) {
-          instance.start(data).then(
-            deferred.resolve,
-            function(reason) {
+          console.log('Ready to start new browserSync instance');
+          instance.start(data).then(deferred.resolve)
+            .fail(function(reason) {
+              console.err("failed to start new instance", reason);
               that.stop(data.user.id).then(function() {
                 deferred.reject(reason);
               });
-            }
-          );
+            });
         }
       }
     });

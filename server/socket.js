@@ -72,18 +72,21 @@ module.exports = function (app, options) {
     socket.on('save', save);
     socket.on('remove', removeDevices);
 
-    function start (data) {
+    function start(data) {
       console.log('DeviceWall control panel start.');
       instances.start(data).then(
         function(startData) {
           var appdata = _.clone(data);
           appdata.url = startData.startUrl;
 
+          console.log('>> socket "update"');
           nsCtrl.emit('update', devices.toJSON());
+          console.log('>> socket "start"', data);
           nsCtrl.emit('start', data);
           nsApp.emit('start', appdata);
         },
         function(reason) {
+          console.log('>> socket "server-stop"', reason);
           nsCtrl.emit('server-stop', {user: data.user, reason: reason});
         }
       );

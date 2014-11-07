@@ -33,6 +33,7 @@ process.on('message', function(message) {
   'use strict';
   switch (message.type) {
     case 'init':
+      console.log("browserSync process: initializing");
       var parsedUrl = url.parse(message.url);
       var browserSyncConfig = {
         proxy: parsedUrl.href,
@@ -62,6 +63,7 @@ process.on('message', function(message) {
 
       bs = browserSync.init(null, browserSyncConfig);
       evt.on('init', function(api) {
+        console.log("browserSync process: initialized");
         process.send({type: 'browserSyncInit', browserSync: api.options.urls.external});
       });
       break;
