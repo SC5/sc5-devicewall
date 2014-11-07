@@ -18,7 +18,7 @@ module.exports = {
     var options = {
       hostname: targetUrl.hostname,
       port: targetUrl.port,
-      path: url.path,
+      path: targetUrl.path,
       rejectUnauthorized: false
     };
     if (proxyOptions.userAgentHeader) {
@@ -34,7 +34,7 @@ module.exports = {
       }
     }
 
-    var req = require(url.protocol === "https:" ? "https" : "http").get(options,  function (res) {
+    var req = require(targetUrl.protocol === "https:" ? "https" : "http").get(options,  function (res) {
       if(res.statusCode === 301 || res.statusCode === 302) {
         cb(null, url.parse(res.headers.location));
         return;
