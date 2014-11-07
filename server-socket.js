@@ -99,7 +99,6 @@ module.exports = function (app, options) {
             ns.emit('update', devices);
             ns.emit('start', data);
             nsApp.emit('start', data);
-
           } else if (message.type === 'browserSyncExit') {
             childProcesses[user.id].send({type: 'exit'});
             if (childProcesses[user.id]) {

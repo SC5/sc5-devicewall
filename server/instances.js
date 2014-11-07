@@ -36,7 +36,6 @@ var Instances = {
 
     data.url = utils.parseUrl(data.url);
 
-
     utils.checkProxyTarget(url.parse(data.url), function(err) {
       if (err) {
         console.warn('Target URL unreachable.');
@@ -45,7 +44,6 @@ var Instances = {
         if (instance && instance.isConnected()) {
           var previousUrlObject = url.parse(instance.get('url'));
           var nextUrlObject = url.parse(data.url);
-          console.log('START old found: ', previousUrlObject.host, nextUrlObject.host);
           if (previousUrlObject.host === nextUrlObject.host) {
             // same host, just send new location
             instance.set('url', data.url);
