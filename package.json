@@ -67,7 +67,7 @@
     "install": "bundle install && gulp install",
     "build": "gulp",
     "test": "gulp test",
-    "start": "node server.js"
+    "start": "node server/server.js"
   },
   "config": {
     "server": {
