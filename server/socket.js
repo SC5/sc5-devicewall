@@ -22,7 +22,20 @@ module.exports = function (app, options) {
     socket.on('check-platform', checkPlatform);
 
     function update(data) {
-      devices.update(data);
+      var device = devices.update(data);
+      if (device.get('userId')) {
+        var instance = instances.find(device.get('userId'));
+        if (instance) {
+          if (instance.get('status') === 'running') {
+            device.set('status', 'starting');
+            socket.emit('start', {
+              labels: instance.get('labels'),
+              url: instance.get('startUrl')
+            });
+            instance.syncClientLocations();
+          }
+        }
+      }
       nsCtrl.emit('update', devices.toJSON());
     }
 

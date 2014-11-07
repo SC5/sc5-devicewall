@@ -36,8 +36,6 @@ var Instances = {
 
     data.url = utils.parseUrl(data.url);
 
-console.log('dataurl: ', data.url);
-
     utils.checkProxyTarget(url.parse(data.url), function(err) {
       if (err) {
         deferred.reject('Target URL unreachable.');
@@ -45,7 +43,6 @@ console.log('dataurl: ', data.url);
         if (instance) {
           var previousUrlObject = url.parse(instance.get('url'));
           var nextUrlObject = url.parse(data.url);
-          console.log('START old found: ', previousUrlObject.host, nextUrlObject.host);
           if (previousUrlObject.host === nextUrlObject.host) {
             // same host, just send new location
             instance.set('url', data.url);
@@ -56,7 +53,6 @@ console.log('dataurl: ', data.url);
             instance.stop();
           }
         } else {
-          console.log('START new!');
           // make new instance
           instance = new Instance(data, {config: that.config, devices: that.devices});
           that.instances.push(instance);

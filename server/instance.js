@@ -96,6 +96,15 @@ Instance.prototype.location = function(data) {
   return this.startDeferred.promise;
 };
 
+Instance.prototype.syncClientLocations = function() {
+  if (this.isConnected()) {
+    this.childProcess.send({
+      type: 'syncLocations',
+      timeout: 5000
+    });
+  }
+};
+
 Instance.prototype.startBrowserSyncProcess = function(data) {
   var that = this;
   var debug = process.execArgv.indexOf('--debug') !== -1;
@@ -112,7 +121,8 @@ Instance.prototype.startBrowserSyncProcess = function(data) {
     switch (message.type) {
       case 'browserSyncInit':
           that.update({
-            'status': 'running'
+            'status': 'running',
+            'startUrl': message.browserSync
           });
           that.startDeferred.resolve({startUrl: message.browserSync});
         break;
