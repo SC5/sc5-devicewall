@@ -43,7 +43,7 @@ module.exports = {
         chunks.push(data);
       });
       res.on("end", function() {
-        cb(null, url);
+        cb(null, targetUrl);
       });
     }).on("error", function (err) {
       if (err.code === "ENOTFOUND" || err.code === "ECONNREFUSED") {
