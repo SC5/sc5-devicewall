@@ -3,8 +3,7 @@ angular.module('DeviceWall')
     $log.debug("defaultController");
 
     function redirectToClient() {
-      var portString = $window.location.port !== '' ? ':'+$window.location.port : '';
-      $window.location.href = $window.location.protocol + '//' + $window.location.hostname + portString + '/client';
+      $location.path('/client');
     }
 
     if ($window.localStorage.getItem('label') !== null) {

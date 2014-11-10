@@ -8,7 +8,6 @@ var
   https = require('https'),
   http = require('http'),
   config = require('../config.json'),
-  deviceWallApp = require('sc5-devicewall-app'),
   url = require('url'),
   fs = require('fs'),
   io;
@@ -44,9 +43,7 @@ require('./routes/devices.js')(adminServer, '/api/devices/:deviceLabel', config.
 
 adminServer.use(express.static(__dirname + '/../dist'));
 
-// Client App uses '/client' prefix to separate requests from control panel
-adminServer.use('/client', deviceWallApp);
-adminServer.use('/client/return', deviceWallApp);
+
 
 // Performance testing
 adminServer.use('/perf-test', express.static(__dirname + '/perf-test'));

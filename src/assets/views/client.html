@@ -1,0 +1,21 @@
+<section id="connection" ng-show="view.connection">
+    <h1>Device Wall</h1>
+    <h3>Ready for testing</h3>
+	<div ng-click="showSettings()" class="icon-button settings icon-mobile"></div>
+  <div ng-click="showControlPanel()" class="icon-button control-panel icon-gauge"></div>
+</section>
+<section id="label" ng-show="view.label">
+  <h1>Device Wall</h1>
+  <h2>Manage device</h2>
+  <p>
+    <label for="device_label">Device label:</label>
+    <input type="text" ng-model="label" id="device_label" name="device_label" placeholder="P001">
+  </p>
+  <p>
+    <button ng-click="updateLabel()">Ok</button>
+  </p>
+</section>
+<div id="screensaver" class="{{view.screensaver ? 'visible' : 'not-visible'}}">
+<img src="assets/images/sc5logo_w.png" class="saver-logo">
+<img src="assets/images/screensaver_slogan.png" class="slogan">
+</div>
