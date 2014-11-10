@@ -28,7 +28,6 @@ var Devices = {
       device = new Device(data);
       this.devices.push(device);
     } else {
-      // TODO: start to browsersync isntance if needed
       device.update(data);
     }
     this.updated = true;
