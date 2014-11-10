@@ -50,7 +50,6 @@ var Instances = {
         if (instance && instance.isConnected()) {
           var previousUrlObject = url.parse(instance.get('url'));
           var nextUrlObject = url.parse(data.url);
-          console.log('START old found: ', previousUrlObject.host, nextUrlObject.host);
           if (previousUrlObject.host === nextUrlObject.host) {
             // same host, just send new location
             instance.set('url', data.url);
