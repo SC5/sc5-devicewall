@@ -12,15 +12,20 @@ module.exports = {
     }
     return url;
   },
-  checkProxyTarget: function (parsedUrl, cb) {
+  checkProxyTarget: function (targetUrl, proxyOptions, cb) {
     var chunks  = [];
     var errored = false;
     var options = {
-      hostname: parsedUrl.hostname,
-      port: parsedUrl.port,
-      path: parsedUrl.path,
+      hostname: targetUrl.hostname,
+      port: targetUrl.port,
+      path: targetUrl.path,
       rejectUnauthorized: false
     };
+    if (proxyOptions.userAgentHeader) {
+      options.headers = {
+        'User-Agent': proxyOptions.userAgentHeader
+      };
+    }
 
     function logError() {
       if (!errored) {
@@ -29,7 +34,7 @@ module.exports = {
       }
     }
 
-    var req = require(parsedUrl.protocol === "https:" ? "https" : "http").get(options,  function (res) {
+    var req = require(targetUrl.protocol === "https:" ? "https" : "http").get(options,  function (res) {
       if(res.statusCode === 301 || res.statusCode === 302) {
         cb(null, url.parse(res.headers.location));
         return;
@@ -38,7 +43,7 @@ module.exports = {
         chunks.push(data);
       });
       res.on("end", function() {
-        cb(null, parsedUrl);
+        cb(null, targetUrl);
       });
     }).on("error", function (err) {
       if (err.code === "ENOTFOUND" || err.code === "ECONNREFUSED") {

@@ -48,6 +48,7 @@ process.on('message', function(message) {
           key: path.resolve(config.sslKey),
           cert: path.resolve(config.sslCert)
         },
+        userAgentHeader: message.userAgentHeader,
         ghostMode: {
           clicks: true,
           location: true,

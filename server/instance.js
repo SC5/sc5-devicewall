@@ -161,7 +161,7 @@ Instance.prototype.startBrowserSyncProcess = function(data) {
     }
   });
   console.info(">> childProcess init url:", data.url);
-  this.childProcess.send({type: 'init', url: data.url});
+  this.childProcess.send({type: 'init', url: data.url, userAgentHeader: data.userAgentHeader});
 
   return this.startDeferred.promise;
 };

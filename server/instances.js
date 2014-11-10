@@ -7,12 +7,14 @@ var _ = require('lodash'),
 
 var Instances = {
   init: function(options) {
+    'use strict';
     this.instances = [];
     this.config = options.config;
     this.devices = options.devices;
   },
   // if needle is array, return is array of matched objects
   find: function(needle) {
+    'use strict';
     if (_.isArray(needle)) {
       return _.filter(this.instances, function(instance) {
         return _.indexOf(needle, instance.get('user').id) !== -1;
@@ -24,21 +26,25 @@ var Instances = {
     }
   },
   removeInstance: function(userId) {
+    'use strict';
     this.instances = _.filter(this.instances, function(instance) {
       return instance.get('user').id !== userId;
     });
   },
   start: function(data) {
+    'use strict';
     var that = this,
         deferred = Q.defer(),
         instance = this.find(data.user.id),
-        locationChange = false;
+        locationChange = false,
+        proxyOptions = {};
 
     data.url = utils.parseUrl(data.url);
+    proxyOptions.userAgentHeader = data.userAgentHeader || false;
 
-    utils.checkProxyTarget(url.parse(data.url), function(err) {
+    utils.checkProxyTarget(url.parse(data.url), proxyOptions, function(err) {
       if (err) {
-        console.warn('Target URL unreachable.');
+        console.warn('Target URL unreachable.', err);
         deferred.reject('Target URL unreachable.');
       } else {
         if (instance && instance.isConnected()) {
@@ -75,6 +81,7 @@ var Instances = {
   },
   // Resolves when instance is stopped and removed
   stop: function(userId) {
+    'use strict';
     var that = this,
         deferred = Q.defer(),
         instance = this.find(userId);
@@ -90,6 +97,7 @@ var Instances = {
     return deferred.promise;    
   },
   stopAll: function() {
+    'use strict';
     var that = this,
         deferred = Q.defer(),
         promises = [];
