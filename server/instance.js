@@ -61,19 +61,11 @@ Instance.prototype.start = function(data) {
 
 Instance.prototype.stop = function() {
   'use strict';
-  var that = this;
+  var that = this,
+      deferred = Q.defer();
 
   this.whenReady().then(function() {
     that.set('status', 'stopping');
-
-    if (that.isConnected()) {
-      that.childProcess.send({
-        type: 'location',
-        url: that.config.deviceWallAppURL,
-        timeout: 5000,
-        completeMessageType: 'browserSyncExit'
-      });
-    }
 
     _.each(that.getDevices(), function(device) {
       device.update({
@@ -83,25 +75,42 @@ Instance.prototype.stop = function() {
         lastUsed: +new Date()
       });
     });
+
+    if (that.isConnected()) {
+      that.stopDeferred.promise.then(deferred.resolve);
+      that.childProcess.send({
+        type: 'location',
+        url: that.config.deviceWallAppURL,
+        timeout: 5000,
+        completeMessageType: 'browserSyncExit'
+      });
+    } else {
+      deferred.resolve();
+    }
   });
 
-  return this.stopDeferred.promise;
+  return deferred.promise;
 };
 
 Instance.prototype.location = function(data) {
   var path = url.parse(data.url).path;
+  if (this.isConnected()) {
+    this.startDeferred = Q.defer();
+    this.stopDeferred = Q.defer();
 
-  this.startDeferred = Q.defer();
-  this.stopDeferred = Q.defer();
+    this.childProcess.send({
+      type: 'location',
+      url: path,
+      timeout: 5000,
+      completeMessageType: 'browserSyncUpdate'
+    });
 
-  this.childProcess.send({
-    type: 'location',
-    url: path,
-    timeout: 5000,
-    completeMessageType: 'browserSyncUpdate'
-  });
-
-  return this.startDeferred.promise;
+    return this.startDeferred.promise;
+  } else {
+    var deferred = Q.defer();
+    deferred.reject('Browsersync not connected');
+    return deferred.promise;
+  }
 };
 
 Instance.prototype.syncClientLocations = function() {
