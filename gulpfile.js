@@ -65,7 +65,6 @@ gulp.task('config', function() {
     data = JSON.parse(fs.readFileSync(configLocalServer+'/config.local.json'));
     serverConfig = extend(true, serverConfig, data);
   }
-  serverConfig = extend(true, serverConfig, config.server);
   fs.writeFileSync('./config.json', JSON.stringify(serverConfig, null, 2));
 
   // Server test config
