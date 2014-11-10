@@ -24,14 +24,20 @@ describe('Frontpage', function() {
   });
 
   it('should show two buttons to select the mode', function() {
-    expect(element(by.id('container')).getText()).to.eventually.have.length.above(0);
+    expect(
+      element(
+        by.id('container')
+      ).getText()
+    ).to.eventually.have.length.above(0);
     expect(element(by.css('.button-device')).getText()).to.eventually.contain('USE AS TEST DEVICE');
     expect(element(by.css('.button-control-panel')).getText()).to.eventually.contain('CONTROL DEVICE WALL');
     expect(ptor.getCurrentUrl()).to.eventually.contain('/#!/');
   });
 
   it('should show device mode if device button clicked', function() {
-    element(by.css('.button-device')).click();
+    element(
+      by.css('.button-device')
+    ).click();
     expect(ptor.getCurrentUrl()).to.eventually.contain('/client/#!/');
   });
 
@@ -44,6 +50,11 @@ describe('Frontpage', function() {
     utils.writeSingleTestDevice(label);
     browser.executeScript('localStorage.setItem("label", "' + label + '");');
     browser.get(indexUrl);
+    expect(
+      element(
+        by.id('connection')
+      ).isPresent()
+    );
     expect(ptor.getCurrentUrl()).to.eventually.contain('/client/#!/');
   });
 });

@@ -101,6 +101,8 @@ Most likely the normal *gulp serve* task will not suffice, and you want to run y
 server, instead. The task below, will default to 'gulp serve' by default until you change it:
 
     > npm start
+    or
+    > node server/server.js
 
 ### Live reloading the changes
 

@@ -21,7 +21,7 @@ module.exports.writeSingleTestDevice = function(label) {
       "appPlatform": "browser"
     });
   }
-  fs.writeFileSync(devicesJson, JSON.stringify(devices));
+  fs.writeFileSync(devicesJson, JSON.stringify(devices, null, 2));
 };
 
 module.exports.addSingleTestDevice = function(label) {

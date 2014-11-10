@@ -31,9 +31,9 @@
         </div>
       </div>
 
-      <section data-ng-show="config.connectionSetupEnabled">
+      <section data-ng-show="config.connectionSetup.enabled">
         <div class="section-wrapper accordion collapsed">
-        <h2 ng-click="toggleAccordion($event)">Connection setup</h2>
+        <h2 toggle-accordion>Connection setup</h2>
         <div class="connection-setup accordion-content">
           <div data-ng-hide="true" class="checkbox">
             <label>
@@ -41,18 +41,37 @@
               Load url with proxy to warm-up the caches
             </label>
           </div>
-          <fieldset class="connection">
+          <fieldset data-ng-show="config.connectionSetup.wifiSimulate.enabled" class="connection">
                 <span>Simulate</span>
                 <label><input type="radio" name="connection-radio" value="3G">3G</label>
                 <label><input type="radio" name="connection-radio" value="4G">4G</label>
                 <label><input type="radio" name="connection-radio" value="Wifi" checked="checked">Wifi</label>
+          </fieldset>
+          <fieldset data-ng-show="config.connectionSetup.customUserAgent.enabled" class="user-agent">
+            <h3>Default user agent</h3>
+              <div class="row">
+                <div class="col-2">
+                  Select device type
+                </div>
+                <div class="col-8">
+                  <select ng-model="userAgent.selected" ng-options="ua.name for ua in userAgents"></select>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-2">
+                  User-agent header
+                </div>
+                <div class="col-8">
+                  <input type="text" data-ng-model="userAgent.selected.value">
+                </div>
+              </div>
           </fieldset>
         </div>
         </div>
       </section>
 
       <div class="section-wrapper accordion" id="available-devices">
-        <h2 ng-click="toggleAccordion($event)">Available devices</h2>
+        <h2 toggle-accordion>Available devices</h2>
 
         <div class="accordion-content">
           <div class="buttons">

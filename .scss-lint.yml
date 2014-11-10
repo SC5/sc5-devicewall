@@ -39,7 +39,7 @@ linters:
     enabled: true
 
   Indentation:
-    enabled: false
+    enabled: true
 
   LeadingZero:
     enabled: false
@@ -64,7 +64,7 @@ linters:
     extra_properties: ['*behavior']
 
   SelectorDepth:
-    enabled: true
+    enabled: false
     max_depth: 3
 
   Shorthand:

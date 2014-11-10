@@ -4,6 +4,14 @@
     "loginType": 2,
     "debugEnabled": true,
     "singleUser": true,
-    "connectionSetupEnabled": false
+    "connectionSetup": {
+      "enabled": true,
+      "wifiSimulate": {
+        "enabled": false
+      },
+      "customUserAgent": {
+        "enabled": true
+      }
+    }
   }
 }
