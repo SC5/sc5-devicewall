@@ -6,6 +6,7 @@ angular.module('DeviceWall')
     var socket = socketConnect.connect('/devicewallapp');
     // Scope variables
     $scope.label = $window.localStorage.getItem('label') || '';
+    $scope.oldLabel = $scope.label;
     $scope.model = '';
     $scope.platform = '';
     $scope.appPlatform = 'browser';
@@ -46,41 +47,17 @@ angular.module('DeviceWall')
       if ($scope.label) {
         $window.localStorage.setItem('label', $scope.label);
 
-        $rootScope.$broadcast('ready');
         $scope.view.label = false;
         $scope.view.connection = true;
 
-        update();
+        if ($scope.oldLabel !== '' && $scope.oldLabel !== $scope.label) {
+          socket.emit('rename', {oldLabel: $scope.oldLabel, newLabel: $scope.label});
+          $scope.oldLabel = $scope.label;
+        } else {
+          socket.emit('update', {label: $scope.label});
+        }
       }
     };
-
-    function update() {
-      var device = {
-        label: $scope.label
-      };
-      if ($scope.model) {
-        device.model = $scope.model;
-      }
-      if ($scope.platform) {
-        device.platform = $scope.platform;
-      }
-      if ($scope.appPlatform) {
-        device.appPlatform = $scope.appPlatform;
-      }
-      if ($scope.version) {
-        device.version = $scope.version;
-      }
-      if ($scope.batteryStatus) {
-        device.batteryStatus = {};
-      }
-      if ($scope.batteryStatus.level) {
-        device.batteryStatus.level = $scope.batteryStatus.level;
-      }
-      if ($scope.batteryStatus.isPlugged) {
-        device.batteryStatus.isPlugged = $scope.batteryStatus.isPlugged;
-      }
-      socket.emit('update', device);
-    }
 
     function showScreensaver() {
       $scope.view.screensaver = true;
@@ -103,8 +80,5 @@ angular.module('DeviceWall')
     });
 
     resetScreensaverCounter();
-
-    if ($scope.label) {
-      $rootScope.$broadcast('ready');
-    }
+    socket.emit('update', {label: $scope.label});
 });

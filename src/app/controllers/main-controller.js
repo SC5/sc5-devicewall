@@ -150,6 +150,15 @@ angular.module('DeviceWall')
         });
       });
 
+      socket.on('rename', function(data) {
+        $log.debug('rename', data);
+        if (DeviceList.has({label: data.oldLabel})) {
+          var device = DeviceList.get(data.oldLabel);
+          DeviceList.remove(device);
+          device.label = data.newLabel;
+          DeviceList.add(device);
+        }
+      });
       socket.on('update', function (data) {
         $scope.$apply(function() {
           _.each(data, function(device) {

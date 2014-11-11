@@ -43,6 +43,7 @@ var Devices = {
     });
     if (removeIndex >= 0) {
       this.devices.splice(removeIndex, 1);
+      this.updated = true;
       return true;
     }
     return false;
@@ -67,9 +68,9 @@ var Devices = {
   },
   write: function() {
     if (this.updated) {
+      var dList = this.toJSON();
       this.updated = false;
-      fs.writeFileSync(this.config.devicesJson, JSON.stringify(this.toJSON(), null, 2));
-      console.log('Updated devices.json');
+      fs.writeFileSync(this.config.devicesJson, JSON.stringify(dList, null, 2));
     }
   },
   sort: function() {
