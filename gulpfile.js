@@ -227,11 +227,16 @@ gulp.task('watch', ['build'], function() {
     'src/assets/**/*',
     'src/index.html',
     '!src/app/config.js', // do not listen files which are modified during build process
-    ], ['build']);
+  ], ['build']);
 });
 
 // Tests
 gulp.task('webdriver_manager_update', $.protractor.webdriver_update);
+
+gulp.task('test:server', function() {
+  return gulp.src('server/test/**/*.spec.js')
+    .pipe($.jasmine());
+});
 
 gulp.task('test:e2e', ['webdriver_manager_update'], function() {
   var testConfig = require('./config.test.json');
@@ -256,7 +261,7 @@ gulp.task('test:e2e', ['webdriver_manager_update'], function() {
     });
 });
 gulp.task('default', ['integrate']);
-gulp.task('build', ['clean'], function() {
+gulp.task('build', ['clean', 'test:server'], function() {
   gulp.start('integrate');
 });
 gulp.task('bower', function() {
