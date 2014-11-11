@@ -176,6 +176,10 @@ h2 {
   font-weight: normal;
 }
 
+fieldset {
+  border: 0;
+}
+
 table {
   margin: auto;
   margin-bottom: 30px;
@@ -481,11 +485,13 @@ input[type=text].error {
   vertical-align: top;
   cursor: pointer;
   background-color: $icon-bg;
-  margin-right: 5px;
+  margin: 5px;
 
   .text {
     font-size: 30px;
     text-transform: uppercase;
+    width: 200px;
+    margin: auto;
   }
 
   .icon {
