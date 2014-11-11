@@ -1,7 +1,5 @@
 angular.module('DeviceWall')
   .controller('DefaultController', function($scope, $location, $window, $log, Devices, appConfig) {
-    $log.debug("defaultController");
-
     function redirectToClient() {
       $location.path('/client');
     }
