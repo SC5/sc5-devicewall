@@ -51,7 +51,6 @@
     "passport-google-oauth": "^0.1.5",
     "q": "~1.0.1",
     "request": "^2.34.0",
-    "sc5-devicewall-app": "git+ssh://git@bitbucket.org:SC5/devicewallapp.git",
     "socket.io": "^1.0.6",
     "socket.io-client": "^1.0.6"
   },

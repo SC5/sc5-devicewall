@@ -1,8 +1,9 @@
 /*jshint -W072 */
 angular.module('DeviceWall')
-  .controller('ClientController', function($rootScope, $scope, $timeout, socket, $window, appConfig, $log) {
+  .controller('ClientController', function($rootScope, $scope, $timeout, socketConnect, $window, appConfig, $log) {
     var screensaverTimeoutPromise;
-    var screensaverTimeoutSeconds = appConfig.screenSaverTimeoutSeconds || 60;
+    var screensaverTimeoutSeconds = appConfig.client.screenSaverTimeoutSeconds || 60;
+    var socket = socketConnect.connect('/devicewallapp');
     // Scope variables
     $scope.label = $window.localStorage.getItem('label') || '';
     $scope.model = '';
