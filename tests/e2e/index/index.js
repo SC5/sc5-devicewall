@@ -38,7 +38,7 @@ describe('Frontpage', function() {
     element(
       by.css('.button-device')
     ).click();
-    expect(ptor.getCurrentUrl()).to.eventually.contain('/client/#!/');
+    expect(ptor.getCurrentUrl()).to.eventually.contain('/#!/client');
   });
 
   it('should show control panel mode if control panel button clicked', function() {
@@ -55,6 +55,6 @@ describe('Frontpage', function() {
         by.id('connection')
       ).isPresent()
     );
-    expect(ptor.getCurrentUrl()).to.eventually.contain('/client/#!/');
+    expect(ptor.getCurrentUrl()).to.eventually.contain('/#!/client');
   });
 });
