@@ -1,5 +1,5 @@
 $font-blue:   #0072a3;
-$icon-bg:     #007FB5;
+$icon-bg:     #007fb5;
 
 @mixin transition($value) {
   -webkit-transition: $value;
@@ -37,10 +37,10 @@ $icon-bg:     #007FB5;
 
 @mixin icon-button() {
   background-color: $icon-bg;
-  color: white;
+  color: #fff;
   width: 100px;
   height: 100px;
-  border: none;
+  border: 0;
   font-family: 'entypo';
   font-size: 4.9em;
   padding: 0;
@@ -85,31 +85,30 @@ body {
     width: 100%;
     height: 100%;
     text-align: center;
-  }
 
-  &.centerized #content {
-    position: absolute;
-    left: 0;
-    top: 0;
-    margin: 120px 0 0 0;
-    height: 200px;
-    width: 100%;
-    &.devices {
-      top: 120px;
+    #content {
+      position: absolute;
+      left: 0;
+      top: 0;
+      margin: 120px 0 0;
+      height: 200px;
+      width: 100%;
+
+      &.devices {
+        top: 120px;
+      }
+    }
+
+    footer {
+      width: 100%;
+      position: absolute;
+      left: 0;
+      bottom: 0;
     }
   }
-
-  &.centerized footer {
-    width: 100%;
-    position: absolute;
-    left: 0;
-    bottom: 0;
-  }
-
 }
 
 #content {
-
   padding: 20px 0;
   text-align: center;
   font-size: 1rem;
@@ -217,12 +216,7 @@ label {
 button {
 
   @include box-sizing(content-box);
-
   @include linear-gradient(#fff, #ddd);
-
-  &:active {
-    @include linear-gradient(#ddd, #fff);
-  }
 
   overflow: hidden;
   white-space: nowrap;
@@ -244,21 +238,25 @@ button {
   color: #333;
   cursor: pointer;
 
+  &:active {
+    @include linear-gradient(#ddd, #fff);
+  }
+
   &.go {
     height: 48px;
     line-height: 48px;
     font-size: 1.6rem;
   }
-
-
 }
 
 .icon-button {
+
   &.settings {
     @include icon-button();
     position: fixed;
     bottom: 20px;
     left: 20px;
+
     &:before {
       margin: 0;
       display: block;
@@ -266,12 +264,14 @@ button {
       line-height: 100px;
     }
   }
+
   &.control-panel {
     @include icon-button();
     position: fixed;
     bottom: 20px;
     right: 20px;
     background-size: 100%;
+
     &:before {
       margin: 0;
       display: block;
@@ -369,17 +369,3 @@ input[type=checkbox]:after,
   }
 
 }
-
-@-moz-keyframes spin {
-  50% { -moz-transform: rotate(180deg) scale(0.1,0.1); }
-  100% { -moz-transform: rotate(360deg) scale(1,1); }
-}
-@-webkit-keyframes spin {
-  50% { -webkit-transform: rotate(180deg) scale(0.1,0.1); }
-  100% { -webkit-transform: rotate(360deg) scale(1,1); }
-}
-@keyframes spin {
-  50% { -webkit-transform: rotate(180deg) scale(0.1,0.1); transform:rotate(180deg) scale(0.1,0.1); }
-  100% { -webkit-transform: rotate(360deg) scale(1,1); transform:rotate(360deg) scale(1,1); }
-}
-

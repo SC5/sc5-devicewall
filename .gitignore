@@ -15,3 +15,4 @@ config/app/config.local.json
 /config.test.json
 tests/data/devices.json
 tests/data/instances.json
+npm-debug.log
