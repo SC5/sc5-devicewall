@@ -10,8 +10,8 @@ describe('Device', function() {
     id: 'testuser',
     displayName: 'testuser'
   };
-  var clientUrl = 'http://' + config.host + ':' + config.port + '/client/#!/';
-  var clientReturnUrl = '/client/return/#!';
+  var clientUrl = 'http://' + config.host + ':' + config.port + '/#!/client';
+  var clientReturnUrl = '/#!/client';
   var testUrl = 'http://' + config.host + ':' + config.port + '/test';
   var anotherTestUrl = 'http://' + config.host + ':' + config.testServerPort + '/test';
 
@@ -73,7 +73,7 @@ describe('Device', function() {
     browser.executeScript('localStorage.setItem("label", "' + label + '");');
     browser.get(clientUrl);
     element(by.css('#connection .settings')).click();
-    expect(ptor.getCurrentUrl()).to.eventually.contain('/client/#!/');
+    expect(ptor.getCurrentUrl()).to.eventually.contain('/#!/client');
     expect(utils.hasClass(element(by.id('label')), 'ng-hide')).to.eventually.equal(false);
     expect(utils.hasClass(element(by.id('connection')), 'ng-hide')).to.eventually.equal(true);
   });
@@ -163,7 +163,7 @@ describe('Device', function() {
     socket.start(user, [label], anotherTestUrl + '/302');
     browser.driver.wait(function() {
       return browser.driver.getCurrentUrl().then(function (url) {
-          return url !== clientUrl;
+        return url !== clientUrl;
       });
     }).then(function() {
       socket.stopAll();

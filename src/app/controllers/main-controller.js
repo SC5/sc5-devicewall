@@ -1,9 +1,10 @@
 angular.module('DeviceWall')
   .controller(
     'MainController',
-    function($rootScope, $scope, $window, $http, $timeout, DeviceList, lodash, appConfig, $log, socket) {
+    function($rootScope, $scope, $window, $http, $timeout, DeviceList, lodash, appConfig, $log, socketConnect) {
       'use strict';
       var _ = lodash;
+      var socket = socketConnect.connect('/devicewall');
 
       $log.debug('loading main controller');
       $scope.indicatorWaiting = {show: true};

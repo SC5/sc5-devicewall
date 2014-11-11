@@ -1,0 +1,105 @@
+$font-blue:   #0072a3;
+$icon-bg:     #007fb5;
+$app-bg:      #0072a3;
+$section-bg:  #0084bd;
+
+@mixin transition($value) {
+  -webkit-transition: $value;
+  -moz-transition: $value;
+  -ms-transition: $value;
+  transition: $value;
+}
+
+@mixin box-sizing($value) {
+  -webkit-box-sizing: $value;
+  -moz-box-sizing: $value;
+  box-sizing: $value;
+}
+
+@mixin box-shadow($values...) {
+  -webkit-box-shadow: $values;
+  -moz-box-shadow: $values;
+  -ms-box-shadow: $values;
+  box-shadow: $values;
+}
+
+@mixin linear-gradient($values...) {
+  background-image: -webkit-linear-gradient($values);
+  background-image: -moz-linear-gradient($values);
+  background-image: -ms-linear-gradient($values);
+  background-image: linear-gradient($values);
+}
+
+@mixin radial-gradient($values...) {
+  background-image: -webkit-radial-gradient($values);
+  background-image: -moz-radial-gradient($values);
+  background-image: -ms-radial-gradient($values);
+  /*background-image: radial-gradient($values);*/
+}
+
+@mixin icon-button() {
+  background-color: $icon-bg;
+  color: #fff;
+  width: 100px;
+  height: 100px;
+  border: 0;
+  font-family: 'entypo';
+  font-size: 4.9em;
+  padding: 0;
+}
+
+@mixin large-icon-button() {
+  font-family: 'entypo';
+  font-size: 200px;
+  width: 200px;
+  height: 200px;
+  border: 0;
+  padding: 0;
+  margin: auto;
+}
+
+@mixin placeholder-color($color) {
+  &::-webkit-input-placeholder {
+    color: $color;
+  }
+
+  &::-moz-placeholder { // Firefox 19+
+    color: $color;
+  }
+
+  &:-ms-input-placeholder {
+    color: $color;
+  }
+
+  &:-moz-placeholder { // Firefox 18-
+    color: $color;
+  }
+}
+
+@font-face {
+  font-family: 'entypo';
+  src: url('/assets/fonts/entypo.eot');
+  src: url('/assets/fonts/entypo.eot?#iefix') format('embedded-opentype'),
+     url('/assets/fonts/entypo.woff') format('woff'),
+     url('/assets/fonts/entypo.ttf') format('truetype'),
+     url('/assets/fonts/entypo.svg#entypo') format('svg');
+}
+
+
+html {
+  height: 100%;
+  outline: none;
+}
+
+body {
+
+  min-height: 100%;
+  padding: 0;
+  margin: 0;
+  background-color: #005678;
+  color: #fff;
+  font-family: arial, sans-serif;
+  font-size: 62.5%;
+  background-attachment: fixed;
+}
+

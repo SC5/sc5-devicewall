@@ -1,0 +1,21 @@
+@media only screen and (max-width : 320px) {
+  h1 {
+    font-size: 30px;
+  }
+
+  h2 {
+    font-size: 20px;
+  }
+
+  label {
+    display: block;
+    text-align: left;
+    padding: 5px 4%;
+  }
+
+  input[type=text] {
+    display: block;
+    width: 90%;
+    margin: auto;
+  }
+}
