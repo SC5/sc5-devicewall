@@ -49,7 +49,7 @@ var Instances = {
       utils.resetRedirectCounter();
       if (err) {
         console.warn('Target URL unreachable.', err);
-        deferred.reject('Target URL unreachable.');
+        deferred.reject(err);
       } else {
         console.log("url after checking all the redirections: ", resolvedUrl.href);
         data.url = resolvedUrl.href;
