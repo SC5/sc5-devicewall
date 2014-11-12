@@ -1,20 +1,20 @@
-var url = require('url');
+var url   = require('url');
+var http  = require('http');
+var https = require('https');
+var maxRedirects = require('./../config.json').maxRedirects;
 
+var redirectedCount = 0;
 module.exports = {
-  parseUrl: function(url) {
-    url = url.trim();
-    if (url.match(/:\/\//)) {
-      if (!url.match(/^http[s]*/)) {
-        url.replace(/.*:\/\//, 'http://');
-      }
-    } else {
-      url = 'http://' + url;
-    }
-    return url;
+  resetRedirectCounter: function() {
+    'use strict';
+    redirectedCount = 0;
   },
   checkProxyTarget: function (targetUrl, proxyOptions, cb) {
+    'use strict';
+    var that = this;
     var chunks  = [];
     var errored = false;
+    var protocol = targetUrl.protocol === "https:" ? https : http;
     var options = {
       hostname: targetUrl.hostname,
       port: targetUrl.port,
@@ -27,23 +27,35 @@ module.exports = {
       };
     }
 
-    function logError() {
-      if (!errored) {
-        cb("Proxy address not reachable - is your server running?");
-        errored = true;
-      }
-    }
-
-    var req = require(targetUrl.protocol === "https:" ? "https" : "http").get(options,  function (res) {
+    var req = protocol.get(options,  function (res) {
+      var redirected = false;
+      // got redirect, check location target,
+      // TODO check circular redirection
       if(res.statusCode === 301 || res.statusCode === 302) {
-        cb(null, url.parse(res.headers.location));
+        if (redirectedCount >= maxRedirects) {
+          console.error('Max amount of redirects reached: ' + maxRedirects);
+          cb('Maximum allowed redirects reached, aborting.');
+          return;
+        }
+        var locationUrlObj = url.parse(res.headers.location);
+        if (locationUrlObj.host === null) { // if redirected to path instead of full address
+          targetUrl = url.parse(targetUrl.protocol + '//' + targetUrl.host + locationUrlObj.path);
+        } else {
+          targetUrl = url.parse(locationUrlObj.href);
+        }
+        console.info("Site redirection detected: " + targetUrl.href);
+        redirected = true;
+        ++redirectedCount;
+        that.checkProxyTarget(targetUrl, proxyOptions, cb);
         return;
       }
       res.on("data", function (data) {
         chunks.push(data);
       });
       res.on("end", function() {
-        cb(null, targetUrl);
+        if (redirected === false) {
+          cb(null, targetUrl);
+        }
       });
     }).on("error", function (err) {
       if (err.code === "ENOTFOUND" || err.code === "ECONNREFUSED") {

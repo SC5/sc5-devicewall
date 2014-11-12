@@ -92,15 +92,14 @@ Instance.prototype.stop = function() {
   return deferred.promise;
 };
 
-Instance.prototype.location = function(data) {
-  var path = url.parse(data.url).path;
+Instance.prototype.location = function(urlPath) {
   if (this.isConnected()) {
     this.startDeferred = Q.defer();
     this.stopDeferred = Q.defer();
 
     this.childProcess.send({
       type: 'location',
-      url: path,
+      url: urlPath,
       timeout: 5000,
       completeMessageType: 'browserSyncUpdate'
     });

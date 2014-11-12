@@ -13,5 +13,6 @@
   "instancesJson": "./tests/data/instances.json",
   "host": "localhost",
   "port": 8081,
-  "testServerPort": 8082
+  "testServerPort": 8082,
+  "maxRedirects": 10
 }
