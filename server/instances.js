@@ -40,8 +40,12 @@ var Instances = {
         proxyOptions = {};
 
     proxyOptions.userAgentHeader = data.userAgentHeader || false;
+    var parsedUrl = url.parse(data.url);
+    if (parsedUrl.protocol === null) {
+      parsedUrl.protocol = 'http';
+    }
 
-    utils.checkProxyTarget(url.parse(data.url), proxyOptions, function(err, resolvedUrl) {
+    utils.checkProxyTarget(parsedUrl, proxyOptions, function(err, resolvedUrl) {
       utils.resetRedirectCounter();
       if (err) {
         console.warn('Target URL unreachable.', err);

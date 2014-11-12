@@ -3,6 +3,8 @@ var http  = require('http');
 var https = require('https');
 var maxRedirects = require('./../config.json').maxRedirects;
 
+var redirectionCodes = [301, 302, 303, 304, 305, 307];
+
 var redirectedCount = 0;
 module.exports = {
   resetRedirectCounter: function() {
@@ -29,20 +31,13 @@ module.exports = {
 
     var req = protocol.get(options,  function (res) {
       var redirected = false;
-      // got redirect, check location target,
-      // TODO check circular redirection
-      if(res.statusCode === 301 || res.statusCode === 302) {
-        if (redirectedCount >= maxRedirects) {
+      if(that._isRedirectionCode(res.statusCode)) {
+        if (that._isMaxRedirectionsReached()) {
           console.error('Max amount of redirects reached: ' + maxRedirects);
           cb('Maximum allowed redirects reached, aborting.');
           return;
         }
-        var locationUrlObj = url.parse(res.headers.location);
-        if (locationUrlObj.host === null) { // if redirected to path instead of full address
-          targetUrl = url.parse(targetUrl.protocol + '//' + targetUrl.host + locationUrlObj.path);
-        } else {
-          targetUrl = url.parse(locationUrlObj.href);
-        }
+        targetUrl = that._getNewTargetUrl(targetUrl, url.parse(res.headers.location));
         console.info("Site redirection detected: " + targetUrl.href);
         redirected = true;
         ++redirectedCount;
@@ -73,5 +68,23 @@ module.exports = {
         req.abort();
       });
     });
+  },
+  _isRedirectionCode: function(code) {
+    'use strict';
+    return redirectionCodes.indexOf(code) !== -1;
+  },
+  _isMaxRedirectionsReached: function () {
+    'use strict';
+    return redirectedCount >= maxRedirects;
+  },
+  _getNewTargetUrl: function(oldTarget, newTarget) {
+    'use strict';
+    var targetUrl;
+    if (newTarget.host === null) { // if redirected to path instead of full address
+      targetUrl = url.parse(oldTarget.protocol + '//' + oldTarget.host + newTarget.path);
+    } else {
+      targetUrl = url.parse(newTarget.href);
+    }
+    return targetUrl;
   }
 };
