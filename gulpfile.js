@@ -233,9 +233,15 @@ gulp.task('watch', ['build'], function() {
 // Tests
 gulp.task('webdriver_manager_update', $.protractor.webdriver_update);
 
-gulp.task('test:server', function() {
-  return gulp.src('server/test/**/*.spec.js')
-    .pipe($.jasmine());
+gulp.task('test:server', function(cb) {
+  gulp.src(['server/**/*.js', '!server/test/**/*'])
+    .pipe($.istanbul()) // Covering files
+    .on('finish', function () {
+      gulp.src('server/test/**/*.spec.js')
+        .pipe($.jasmine())
+        .pipe($.istanbul.writeReports()) // Creating the reports after tests runned
+        .on('end', cb);
+    });
 });
 
 gulp.task('test:e2e', ['webdriver_manager_update'], function() {
