@@ -33,12 +33,10 @@ var config = {
 
 // Package management
 /* Install & update Bower dependencies */
-gulp.task('install', ['config', 'integrate'], function() {
-  // FIXME specifying the component directory broken in gulp
-  // For now, use .bowerrc; No need for piping, either
-  $.bower();
+gulp.task('install', ['config', 'bower'], function() {
   // Downloads the Selenium webdriver
   $.protractor.webdriver_update(function() {});
+  gulp.start('integrate');
 });
 
 /* Bump version number for packagejson.json & bower.json */
@@ -260,6 +258,9 @@ gulp.task('test:e2e', ['webdriver_manager_update'], function() {
 gulp.task('default', ['integrate']);
 gulp.task('build', ['clean'], function() {
   gulp.start('integrate');
+});
+gulp.task('bower', function() {
+  return $.bower();
 });
 
 
