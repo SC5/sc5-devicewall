@@ -1,4 +1,5 @@
 @media only screen and (max-width : 320px) {
+
   h1 {
     font-size: 30px;
   }
@@ -17,5 +18,40 @@
     display: block;
     width: 90%;
     margin: auto;
+  }
+
+  input[type=url] {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  #available-devices {
+    button {
+      font-size: 1rem;
+    }
+  }
+
+  #content .connection-setup {
+    margin: 0;
+
+    fieldset {
+      padding: 0;
+    }
+
+    .row {
+      float: none;
+
+      &.row-2 {
+        display: none;
+      }
+
+      .col-2,
+      .col-8 {
+        float: none;
+        width: 100%;
+        display: block;
+      }
+    }
+
   }
 }

@@ -254,7 +254,6 @@ input[type=checkbox]:after,
   color: #333;
   border: 1px solid #777;
   background-color: #fff;
-  @include box-shadow(inset 0 10px 10px -5px rgba(0, 0, 0, .25));
 }
 
 #screensaver {

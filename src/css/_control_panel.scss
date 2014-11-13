@@ -69,7 +69,7 @@ body {
 
     &.collapsed {
       overflow: hidden;
-      max-height: 40px;
+      max-height: 30px;
 
       h2:before {
         content: '\e825';
@@ -105,6 +105,10 @@ body {
   .connection-setup {
     text-align: left;
     margin: 0 20px;
+
+    h3 {
+      margin-top: 7px;
+    }
 
     fieldset.connection {
       border: 0;
@@ -174,6 +178,10 @@ h1 {
 h2 {
   font-size: 1.8rem;
   font-weight: normal;
+}
+
+fieldset {
+  border: 0;
 }
 
 table {
@@ -331,6 +339,10 @@ button {
   }
 }
 
+select {
+  font-size: 1.2rem;
+}
+
 .input {
 
   display: inline-block;
@@ -381,6 +393,11 @@ input[type=url] {
   border-radius: 5px;
   padding: 10px;
   line-height: 1rem;
+}
+
+input[type=url] {
+  width: 100%;
+  box-sizing: border-box;
 }
 
 input[type=checkbox] {
@@ -481,11 +498,13 @@ input[type=text].error {
   vertical-align: top;
   cursor: pointer;
   background-color: $icon-bg;
-  margin-right: 5px;
+  margin: 5px;
 
   .text {
     font-size: 30px;
     text-transform: uppercase;
+    width: 200px;
+    margin: auto;
   }
 
   .icon {
@@ -537,6 +556,7 @@ input[type=text].error {
 
     .text {
       font-size: 20px;
+      width: 100px;
     }
 
     .icon,
@@ -548,6 +568,6 @@ input[type=text].error {
   }
 
   .home {
-    left: 18px;
+    left: 0;
   }
 }
