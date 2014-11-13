@@ -1,0 +1,22 @@
+.info {
+  text-align: left;
+  font-size: 1rem;
+  margin: 20px;
+
+  p,
+  ul {
+    padding-left: 20px;
+  }
+
+  .icon-heart:before {
+    font-size: inherit;
+  }
+
+  ul {
+    list-style-type: none;
+
+    span {
+      color: #c9d4e7;
+    }
+  }
+}

@@ -10,6 +10,15 @@ angular.module('DeviceWall')
     }
 
     $scope.onConnectDeviceClick = redirectToClient;
+
+    $scope.onTutorialClick = function() {
+      $location.path('/tutorial');
+    };
+
+    $scope.onInfoClick = function() {
+      $location.path('/info');
+    };
+
     $scope.onControlPanelClick = function() {
       if (appConfig.singleUser) {
         $location.path('/devices');

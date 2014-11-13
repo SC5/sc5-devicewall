@@ -25,6 +25,14 @@ module.config(function($routeProvider, $locationProvider, $logProvider, appConfi
       templateUrl: 'assets/views/client.html',
       controller: 'ClientController'
     }).
+    when('/info', {
+      templateUrl: 'assets/views/info.html',
+      controller: 'ClientController'
+    }).
+    when('/tutorial', {
+      templateUrl: 'assets/views/tutorial/index.html',
+      controller: 'ClientController'
+    }).
     otherwise({
       redirectTo: '/'
     });
