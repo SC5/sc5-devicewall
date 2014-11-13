@@ -56,6 +56,7 @@ $section-bg:  #0084bd;
   border: 0;
   padding: 0;
   margin: auto;
+  margin-top: -35px;
 }
 
 @mixin placeholder-color($color) {
@@ -85,7 +86,6 @@ $section-bg:  #0084bd;
      url('/assets/fonts/entypo.svg#entypo') format('svg');
 }
 
-
 html {
   height: 100%;
   outline: none;
@@ -101,5 +101,9 @@ body {
   font-family: arial, sans-serif;
   font-size: 62.5%;
   background-attachment: fixed;
+}
+
+#container {
+  position: static;
 }
 
