@@ -11,6 +11,9 @@
           this.deviceList[device.label] = device;
         }
       },
+      get: function(label) {
+        return this.deviceList[label];
+      },
       update: function(device) {
         if (lodash.has(this.deviceList, device.label)) {
           this.deviceList[device.label] = angular.extend(this.deviceList[device.label], device);

@@ -15,11 +15,28 @@ module.exports = function (app, options) {
   nsApp.on('connection', function (socket) {
     console.log('Test device connected!');
 
+    socket.on('rename', rename);
     socket.on('update', update);
     socket.on('started', started);
     socket.on('idling', idling);
     socket.on('disconnect', disconnect);
     socket.on('check-platform', checkPlatform);
+
+    function rename(data) {
+      var device = devices.find(data.oldLabel);
+      if (device) {
+        if (devices.remove(data.oldLabel)) {
+          console.log("Removed label " + data.oldLabel);
+        } else {
+          console.log("Unable to remove label " + data.oldLabel);
+        }
+        device.set('label', data.newLabel);
+        devices.update(device.toJSON());
+        nsCtrl.emit('rename', data);
+      } else {
+        console.log("Device label " + data.oldLabel + " does not exists");
+      }
+    }
 
     function update(data) {
       var device = devices.update(data);
