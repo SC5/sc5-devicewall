@@ -23,7 +23,7 @@ describe('Frontpage', function() {
     browser.executeScript('localStorage.clear();');
   });
 
-  iit('should show two buttons to select the mode', function() {
+  it('should show two buttons to select the mode', function() {
     expect(
       element(
         by.id('container')
