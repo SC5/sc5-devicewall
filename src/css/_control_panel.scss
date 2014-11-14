@@ -20,18 +20,17 @@ body {
 }
 
 #content {
-
+  @include transition(top .3s ease-out);
   padding: 0 0 20px;
   text-align: center;
   font-size: 1rem;
-  @include transition(top .3s ease-out);
 
   &.centerized {
+    @include translateY(-50%);
     position: absolute;
     left: 0;
     top: 50%;
     margin-top: 20px;
-    @include translateY(-50%);
     width: 100%;
 
     &.devices {
@@ -45,9 +44,9 @@ body {
   }
 
   .accordion {
+    @include transition(all .5s ease-out);
     position: relative;
     max-height: 1200px;
-    @include transition(all .5s ease-out);
 
     h2 {
       cursor: pointer;
@@ -207,6 +206,7 @@ table {
       overflow: hidden;
 
       input[type=text] {
+        @include placeholder-color(transparent);
         background-color: transparent;
         height: 100%;
         width: 100%;
@@ -216,8 +216,6 @@ table {
         padding: 5px;
         font-size: .9rem;
         border-radius: 0;
-
-        @include placeholder-color(transparent);
 
         &:focus {
           @include placeholder-color(#c0c0c0);
@@ -542,10 +540,10 @@ input[type=text].error {
   }
 
   #content {
+    @include translateY(0);
     margin-top: 30px;
     position: relative;
     top: initial;
-    @include translateY(0);
   }
 
   .mode-button {

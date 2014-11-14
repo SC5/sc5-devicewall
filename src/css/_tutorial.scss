@@ -13,10 +13,10 @@
   text-transform: uppercase;
 
   .text {
+    @include translateY(-50%);
     padding: 10px;
     position: absolute;
     top: 50%;
-    @include translateY(-50%);
   }
 }
 
