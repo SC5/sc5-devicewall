@@ -39,21 +39,27 @@ var Instances = {
         locationChange = false,
         proxyOptions = {};
 
-    data.url = utils.parseUrl(data.url);
     proxyOptions.userAgentHeader = data.userAgentHeader || false;
+    var parsedUrl = url.parse(data.url);
+    if (parsedUrl.protocol === null) {
+      parsedUrl.protocol = 'http';
+    }
 
-    utils.checkProxyTarget(url.parse(data.url), proxyOptions, function(err) {
+    utils.checkProxyTarget(parsedUrl, proxyOptions, function(err, resolvedUrl) {
+      utils.resetRedirectCounter();
       if (err) {
         console.warn('Target URL unreachable.', err);
-        deferred.reject('Target URL unreachable.');
+        deferred.reject(err);
       } else {
+        console.log("url after checking all the redirections: ", resolvedUrl.href);
+        data.url = resolvedUrl.href;
         if (instance && instance.isConnected()) {
           var previousUrlObject = url.parse(instance.get('url'));
-          var nextUrlObject = url.parse(data.url);
+          var nextUrlObject = resolvedUrl;
           if (previousUrlObject.host === nextUrlObject.host) {
             // same host, just send new location
-            instance.set('url', data.url);
-            instance.location(data).then(deferred.resolve);
+            instance.set('url', resolvedUrl.href);
+            instance.location(resolvedUrl.path).then(deferred.resolve);
             locationChange = true;
           } else {
             // stop before relaunch
