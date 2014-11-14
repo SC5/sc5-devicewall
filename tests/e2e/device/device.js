@@ -10,8 +10,8 @@ describe('Device', function() {
     id: 'testuser',
     displayName: 'testuser'
   };
-  var clientUrl = 'http://' + config.host + ':' + config.port + '/#!/client';
-  var clientReturnUrl = '/#!/client';
+  var clientUrl = 'http://' + config.host + ':' + config.port + '/client';
+  var clientReturnUrl = '/client';
   var testUrl = 'http://' + config.host + ':' + config.port + '/test';
   var anotherTestUrl = 'http://' + config.host + ':' + config.testServerPort + '/test';
 
@@ -65,7 +65,7 @@ describe('Device', function() {
     browser.executeScript('localStorage.setItem("label", "' + label + '");');
     browser.get(clientUrl);
     element(by.css('#connection .control-panel')).click();
-    expect(ptor.getCurrentUrl()).to.eventually.contain('/#!/devices');
+    expect(ptor.getCurrentUrl()).to.eventually.contain('/devices');
   });
 
   it('should navigate back to label selection if device button clicked', function() {
@@ -73,7 +73,7 @@ describe('Device', function() {
     browser.executeScript('localStorage.setItem("label", "' + label + '");');
     browser.get(clientUrl);
     element(by.css('#connection .settings')).click();
-    expect(ptor.getCurrentUrl()).to.eventually.contain('/#!/client');
+    expect(ptor.getCurrentUrl()).to.eventually.contain('/client');
     expect(utils.hasClass(element(by.id('label')), 'ng-hide')).to.eventually.equal(false);
     expect(utils.hasClass(element(by.id('connection')), 'ng-hide')).to.eventually.equal(true);
   });

@@ -45,6 +45,6 @@ module.config(function($routeProvider, $locationProvider, $logProvider, appConfi
       redirectTo: '/'
     });
 
-  $locationProvider.hashPrefix("!");
+  $locationProvider.html5Mode(true).hashPrefix('!');
   $logProvider.debugEnabled(appConfig.debugEnabled);
 });

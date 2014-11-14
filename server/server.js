@@ -42,9 +42,7 @@ require('./routes/user.js')(adminServer);
 require('./routes/devices.js')(adminServer, '/api/devices/:deviceLabel', config.devicesJson);
 
 adminServer.use(express.static(__dirname + '/../dist'));
-
-
-
+adminServer.use(/\/(devices|client|tutorial|info)/, express.static(__dirname + '/../dist'));
 // Performance testing
 adminServer.use('/perf-test', express.static(__dirname + '/perf-test'));
 
@@ -59,6 +57,7 @@ if (process.env.NODE_ENV === "test") {
     console.log('Test server listening on port %d', test.address().port);
   });
 }
+
 
 var admin = adminServer.listen(config.port, function () {
   console.log('Control server listening on port %d', admin.address().port);
