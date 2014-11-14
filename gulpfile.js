@@ -33,12 +33,10 @@ var config = {
 
 // Package management
 /* Install & update Bower dependencies */
-gulp.task('install', ['config', 'integrate'], function() {
-  // FIXME specifying the component directory broken in gulp
-  // For now, use .bowerrc; No need for piping, either
-  $.bower();
+gulp.task('install', ['config', 'bower'], function() {
   // Downloads the Selenium webdriver
   $.protractor.webdriver_update(function() {});
+  gulp.start('integrate');
 });
 
 /* Bump version number for packagejson.json & bower.json */
@@ -229,11 +227,22 @@ gulp.task('watch', ['build'], function() {
     'src/assets/**/*',
     'src/index.html',
     '!src/app/config.js', // do not listen files which are modified during build process
-    ], ['build']);
+  ], ['build']);
 });
 
 // Tests
 gulp.task('webdriver_manager_update', $.protractor.webdriver_update);
+
+gulp.task('test:server', function(cb) {
+  gulp.src(['server/**/*.js', '!server/test/**/*'])
+    .pipe($.istanbul()) // Covering files
+    .on('finish', function () {
+      gulp.src('server/test/**/*.spec.js')
+        .pipe($.jasmine())
+        .pipe($.istanbul.writeReports()) // Creating the reports after tests runned
+        .on('end', cb);
+    });
+});
 
 gulp.task('test:e2e', ['webdriver_manager_update'], function() {
   var testConfig = require('./config.test.json');
@@ -258,8 +267,11 @@ gulp.task('test:e2e', ['webdriver_manager_update'], function() {
     });
 });
 gulp.task('default', ['integrate']);
-gulp.task('build', ['clean'], function() {
+gulp.task('build', ['clean', 'test:server'], function() {
   gulp.start('integrate');
+});
+gulp.task('bower', function() {
+  return $.bower();
 });
 
 

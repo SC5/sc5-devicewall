@@ -10,5 +10,6 @@
   "sslCert": "./node_modules/browser-sync/lib/server/certs/server.crt",
   "proxyHost": "devicewall.sc5.io",
   "devicesJson": "./server/data/devices.json",
-  "instancesJson": "./server/data/instances.json"
+  "instancesJson": "./server/data/instances.json",
+  "maxRedirects": 10
 }

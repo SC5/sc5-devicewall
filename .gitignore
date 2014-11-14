@@ -1,11 +1,12 @@
+/Gemfile.lock
 temp
 dist
 node_modules
 src/components
 src/.sass-cache
 phantomjs.log
-devices.json
-instances.json
+/server/data/devices.json
+/server/data/instances.json
 .project
 src/app/config.js
 config/server/config.local.json
@@ -13,6 +14,7 @@ config/server/config.test.local.json
 config/app/config.local.json
 /config.json
 /config.test.json
-tests/data/devices.json
-tests/data/instances.json
+/tests/data/devices.json
+/tests/data/instances.json
 npm-debug.log
+/coverage
