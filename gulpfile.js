@@ -148,7 +148,7 @@ gulp.task('javascript', ['preprocess'], function() {
       '**/app.js'
     ]))
     .pipe($.concat(bundleName))
-    .pipe($.if(!config.debug, $.ngmin()))
+    .pipe($.if(!config.debug, $.ngAnnotate()))
     .pipe($.if(!config.debug, $.uglify()))
     .pipe(gulp.dest('dist'));
 });
