@@ -255,6 +255,38 @@ gulp.task('test:e2e', ['webdriver_manager_update'], function() {
       server.kill();
     });
 });
+
+
+gulp.task('test:e2e:ci', function() {
+  var testConfig = require('./config.test.json');
+  var testDataDir = path.dirname(path.resolve(testConfig.devicesJson));
+  var args = [
+    '--baseUrl',
+    'http://' + testConfig.host + ':' + testConfig.port
+  ];
+  var protractorConf = {
+    configFile: './protractor.ci.config.js',
+    args: [args]
+  };
+
+  if (!fs.existsSync(testDataDir)) {
+    fs.mkdirSync(testDataDir);
+  }
+
+  server.listen({path: './server/server.js', env: {"NODE_ENV": "test"}});
+  gulp.src(['tests/e2e/**/*.js'], { read: false })
+    .pipe($.protractor.protractor(protractorConf)).on('error', function() {
+      server.kill();
+    }).on('end', function() {
+      server.kill();
+    });
+});
+
+
+
+
+
+
 gulp.task('default', ['integrate']);
 gulp.task('build', ['clean'], function() {
   gulp.start('integrate');
