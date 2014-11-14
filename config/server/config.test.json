@@ -13,5 +13,5 @@
   "instancesJson": "./tests/data/instances.json",
   "host": "192.168.59.3",
   "port": 8081,
-  "testServerPort": 8082,
+  "testServerPort": 8082
 }
