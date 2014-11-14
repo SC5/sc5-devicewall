@@ -548,8 +548,7 @@ input[type=text].error {
     @include translateY(0);
   }
 
-  .mode-button.button-control-panel,
-  .mode-button.button-device {
+  .mode-button {
     width: 100px;
     height: auto;
     padding: 20px;
