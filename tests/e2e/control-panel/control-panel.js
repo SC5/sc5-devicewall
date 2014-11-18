@@ -8,19 +8,24 @@ describe('Control panel', function() {
   var testUrl = 'http://' + config.host + ':' + config.port + '/test';
   var devicesUrl = 'http://' + config.host + ':' + config.port + '/devices';
 
-  beforeEach(function() {
+
+  console.log("#### START Control panel test ####");
+
+  beforeEach(function(done) {
     ptor = protractor.getInstance();
 
+    browser.get(devicesUrl);
     // PhantomJS crashing randomly if this was not set
     browser.ignoreSynchronization = true;
-
-    browser.get(devicesUrl);
-    browser.executeScript('localStorage.clear();');
-    browser.get(devicesUrl);
+    utils.reloadDevices().then(function() {
+      browser.get(devicesUrl);
+      browser.executeScript('localStorage.clear();');
+      done();
+    });
   });
 
   afterEach(function() {
-    utils.clearAfterEach();
+    utils.clearDevices();
     browser.executeScript('localStorage.clear();');
   });
 
@@ -104,6 +109,10 @@ describe('Control panel', function() {
       return browser.driver.isElementPresent(by.xpath("//div[@id='server-status' and text()='running']"));
     });
     expect(element(by.id('stop-all-button')).isDisplayed()).to.eventually.equal(true);
+    element(by.id('stop-all-button')).click();
+    browser.driver.wait(function() {
+      return browser.driver.isElementPresent(by.xpath("//div[@id='server-status' and text()='stopped']"));
+    });
   });
 
   it('should hide Stop buttons if Stop all button is clicked', function() {
@@ -164,7 +173,7 @@ describe('Control panel', function() {
     element(by.id('url')).sendKeys('dsfkjasdfasdfasdfasdflassdkjajskd.sad');
     element(by.id("go-button")).click();
     browser.driver.wait(function() {
-      return browser.driver.isElementPresent(by.xpath("//span[@id='tooltip-error' and text()='Target URL unreachable.']"));
+      return browser.driver.isElementPresent(by.xpath("//span[@id='tooltip-error' and text()='Unreachable']"));
     });
     expect(element(by.id('stop-all-button')).isDisplayed()).to.eventually.equal(false);
   });

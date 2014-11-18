@@ -14,8 +14,9 @@ describe('Device', function() {
   var clientReturnUrl = '/client';
   var testUrl = 'http://' + config.host + ':' + config.port + '/test';
   var anotherTestUrl = 'http://' + config.host + ':' + config.testServerPort + '/test';
+  var devicesUrl = 'http://' + config.host + ':' + config.port + '/devices';
 
-  beforeEach(function() {
+  beforeEach(function(done) {
     ptor = protractor.getInstance();
 
     // PhantomJS crashing randomly if this was not set
@@ -24,10 +25,12 @@ describe('Device', function() {
     browser.get(clientUrl);
     browser.executeScript('localStorage.clear();');
     browser.get(clientUrl);
+    utils.writeSingleTestDevice(label);
+    utils.reloadDevices().then(done);
   });
 
   afterEach(function() {
-    utils.clearAfterEach();
+    utils.clearDevices();
     browser.executeScript('localStorage.clear();');
   });
 
@@ -52,7 +55,6 @@ describe('Device', function() {
   });
 
   it('should show ready for testing if label in localStorage', function() {
-    utils.writeSingleTestDevice(label);
     browser.executeScript('localStorage.setItem("label", "' + label + '");');
     browser.get(clientUrl);
     expect(utils.hasClass(element(by.id('label')), 'ng-hide')).to.eventually.equal(true);
@@ -61,7 +63,6 @@ describe('Device', function() {
   });
 
   it('should navigate back to control panel if control panel button clicked', function() {
-    utils.writeSingleTestDevice(label);
     browser.executeScript('localStorage.setItem("label", "' + label + '");');
     browser.get(clientUrl);
     element(by.css('#connection .control-panel')).click();
@@ -69,7 +70,6 @@ describe('Device', function() {
   });
 
   it('should navigate back to label selection if device button clicked', function() {
-    utils.writeSingleTestDevice(label);
     browser.executeScript('localStorage.setItem("label", "' + label + '");');
     browser.get(clientUrl);
     element(by.css('#connection .settings')).click();
@@ -79,7 +79,6 @@ describe('Device', function() {
   });
 
   it('should navigate to tested website and back when server started and stopped', function() {
-    utils.writeSingleTestDevice(label);
     browser.executeScript('localStorage.setItem("label", "' + label + '");');
     browser.get(clientUrl);
     socket.start(user, [label], testUrl);
@@ -103,10 +102,10 @@ describe('Device', function() {
         });
       });
     });
+    ptor.sleep(10000);
   });
 
   it('should restart testing if device navigates back to device mode page when testing is on going', function() {
-    utils.writeSingleTestDevice(label);
     browser.executeScript('localStorage.setItem("label", "' + label + '");');
     browser.get(clientUrl);
     socket.start(user, [label], testUrl);
@@ -133,10 +132,10 @@ describe('Device', function() {
         });
       });
     });
+    ptor.sleep(10000);
   });
 
   it('should handle 301 redirects properly when testing started', function() {
-    utils.writeSingleTestDevice(label);
     browser.executeScript('localStorage.setItem("label", "' + label + '");');
     browser.get(clientUrl);
     socket.start(user, [label], anotherTestUrl + '/301');
@@ -145,7 +144,7 @@ describe('Device', function() {
           return url !== clientUrl;
       });
     }).then(function() {
-      socket.stopAll();
+      socket.stopAll()
       browser.driver.wait(function() {
         return browser.driver.getCurrentUrl().then(function (url) {
           return url.indexOf(clientReturnUrl) > -1;
@@ -154,6 +153,7 @@ describe('Device', function() {
         expect(ptor.getCurrentUrl()).to.eventually.contain(clientReturnUrl);
       });
     });
+    ptor.sleep(10000);
   });
 
   it('should handle 302 redirects properly when testing started', function() {
@@ -166,14 +166,17 @@ describe('Device', function() {
         return url !== clientUrl;
       });
     }).then(function() {
-      socket.stopAll();
-      browser.driver.wait(function() {
-        return browser.driver.getCurrentUrl().then(function (url) {
-          return url.indexOf(clientReturnUrl) > -1;
+      ptor.sleep(5000);
+      socket.stopAll().then(function(){
+        browser.driver.wait(function() {
+          return browser.driver.getCurrentUrl().then(function (url) {
+            return url.indexOf(clientReturnUrl) > -1;
+          });
+        }).then(function() {
+          expect(ptor.getCurrentUrl()).to.eventually.contain(clientReturnUrl);
         });
-      }).then(function() {
-        expect(ptor.getCurrentUrl()).to.eventually.contain(clientReturnUrl);
       });
     });
+    ptor.sleep(10000);
   });
 });

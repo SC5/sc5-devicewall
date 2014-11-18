@@ -2,6 +2,7 @@ var config = require("../../config.test.json");
 var fs = require("fs");
 var path = require("path");
 var socket = require("./socket");
+var Q = require('q');
 
 module.exports.writeSingleTestDevice = function(label) {
   var devicesJson = path.resolve(config.devicesJson);
@@ -24,6 +25,10 @@ module.exports.writeSingleTestDevice = function(label) {
   fs.writeFileSync(devicesJson, JSON.stringify(devices, null, 2));
 };
 
+module.exports.reloadDevices = function() {
+  return socket.reloadDevices();
+}
+
 module.exports.addSingleTestDevice = function(label) {
   return socket.addDevices([label]);
 };
@@ -36,9 +41,11 @@ module.exports.removeTestDevices = function() {
   return socket.removeAllDevices();
 };
 
-module.exports.clearAfterEach = function() {
-  socket.stopAll();
+module.exports.clearDevices = function() {
   return socket.removeAllDevices();
+}
+module.exports.stopAll = function() {
+  return socket.stopAll();
 };
 
 module.exports.hasClass = function (element, cls) {

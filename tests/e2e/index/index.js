@@ -7,6 +7,8 @@ describe('Frontpage', function() {
   var label = 'testdevice';
   var indexUrl = 'http://' + config.host + ':' + config.port + '/';
 
+  console.log("#### START Front page test ####");
+
   beforeEach(function() {
     ptor = protractor.getInstance();
 
@@ -19,7 +21,7 @@ describe('Frontpage', function() {
   });
 
   afterEach(function() {
-    utils.clearAfterEach();
+    utils.clearDevices();
     browser.executeScript('localStorage.clear();');
   });
 
