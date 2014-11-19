@@ -22,7 +22,6 @@ var Instance =  function (data, options) {
 
 Instance.prototype.start = function(data) {
   'use strict';
-  console.info("Starting an instance" + data);
   var deferred = Q.defer();
 
   if (this.canBeStarted() === false) {

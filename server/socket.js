@@ -39,7 +39,12 @@ module.exports = function (app, options) {
     }
 
     function update(data) {
-      var device = devices.update(data);
+      var device;
+      if (_.has(data, 'label') === false || data.label === '') {
+        console.error("Client sent an empty label", data);
+        return
+      }
+      device = devices.update(data);
       if (device.get('userId')) {
         var instance = instances.find(device.get('userId'));
         if (instance) {

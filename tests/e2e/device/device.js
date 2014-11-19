@@ -14,7 +14,6 @@ describe('Device', function() {
   var clientReturnUrl = '/client';
   var testUrl = 'http://' + config.host + ':' + config.port + '/test';
   var anotherTestUrl = 'http://' + config.host + ':' + config.testServerPort + '/test';
-  var devicesUrl = 'http://' + config.host + ':' + config.port + '/devices';
 
   beforeEach(function(done) {
     ptor = protractor.getInstance();

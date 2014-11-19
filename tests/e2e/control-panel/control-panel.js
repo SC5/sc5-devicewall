@@ -8,9 +8,6 @@ describe('Control panel', function() {
   var testUrl = 'http://' + config.host + ':' + config.port + '/test';
   var devicesUrl = 'http://' + config.host + ':' + config.port + '/devices';
 
-
-  console.log("#### START Control panel test ####");
-
   beforeEach(function(done) {
     ptor = protractor.getInstance();
 

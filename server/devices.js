@@ -23,14 +23,15 @@ var Devices = {
   },
   update: function(data) {
     var device = this.find(data.label);
+    if (!data.label) {
+      console.error("empty label", data);
+      throw new Error('Trying to save an empty label');
+    }
     if (!device) {
       device = new Device(data);
       this.devices.push(device);
-    } else if(data.label) {
-      device.update(data);
     } else {
-      console.error("Trying to save empty label");
-      return undefined;
+      device.update(data);
     }
     this.updated = true;
     return device;

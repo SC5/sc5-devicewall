@@ -80,7 +80,7 @@ var Instances = {
               deferred.resolve(data);
             })
             .fail(function(reason) {
-              console.err("failed to start new instance", reason);
+              console.error("failed to start new instance", reason);
               that.stop(data.user.id).then(function() {
                 deferred.reject(reason);
               });
@@ -117,7 +117,6 @@ var Instances = {
         promises = [];
     console.log("instances.stopAll");
     _.each(this.instances, function(instance) {
-      console.log("instances.stopAll push instance");
       promises.push(instance.stop());
     });
     Q.all(promises).fin(function() {
