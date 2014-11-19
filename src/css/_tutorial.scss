@@ -20,6 +20,27 @@
   }
 }
 
+.tutorial {
+  font-size: 2em;
+  .tutorial-nav {
+    .circle {
+      border-radius: 50%;
+      padding: 1px 12px;
+      width: 20px;
+      height: 20px;
+      background: #2c3f8b;
+      border: 3px solid black;
+    }
+    a {
+      display: inline;
+      margin: 5px 10px;
+    }
+    a.active {
+      background: #5c97e6;
+    }
+  }
+}
+
 @media only screen and (max-width : 600px), screen and (max-height : 700px) {
   .mode-button {
     width: 100px;
