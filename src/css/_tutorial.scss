@@ -1,0 +1,30 @@
+.tutorial-button {
+  display: inline-block;
+  position: relative;
+  width: 300px;
+  height: 300px;
+  vertical-align: top;
+  cursor: pointer;
+  background-color: $icon-bg;
+  margin: 5px;
+  color: inherit;
+
+  font-size: 30px;
+  text-transform: uppercase;
+
+  .text {
+    @include translateY(-50%);
+    padding: 10px;
+    position: absolute;
+    top: 50%;
+  }
+}
+
+@media only screen and (max-width : 600px), screen and (max-height : 700px) {
+  .mode-button {
+    width: 100px;
+    height: auto;
+    padding: 20px;
+    font-size: 20px;
+  }
+}

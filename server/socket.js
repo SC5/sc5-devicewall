@@ -1,5 +1,5 @@
-var _ = require('lodash'),
-    socketio = require('socket.io');
+var _ = require('lodash');
+var socketio = require('socket.io');
 
 module.exports = function (app, options) {
   'use strict';
@@ -39,7 +39,12 @@ module.exports = function (app, options) {
     }
 
     function update(data) {
-      var device = devices.update(data);
+      var device;
+      if (_.has(data, 'label') === false || data.label === '') {
+        console.error("Client sent an empty label", data);
+        return
+      }
+      device = devices.update(data);
       if (device.get('userId')) {
         var instance = instances.find(device.get('userId'));
         if (instance) {
@@ -87,7 +92,6 @@ module.exports = function (app, options) {
       }
       fn({appPlatform: appPlatform});
     }
-
   });
 
   // Control panel
@@ -101,19 +105,23 @@ module.exports = function (app, options) {
     socket.on('list', list);
     socket.on('save', save);
     socket.on('remove', removeDevices);
+    socket.on('reload-devices', reloadDevices);
+    if (process.env.NODE_ENV === "test") {
+      socket.on('reset', resetAppData);
+    }
 
     function start(data) {
       console.log('DeviceWall control panel start.');
       instances.start(data).then(
         function(startData) {
-          var appdata = _.clone(data);
-          appdata.url = startData.startUrl;
+          var appData = _.clone(data);
+          appData.url = startData.startUrl;
 
           console.log('>> socket "update"');
           nsCtrl.emit('update', devices.toJSON());
           console.log('>> socket "start"', data);
           nsCtrl.emit('start', data);
-          nsApp.emit('start', appdata);
+          nsApp.emit('start', appData);
         },
         function(reason) {
           console.log('>> socket "server-stop"', reason);
@@ -131,8 +139,9 @@ module.exports = function (app, options) {
     }
 
     function stopAll() {
-      console.log('DeviceWall control panel stop all.');
-      instances.stopAll().then(function() {
+      console.log('DeviceWall control panel stop all instances.length: ', instances.instances.length);
+      instances.stopAll().done(function() {
+        console.log("Stop all done");
         nsCtrl.emit('update', devices.toJSON());
         nsCtrl.emit('stopall');
       });
@@ -175,11 +184,24 @@ module.exports = function (app, options) {
       socket.broadcast.emit('update', devices);
     }
 
+    function reloadDevices() {
+      console.info("reloading device list");
+      devices.read();
+    }
+
+    // only used with e2e tests
+    function resetAppData() {
+      console.info("<<< reset");
+      instances.stopAll().then(function() {
+        console.info(">>> resetted");
+        socket.emit("resetted");
+      });
+      devices.removeAll();
+    }
   });
 
-  devices.init({
-    config: config
-  });
+  devices.init({config: config});
+  devices.read();
   instances.init({
     config: config,
     devices: devices

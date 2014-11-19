@@ -4,27 +4,27 @@ var utils = require('../utils');
 var socket = require('../socket');
 
 describe('Control panel', function() {
-  var ptor;
+  var ptor = protractor.getInstance();
   var testUrl = 'http://' + config.host + ':' + config.port + '/test';
-  var devicesUrl = 'http://' + config.host + ':' + config.port + '/#!/devices';
+  var devicesUrl = 'http://' + config.host + ':' + config.port + '/devices';
+  var resetUrl = 'http://' + config.host + ':' + config.port + '/test/reset';
 
   beforeEach(function() {
-    ptor = protractor.getInstance();
-
-    // PhantomJS crashing randomly if this was not set
-    browser.ignoreSynchronization = true;
-
     browser.get(devicesUrl);
-    browser.executeScript('localStorage.clear();');
-    browser.get(devicesUrl);
+    browser.waitForAngular();
   });
 
   afterEach(function() {
-    utils.clearAfterEach();
-    browser.executeScript('localStorage.clear();');
+    // reset env state
+    browser.driver.get(resetUrl);
+    browser.driver.wait(function() {
+      return browser.driver.isElementPresent(by.xpath("//div[@id='test']"));
+    });
   });
 
+
   it('should render correctly', function() {
+    console.log("should render correctly");
     expect(element(by.id('go-button')).isDisplayed()).to.eventually.equal(true);
     expect(element(by.id('stop-button')).isDisplayed()).to.eventually.equal(false);
     expect(element(by.id('stop-all-button')).isDisplayed()).to.eventually.equal(false);
@@ -104,6 +104,10 @@ describe('Control panel', function() {
       return browser.driver.isElementPresent(by.xpath("//div[@id='server-status' and text()='running']"));
     });
     expect(element(by.id('stop-all-button')).isDisplayed()).to.eventually.equal(true);
+    element(by.id('stop-all-button')).click();
+    browser.driver.wait(function() {
+      return browser.driver.isElementPresent(by.xpath("//div[@id='server-status' and text()='stopped']"));
+    });
   });
 
   it('should hide Stop buttons if Stop all button is clicked', function() {
@@ -129,10 +133,8 @@ describe('Control panel', function() {
   it('should select all if Select all clicked', function() {
     utils.addMultipleTestDevices(["testdevice2", "testdevice1"]);
     browser.driver.wait(function() {
-      return browser.driver.isElementPresent(by.xpath("//td[text()='testdevice2']"));
+      return browser.driver.isElementPresent(by.xpath("//td[text()='testdevice1']"));
     });
-    element(by.css('#devices-list tr:nth-child(1) input[type="checkbox"]')).click();
-    expect(element.all(by.css('#devices-list input[type="checkbox"]:checked')).count()).to.eventually.equal(1);
     element(by.id('select-all')).click();
     expect(element.all(by.css('#devices-list input[type="checkbox"]:checked')).count()).to.eventually.equal(2);
     element(by.css('#devices-list tr:nth-child(1) input[type="checkbox"]')).click();
@@ -164,7 +166,7 @@ describe('Control panel', function() {
     element(by.id('url')).sendKeys('dsfkjasdfasdfasdfasdflassdkjajskd.sad');
     element(by.id("go-button")).click();
     browser.driver.wait(function() {
-      return browser.driver.isElementPresent(by.xpath("//span[@id='tooltip-error' and text()='Target URL unreachable.']"));
+      return browser.driver.isElementPresent(by.xpath("//span[@id='tooltip-error' and text()='Unreachable']"));
     });
     expect(element(by.id('stop-all-button')).isDisplayed()).to.eventually.equal(false);
   });

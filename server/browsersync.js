@@ -70,13 +70,19 @@ process.on('message', function(message) {
       break;
     case 'location':
       var promisesLoc = [];
+      console.info("BrowserSync clients: ", bs.io.sockets.sockets.length);
       bs.io.sockets.sockets.forEach(function(socket) {
+        console.log(">>> location: ", message.url);
         promisesLoc.push(deferredEmit(socket, 'location', {url: message.url}, message.timeout || 5000));
       });
       Q.all(promisesLoc).fin(function(){
         // all promises finished.
         if (message.completeMessageType) {
-          process.send({type: message.completeMessageType});
+          if (message.completeMessageType === 'browserSyncExit') {
+            browserSync.exit();
+          } else {
+            process.send({type: message.completeMessageType});
+          }
         }
       });
       break;
@@ -95,7 +101,7 @@ process.on('message', function(message) {
               Q.all(promisesSync).fin(function() {
                 //console.log('SYNC LOCATION FINISHED');
               });
-            }, 3000);
+            });
           }
         });
         promisesGetSync.push(deferredEmit(socket, 'get-location', {}, message.timeout || 5000));

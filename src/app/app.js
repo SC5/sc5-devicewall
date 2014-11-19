@@ -25,10 +25,26 @@ module.config(function($routeProvider, $locationProvider, $logProvider, appConfi
       templateUrl: 'assets/views/client.html',
       controller: 'ClientController'
     }).
+    when('/info', {
+      templateUrl: 'assets/views/info.html',
+      controller: 'ClientController'
+    }).
+    when('/tutorial', {
+      templateUrl: 'assets/views/tutorial.html',
+      controller: 'ClientController'
+    }).
+    when('/tutorials/device/:page', {
+      templateUrl: 'assets/views/tutorial_device.html',
+      controller: 'ClientController'
+    }).
+    when('/tutorials/test/:page', {
+      templateUrl: 'assets/views/tutorial_test.html',
+      controller: 'ClientController'
+    }).
     otherwise({
       redirectTo: '/'
     });
 
-  $locationProvider.hashPrefix("!");
+  $locationProvider.html5Mode(true).hashPrefix('!');
   $logProvider.debugEnabled(appConfig.debugEnabled);
 });

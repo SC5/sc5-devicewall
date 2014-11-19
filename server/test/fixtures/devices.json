@@ -1,0 +1,11 @@
+[
+  {
+    "label": "testdevice",
+    "model": "Nokia",
+    "status": "running",
+    "platform": "Windows",
+    "appPlatform": "browser",
+    "version": "1.0",
+    "updated": 1414395161883
+  }
+]

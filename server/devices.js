@@ -6,9 +6,8 @@ var _ = require('lodash'),
 var Devices = {
   init: function(options) {
     this.config = options.config;
-    this.devices = [];
+    this.devices = options.devices || [];
     this.updated = false;
-    this.read();
   },
   // if needle is array, return is array of matched objects
   find: function(needle) {
@@ -24,6 +23,10 @@ var Devices = {
   },
   update: function(data) {
     var device = this.find(data.label);
+    if (!data.label) {
+      console.error("empty label", data);
+      throw new Error('Trying to save an empty label');
+    }
     if (!device) {
       device = new Device(data);
       this.devices.push(device);
@@ -88,6 +91,12 @@ var Devices = {
       }
       return 0;
     });
+  },
+  removeAll: function() {
+    'use strict';
+    this.devices = [];
+    this.updated = true;
+    this.write();
   }
 };
 

@@ -148,7 +148,7 @@ gulp.task('javascript', ['preprocess'], function() {
       '**/app.js'
     ]))
     .pipe($.concat(bundleName))
-    .pipe($.if(!config.debug, $.ngmin()))
+    .pipe($.if(!config.debug, $.ngAnnotate()))
     .pipe($.if(!config.debug, $.uglify()))
     .pipe(gulp.dest('dist'));
 });
@@ -227,11 +227,22 @@ gulp.task('watch', ['build'], function() {
     'src/assets/**/*',
     'src/index.html',
     '!src/app/config.js', // do not listen files which are modified during build process
-    ], ['build']);
+  ], ['build']);
 });
 
 // Tests
 gulp.task('webdriver_manager_update', $.protractor.webdriver_update);
+
+gulp.task('test:server', function(cb) {
+  gulp.src(['server/**/*.js', '!server/test/**/*'])
+    .pipe($.istanbul()) // Covering files
+    .on('finish', function () {
+      gulp.src('server/test/**/*.spec.js')
+        .pipe($.jasmine())
+        .pipe($.istanbul.writeReports()) // Creating the reports after tests runned
+        .on('end', cb);
+    });
+});
 
 gulp.task('test:e2e', ['webdriver_manager_update'], function() {
   var testConfig = require('./config.test.json');
@@ -288,7 +299,7 @@ gulp.task('test:e2e:ci', function() {
 
 
 gulp.task('default', ['integrate']);
-gulp.task('build', ['clean'], function() {
+gulp.task('build', ['clean', 'test:server'], function() {
   gulp.start('integrate');
 });
 gulp.task('bower', function() {

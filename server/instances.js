@@ -39,21 +39,28 @@ var Instances = {
         locationChange = false,
         proxyOptions = {};
 
-    data.url = utils.parseUrl(data.url);
     proxyOptions.userAgentHeader = data.userAgentHeader || false;
+    var parsedUrl = url.parse(data.url);
+    if (parsedUrl.protocol === null) {
+      parsedUrl.protocol = 'http';
+    }
 
-    utils.checkProxyTarget(url.parse(data.url), proxyOptions, function(err) {
+    utils.checkProxyTarget(parsedUrl, proxyOptions, function(err, resolvedUrl) {
+      utils.resetRedirectCounter();
       if (err) {
         console.warn('Target URL unreachable.', err);
-        deferred.reject('Target URL unreachable.');
+        deferred.reject(err);
       } else {
+        console.log("url after checking all the redirections: ", resolvedUrl.href);
+        data.url = resolvedUrl.href;
         if (instance && instance.isConnected()) {
           var previousUrlObject = url.parse(instance.get('url'));
-          var nextUrlObject = url.parse(data.url);
+          var nextUrlObject = resolvedUrl;
           if (previousUrlObject.host === nextUrlObject.host) {
             // same host, just send new location
-            instance.set('url', data.url);
-            instance.location(data).then(deferred.resolve);
+            instance.set('url', resolvedUrl.href);
+            instance.location(resolvedUrl.path);
+            deferred.resolve();
             locationChange = true;
           } else {
             // stop before relaunch
@@ -67,9 +74,13 @@ var Instances = {
 
         if (!locationChange) {
           console.log('Ready to start new browserSync instance');
-          instance.start(data).then(deferred.resolve)
+          instance.start(data)
+            .then(function(data) {
+              console.info("Instance.start: browserSync started", data.url);
+              deferred.resolve(data);
+            })
             .fail(function(reason) {
-              console.err("failed to start new instance", reason);
+              console.error("failed to start new instance", reason);
               that.stop(data.user.id).then(function() {
                 deferred.reject(reason);
               });
@@ -87,11 +98,14 @@ var Instances = {
         instance = this.find(userId);
 
     if (instance) {
+      console.log("Stopping instance", userId);
       instance.stop().then(function() {
+        console.log("instance stopped:", userId);
         that.removeInstance(userId);
         deferred.resolve();
       });
     } else {
+      console.log("no instance:", userId);
       deferred.resolve();
     }
     return deferred.promise;    
@@ -101,12 +115,15 @@ var Instances = {
     var that = this,
         deferred = Q.defer(),
         promises = [];
+    console.log("instances.stopAll");
     _.each(this.instances, function(instance) {
       promises.push(instance.stop());
     });
     Q.all(promises).fin(function() {
       that.instances = [];
       deferred.resolve();
+    }, function(err) {
+      console.error(err);
     });
     return deferred.promise;
   }

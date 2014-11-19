@@ -43,10 +43,10 @@
 }
 
 #content {
+  @include transition(top .3s ease-out);
   padding: 20px 0;
   text-align: center;
   font-size: 1rem;
-  @include transition(top .3s ease-out);
 
   .buttons {
     padding: 20px 0;
@@ -257,6 +257,7 @@ input[type=checkbox]:after,
 }
 
 #screensaver {
+  @include transition(opacity .5s);
   z-index: 1000;
   position: fixed;
   top: 0;
@@ -274,8 +275,6 @@ input[type=checkbox]:after,
   background-color: #005678;
   opacity: 0;
   visibility: hidden;
-
-  @include transition(opacity .5s);
 
   .saver-logo {
     width: 120px;
