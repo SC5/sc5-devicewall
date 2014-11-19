@@ -1,4 +1,7 @@
 var config = require('../../config.test.json');
+var testHost = 'http://' + config.host + ':' + config.port;
+var io = require('socket.io-client');
+
 module.exports = function (app) {
   app.get('/test', function (req, res) {
     res.set('Content-Type', 'text/html');
@@ -17,5 +20,24 @@ module.exports = function (app) {
       'Location': 'http://' + config.host + ':' + config.port + '/test'
     });
     res.end();
+  });
+
+  /**
+   * Reset environment
+   */
+  var s = io(testHost + '/devicewall');
+  app.get('/test/reset', function (req, res) {
+    //res.set('Content-Type', 'text/html');
+    console.info('Resetting environment');
+    s.emit('reset');
+    s.once('resetted', isDone);
+    function isDone() {
+      console.info('Reset done');
+      res.send(
+        '<html><body><div id="test">OK' +
+        '<script type="text/javascript">window.localStorage.clear();</script>' +
+        '</div></body></html>'
+      );
+    }
   });
 };

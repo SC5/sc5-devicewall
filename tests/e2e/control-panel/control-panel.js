@@ -4,29 +4,27 @@ var utils = require('../utils');
 var socket = require('../socket');
 
 describe('Control panel', function() {
-  var ptor;
+  var ptor = protractor.getInstance();
   var testUrl = 'http://' + config.host + ':' + config.port + '/test';
   var devicesUrl = 'http://' + config.host + ':' + config.port + '/devices';
+  var resetUrl = 'http://' + config.host + ':' + config.port + '/test/reset';
 
-  beforeEach(function(done) {
-    ptor = protractor.getInstance();
-
+  beforeEach(function() {
     browser.get(devicesUrl);
-    // PhantomJS crashing randomly if this was not set
-    browser.ignoreSynchronization = true;
-    utils.reloadDevices().then(function() {
-      browser.get(devicesUrl);
-      browser.executeScript('localStorage.clear();');
-      done();
-    });
+    browser.waitForAngular();
   });
 
   afterEach(function() {
-    utils.clearDevices();
-    browser.executeScript('localStorage.clear();');
+    // reset env state
+    browser.driver.get(resetUrl);
+    browser.driver.wait(function() {
+      return browser.driver.isElementPresent(by.xpath("//div[@id='test']"));
+    });
   });
 
+
   it('should render correctly', function() {
+    console.log("should render correctly");
     expect(element(by.id('go-button')).isDisplayed()).to.eventually.equal(true);
     expect(element(by.id('stop-button')).isDisplayed()).to.eventually.equal(false);
     expect(element(by.id('stop-all-button')).isDisplayed()).to.eventually.equal(false);
@@ -135,10 +133,8 @@ describe('Control panel', function() {
   it('should select all if Select all clicked', function() {
     utils.addMultipleTestDevices(["testdevice2", "testdevice1"]);
     browser.driver.wait(function() {
-      return browser.driver.isElementPresent(by.xpath("//td[text()='testdevice2']"));
+      return browser.driver.isElementPresent(by.xpath("//td[text()='testdevice1']"));
     });
-    element(by.css('#devices-list tr:nth-child(1) input[type="checkbox"]')).click();
-    expect(element.all(by.css('#devices-list input[type="checkbox"]:checked')).count()).to.eventually.equal(1);
     element(by.id('select-all')).click();
     expect(element.all(by.css('#devices-list input[type="checkbox"]:checked')).count()).to.eventually.equal(2);
     element(by.css('#devices-list tr:nth-child(1) input[type="checkbox"]')).click();

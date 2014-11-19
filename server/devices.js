@@ -91,6 +91,12 @@ var Devices = {
       }
       return 0;
     });
+  },
+  removeAll: function() {
+    'use strict';
+    this.devices = [];
+    this.updated = true;
+    this.write();
   }
 };
 

@@ -1,5 +1,5 @@
-var _ = require('lodash'),
-    socketio = require('socket.io');
+var _ = require('lodash');
+var socketio = require('socket.io');
 
 module.exports = function (app, options) {
   'use strict';
@@ -92,7 +92,6 @@ module.exports = function (app, options) {
       }
       fn({appPlatform: appPlatform});
     }
-
   });
 
   // Control panel
@@ -107,6 +106,9 @@ module.exports = function (app, options) {
     socket.on('save', save);
     socket.on('remove', removeDevices);
     socket.on('reload-devices', reloadDevices);
+    if (process.env.NODE_ENV === "test") {
+      socket.on('reset', resetAppData);
+    }
 
     function start(data) {
       console.log('DeviceWall control panel start.');
@@ -187,6 +189,15 @@ module.exports = function (app, options) {
       devices.read();
     }
 
+    // only used with e2e tests
+    function resetAppData() {
+      console.info("<<< reset");
+      instances.stopAll().then(function() {
+        console.info(">>> resetted");
+        socket.emit("resetted");
+      });
+      devices.removeAll();
+    }
   });
 
   devices.init({config: config});

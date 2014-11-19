@@ -4,7 +4,6 @@ var utils = require('../utils');
 var socket = require('../socket');
 
 describe('Device', function() {
-  var ptor;
   var label = 'testdevice';
   var user = {
     id: 'testuser',
@@ -14,28 +13,26 @@ describe('Device', function() {
   var clientReturnUrl = '/client';
   var testUrl = 'http://' + config.host + ':' + config.port + '/test';
   var anotherTestUrl = 'http://' + config.host + ':' + config.testServerPort + '/test';
+  var resetUrl = 'http://' + config.host + ':' + config.port + '/test/reset';
+  var ptor = protractor.getInstance();
 
-  beforeEach(function(done) {
-    ptor = protractor.getInstance();
-
-    // PhantomJS crashing randomly if this was not set
-    browser.ignoreSynchronization = true;
-
-    browser.get(clientUrl);
-    browser.executeScript('localStorage.clear();');
-    browser.get(clientUrl);
+  beforeEach(function() {
     utils.writeSingleTestDevice(label);
-    utils.reloadDevices().then(done);
+    utils.reloadDevices();
+    browser.ignoreSynchronization = true;
+    browser.get(clientUrl);
+    browser.waitForAngular();
   });
 
   afterEach(function() {
-    utils.clearDevices();
-    browser.executeScript('localStorage.clear();');
+    // reset env state
+    browser.driver.get(resetUrl);
+    browser.driver.wait(function() {
+      return browser.driver.isElementPresent(by.xpath("//div[@id='test']"));
+    });
   });
 
   it('should show label selection with ok button if no label in localStorage', function() {
-    browser.executeScript('localStorage.clear();');
-    browser.get(clientUrl);
     expect(utils.hasClass(element(by.id('label')), 'ng-hide')).to.eventually.equal(false);
     expect(utils.hasClass(element(by.id('connection')), 'ng-hide')).to.eventually.equal(true);
     expect(element(by.id('device_label')).isPresent()).to.eventually.equal(true);
@@ -44,8 +41,6 @@ describe('Device', function() {
   });
 
   it('should show ready for testing if label typed and go clicked', function() {
-    browser.executeScript('localStorage.clear();');
-    browser.get(clientUrl);
     element(by.id('device_label')).click();
     element(by.id('device_label')).sendKeys('testdevice');
     element(by.css('#label button')).click();
@@ -55,7 +50,7 @@ describe('Device', function() {
 
   it('should show ready for testing if label in localStorage', function() {
     browser.executeScript('localStorage.setItem("label", "' + label + '");');
-    browser.get(clientUrl);
+    browser.refresh();
     expect(utils.hasClass(element(by.id('label')), 'ng-hide')).to.eventually.equal(true);
     expect(utils.hasClass(element(by.id('connection')), 'ng-hide')).to.eventually.equal(false);
     expect(element(by.css('#connection h3')).getText()).to.eventually.contain('Ready for testing');
@@ -63,14 +58,14 @@ describe('Device', function() {
 
   it('should navigate back to control panel if control panel button clicked', function() {
     browser.executeScript('localStorage.setItem("label", "' + label + '");');
-    browser.get(clientUrl);
+    browser.refresh();
     element(by.css('#connection .control-panel')).click();
     expect(ptor.getCurrentUrl()).to.eventually.contain('/devices');
   });
 
   it('should navigate back to label selection if device button clicked', function() {
     browser.executeScript('localStorage.setItem("label", "' + label + '");');
-    browser.get(clientUrl);
+    browser.refresh();
     element(by.css('#connection .settings')).click();
     expect(ptor.getCurrentUrl()).to.eventually.contain('/client');
     expect(utils.hasClass(element(by.id('label')), 'ng-hide')).to.eventually.equal(false);
@@ -79,7 +74,7 @@ describe('Device', function() {
 
   it('should navigate to tested website and back when server started and stopped', function() {
     browser.executeScript('localStorage.setItem("label", "' + label + '");');
-    browser.get(clientUrl);
+    browser.refresh();
     socket.start(user, [label], testUrl);
     browser.driver.wait(function() {
       return browser.driver.getCurrentUrl().then(function (url) {
@@ -101,16 +96,15 @@ describe('Device', function() {
         });
       });
     });
-    ptor.sleep(10000);
   });
 
   it('should restart testing if device navigates back to device mode page when testing is on going', function() {
     browser.executeScript('localStorage.setItem("label", "' + label + '");');
-    browser.get(clientUrl);
+    browser.refresh();
     socket.start(user, [label], testUrl);
     browser.driver.wait(function() {
       return browser.driver.getCurrentUrl().then(function (url) {
-          return url !== clientUrl;
+        return url !== clientUrl;
       });
     }).then(function() {
       expect(ptor.getCurrentUrl()).to.eventually.contain('/test');
@@ -131,12 +125,11 @@ describe('Device', function() {
         });
       });
     });
-    ptor.sleep(10000);
   });
 
   it('should handle 301 redirects properly when testing started', function() {
     browser.executeScript('localStorage.setItem("label", "' + label + '");');
-    browser.get(clientUrl);
+    browser.refresh();
     socket.start(user, [label], anotherTestUrl + '/301');
     browser.driver.wait(function() {
       return browser.driver.getCurrentUrl().then(function (url) {
@@ -152,13 +145,11 @@ describe('Device', function() {
         expect(ptor.getCurrentUrl()).to.eventually.contain(clientReturnUrl);
       });
     });
-    ptor.sleep(10000);
   });
 
   it('should handle 302 redirects properly when testing started', function() {
-    utils.writeSingleTestDevice(label);
     browser.executeScript('localStorage.setItem("label", "' + label + '");');
-    browser.get(clientUrl);
+    browser.refresh();
     socket.start(user, [label], anotherTestUrl + '/302');
     browser.driver.wait(function() {
       return browser.driver.getCurrentUrl().then(function (url) {
@@ -176,6 +167,5 @@ describe('Device', function() {
         });
       });
     });
-    ptor.sleep(10000);
   });
 });
