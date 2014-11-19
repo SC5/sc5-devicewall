@@ -7,6 +7,9 @@ describe('Frontpage', function() {
   var label = 'testdevice';
   var indexUrl = 'http://' + config.host + ':' + config.port + '/';
 
+  // On CI the window size might be too small, so tests are trying to click out of bounds
+  browser.driver.manage().window().setSize(1280, 1024);
+
   beforeEach(function() {
     ptor = protractor.getInstance();
 

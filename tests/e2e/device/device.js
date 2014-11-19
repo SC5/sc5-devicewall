@@ -16,6 +16,9 @@ describe('Device', function() {
   var resetUrl = 'http://' + config.host + ':' + config.port + '/test/reset';
   var ptor = protractor.getInstance();
 
+  // On CI the window size might be too small, so tests are trying to click out of bounds
+  browser.driver.manage().window().setSize(1280, 1024);
+
   beforeEach(function() {
     utils.writeSingleTestDevice(label);
     utils.reloadDevices();
@@ -112,7 +115,7 @@ describe('Device', function() {
       expect(ptor.getCurrentUrl()).to.eventually.contain(clientUrl);
       browser.driver.wait(function() {
         return browser.driver.getCurrentUrl().then(function (url) {
-            return url !== clientUrl && /\/test/.test(url);
+          return url !== clientUrl && /\/test/.test(url);
         });
       }).then(function() {
         socket.stopAll();
@@ -133,7 +136,7 @@ describe('Device', function() {
     socket.start(user, [label], anotherTestUrl + '/301');
     browser.driver.wait(function() {
       return browser.driver.getCurrentUrl().then(function (url) {
-          return url !== clientUrl;
+        return url !== clientUrl;
       });
     }).then(function() {
       socket.stopAll()

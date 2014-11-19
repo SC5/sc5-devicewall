@@ -9,6 +9,9 @@ describe('Control panel', function() {
   var devicesUrl = 'http://' + config.host + ':' + config.port + '/devices';
   var resetUrl = 'http://' + config.host + ':' + config.port + '/test/reset';
 
+  // On CI the window size might be too small, so tests are trying to click out of bounds
+  browser.driver.manage().window().setSize(1280, 1024);
+
   beforeEach(function() {
     browser.get(devicesUrl);
     browser.waitForAngular();
