@@ -49,6 +49,7 @@ describe('Frontpage', function() {
     expect(ptor.getCurrentUrl()).to.eventually.contain('/devices');
   });
 
+  /* disabled automatic redirect because client is unable to access tutorial
   it('should show device mode if device label in localStorage', function() {
     utils.writeSingleTestDevice(label);
     browser.executeScript('localStorage.setItem("label", "' + label + '");');
@@ -60,4 +61,5 @@ describe('Frontpage', function() {
     );
     expect(ptor.getCurrentUrl()).to.eventually.contain('/client');
   });
+  */
 });
