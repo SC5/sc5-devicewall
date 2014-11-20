@@ -6,7 +6,7 @@ var socket = require('../socket');
 describe('Control panel', function() {
   var ptor;
   var testUrl = 'http://' + config.host + ':' + config.port + '/test';
-  var devicesUrl = 'http://' + config.host + ':' + config.port + '/#!/devices';
+  var devicesUrl = 'http://' + config.host + ':' + config.port + '/devices';
 
   beforeEach(function() {
     ptor = protractor.getInstance();

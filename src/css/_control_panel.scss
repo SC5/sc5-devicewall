@@ -20,18 +20,17 @@ body {
 }
 
 #content {
-
+  @include transition(top .3s ease-out);
   padding: 0 0 20px;
   text-align: center;
   font-size: 1rem;
-  @include transition(top .3s ease-out);
 
   &.centerized {
+    @include translateY(-50%);
     position: absolute;
     left: 0;
     top: 50%;
     margin-top: 20px;
-    @include translateY(-50%);
     width: 100%;
 
     &.devices {
@@ -45,9 +44,9 @@ body {
   }
 
   .accordion {
+    @include transition(all .5s ease-out);
     position: relative;
     max-height: 1200px;
-    @include transition(all .5s ease-out);
 
     h2 {
       cursor: pointer;
@@ -159,7 +158,7 @@ footer {
   text-align: center;
   font-size: .8rem;
   margin-top: 20px;
-  background-color: #005678;
+  background-color: $footer-blue;
 }
 
 #{headings(all)} {
@@ -207,6 +206,7 @@ table {
       overflow: hidden;
 
       input[type=text] {
+        @include placeholder-color(transparent);
         background-color: transparent;
         height: 100%;
         width: 100%;
@@ -216,8 +216,6 @@ table {
         padding: 5px;
         font-size: .9rem;
         border-radius: 0;
-
-        @include placeholder-color(transparent);
 
         &:focus {
           @include placeholder-color(#c0c0c0);
@@ -522,52 +520,4 @@ input[type=text].error {
   font-size: 4rem;
   line-height: 2rem;
   margin: 0 5px;
-}
-
-@media only screen and (max-width : 775px) {
-  .small-viewport-hidden {
-    display: none;
-  }
-}
-
-@media only screen and (max-width : 600px), screen and (max-height : 700px) {
-  h1 {
-    font-size: 2.8rem;
-  }
-
-  #devices {
-    input[type=text] {
-      width: 90%;
-    }
-  }
-
-  #content {
-    margin-top: 30px;
-    position: relative;
-    top: initial;
-    @include translateY(0);
-  }
-
-  .mode-button.button-control-panel,
-  .mode-button.button-device {
-    width: 100px;
-    height: auto;
-    padding: 20px;
-
-    .text {
-      font-size: 20px;
-      width: 100px;
-    }
-
-    .icon,
-    .icon {
-      width: 100px;
-      height: 100px;
-      font-size: 100px;
-    }
-  }
-
-  .home {
-    left: 0;
-  }
 }

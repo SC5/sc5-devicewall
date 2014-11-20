@@ -14,7 +14,8 @@
       }
     },
     "client": {
-      "screenSaverTimeoutSeconds": 600
+      "screenSaverTimeoutSeconds": 600,
+      "redirectToClientModeAutomatically": false
     }
   }
 }

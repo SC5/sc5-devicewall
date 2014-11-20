@@ -27,7 +27,7 @@ angular.module('DeviceWall')
     $scope.showControlPanel = function() {
       var portString = $window.location.port.length > 0 ? ':' + $window.location.port : '';
       var url = $window.location.protocol + '//' + $window.location.hostname + portString +
-        '/#!/devices';
+        '/devices';
       $window.location.href = url;
     };
 

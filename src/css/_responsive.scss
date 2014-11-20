@@ -1,3 +1,60 @@
+@media only screen and (max-width : 775px) {
+  .small-viewport-hidden {
+    display: none;
+  }
+}
+
+@media only screen and (max-width : 600px), screen and (max-height : 700px) {
+  h1 {
+    font-size: 2.8rem;
+  }
+
+  #devices {
+    input[type=text] {
+      width: 90%;
+    }
+  }
+
+  #content {
+    @include translateY(0);
+    margin-top: 30px;
+    position: relative;
+    top: initial;
+  }
+
+  .mode-button {
+    width: 100px;
+    height: auto;
+    padding: 20px;
+
+    .text {
+      font-size: 20px;
+      width: 100px;
+    }
+
+    .icon,
+    .icon {
+      width: 100px;
+      height: 100px;
+      font-size: 100px;
+    }
+  }
+
+  .home {
+    left: 0;
+  }
+
+  .tutorial-button {
+    width: 200px;
+    height: 200px;
+    font-size: 20px;
+
+    .text {
+      padding: 0 10px;
+    }
+  }
+}
+
 @media only screen and (max-width : 320px) {
 
   h1 {
@@ -23,6 +80,10 @@
   input[type=url] {
     width: 100%;
     box-sizing: border-box;
+  }
+
+  .logo {
+    width: 75px;
   }
 
   #available-devices {

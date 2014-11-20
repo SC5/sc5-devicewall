@@ -52,6 +52,10 @@ linters:
     enabled: false
     convention: hyphenated_lowercase # or 'BEM', or a regex pattern
 
+  NestingDepth:
+    enable: false
+    max_depth: 5
+
   PlaceholderInExtend:
     enabled: true
 
@@ -100,6 +104,9 @@ linters:
   TrailingSemicolonAfterPropertyValue:
     enabled: true
 
+  QualifyingElement:
+    enabled: false
+
   UnnecessaryMantissa:
     enabled: true
 
@@ -111,6 +118,9 @@ linters:
 
   ZeroUnit:
     enabled: true
+
+  VendorPrefixes:
+    enabled: false
 
   Compass::*:
     enabled: false

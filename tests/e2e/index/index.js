@@ -29,21 +29,21 @@ describe('Frontpage', function() {
         by.id('container')
       ).getText()
     ).to.eventually.have.length.above(0);
-    expect(element(by.css('.button-device')).getText()).to.eventually.contain('USE AS TEST DEVICE');
-    expect(element(by.css('.button-control-panel')).getText()).to.eventually.contain('CONTROL DEVICE WALL');
-    expect(ptor.getCurrentUrl()).to.eventually.contain('/#!/');
+    expect(element(by.css('.button-device')).getText()).to.eventually.contain('Add/Reset device'.toUpperCase());
+    expect(element(by.css('.button-control-panel')).getText()).to.eventually.contain('Test website'.toUpperCase());
+    expect(ptor.getCurrentUrl()).to.eventually.contain('/');
   });
 
   it('should show device mode if device button clicked', function() {
     element(
       by.css('.button-device')
     ).click();
-    expect(ptor.getCurrentUrl()).to.eventually.contain('/#!/client');
+    expect(ptor.getCurrentUrl()).to.eventually.contain('/client');
   });
 
   it('should show control panel mode if control panel button clicked', function() {
     element(by.css('.button-control-panel')).click();
-    expect(ptor.getCurrentUrl()).to.eventually.contain('/#!/devices');
+    expect(ptor.getCurrentUrl()).to.eventually.contain('/devices');
   });
 
   it('should show device mode if device label in localStorage', function() {
@@ -55,6 +55,6 @@ describe('Frontpage', function() {
         by.id('connection')
       ).isPresent()
     );
-    expect(ptor.getCurrentUrl()).to.eventually.contain('/#!/client');
+    expect(ptor.getCurrentUrl()).to.eventually.contain('/client');
   });
 });
