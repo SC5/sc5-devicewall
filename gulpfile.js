@@ -251,7 +251,8 @@ gulp.task('test:e2e', ['webdriver_manager_update'], function() {
   var args = ['--seleniumServerJar', paths[0], '--baseUrl', 'http://' + testConfig.host + ':' + testConfig.port];
   var protractorConf = {
     configFile: './protractor.config.js',
-    args: [args]
+    args: [args],
+    debug: Boolean($.util.env.debug)
   };
 
   if (!fs.existsSync(testDataDir)) {

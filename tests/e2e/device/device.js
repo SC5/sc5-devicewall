@@ -105,26 +105,21 @@ describe('Device', function() {
     browser.executeScript('localStorage.setItem("label", "' + label + '");');
     browser.refresh();
     socket.start(user, [label], testUrl);
+
     browser.driver.wait(function() {
       return browser.driver.getCurrentUrl().then(function (url) {
         return url !== clientUrl;
       });
     }).then(function() {
+      // test url ok
       expect(ptor.getCurrentUrl()).to.eventually.contain('/test');
+      // go back to client mode
       browser.get(clientUrl);
-      expect(ptor.getCurrentUrl()).to.eventually.contain(clientUrl);
+      // now should be redirected back to test url
       browser.driver.wait(function() {
         return browser.driver.getCurrentUrl().then(function (url) {
-          return url !== clientUrl && /\/test/.test(url);
-        });
-      }).then(function() {
-        socket.stopAll();
-        browser.driver.wait(function() {
-          return browser.driver.getCurrentUrl().then(function (url) {
-            return url.indexOf(clientReturnUrl) > -1;
-          });
-        }).then(function() {
-          expect(ptor.getCurrentUrl()).to.eventually.contain(clientReturnUrl);
+          var state = url !== clientUrl && /\/test/.test(url);
+          return state;
         });
       });
     });
