@@ -18,3 +18,4 @@ config/app/config.local.json
 /tests/data/instances.json
 npm-debug.log
 /coverage
+data

@@ -1,0 +1,30 @@
+<script id="template.html" type="text/ng-template">
+  <img src="/assets/images/tutorial_images/{{ currentItem.image }}" data-ng-click="selectPage(currentPage+1)" alt="Illustration">
+  <p data-ng-bind-html="safeHtml(currentItem.text)" class="tutorial-text"></p>
+
+  <div class="tutorial-nav">
+    <a
+      data-ng-repeat="page in pages[currentTutorial]"
+      href="#"
+      class="circle type1"
+      data-ng-class="{active: $index===currentPage}"
+      data-ng-click="selectPage($index)"
+    ></a>
+  </div>
+</script>
+
+<div class="tutorial">
+  <a class="home icon-layout" href="/"></a>
+  <div data-ng-hide="hideMain" id="content">
+    <a class="tutorial-button button-device" data-ng-click="selectTutorial('client')">
+      <div class="text">I want to add a new test device</div>
+    </a>
+    <a class="tutorial-button button-control-panel"  data-ng-click="selectTutorial('control')">
+      <div class="text">I want to test my website</div>
+    </a>
+  </div>
+
+  <div data-ng-show="hideMain">
+    <div data-ng-include="'template.html'"></div>
+  </div>
+</div>

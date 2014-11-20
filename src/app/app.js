@@ -30,16 +30,8 @@ module.config(function($routeProvider, $locationProvider, $logProvider, appConfi
       controller: 'ClientController'
     }).
     when('/tutorial', {
-      templateUrl: 'assets/views/tutorial.html',
-      controller: 'ClientController'
-    }).
-    when('/tutorials/device/:page', {
-      templateUrl: 'assets/views/tutorial_device.html',
-      controller: 'ClientController'
-    }).
-    when('/tutorials/test/:page', {
-      templateUrl: 'assets/views/tutorial_test.html',
-      controller: 'ClientController'
+      templateUrl: 'assets/views/tutorial/tutorial.html',
+      controller: 'TutorialController'
     }).
     otherwise({
       redirectTo: '/'

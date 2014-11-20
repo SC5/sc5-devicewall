@@ -13,18 +13,61 @@
   text-transform: uppercase;
 
   .text {
-    @include translateY(-50%);
-    padding: 10px;
-    position: absolute;
-    top: 50%;
+    display: table-cell;
+    vertical-align: middle;
+    height: inherit;
+    padding: 0 30px;
   }
 }
 
-@media only screen and (max-width : 600px), screen and (max-height : 700px) {
-  .mode-button {
-    width: 100px;
-    height: auto;
-    padding: 20px;
-    font-size: 20px;
+.tutorial {
+  font-size: 2em;
+
+  img, .tutorial-text {
+    width: 70%;
+    max-width: 670px;
+    margin: auto;
+    min-height: 110px;
+  }
+
+  img {
+    border: 3px solid white;
+    margin-top: 20px;
+  }
+
+  .tutorial-text {
+    padding-bottom: 50px;
+    p {
+      margin: 6px;
+
+      span {
+        color: $sc5-blue;
+
+      }
+    }
+
+  }
+
+  .tutorial-nav {
+    position: fixed;
+    background-color: rgba(0,114,163, 0.9);
+    bottom: 20px;
+    left: 0;
+    right: 0;
+
+    .circle {
+      display: inline-block;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      background: $footer-blue;
+    }
+    a {
+      display: inline;
+      margin: 5px 10px;
+    }
+    a.active {
+      background: $sc5-blue;
+    }
   }
 }
