@@ -7,37 +7,53 @@ angular.module('DeviceWall').controller('TutorialController', function($scope, $
     control: [
       {
         image: 'test/1.png',
-        text: "Connect your device to <b>SC5DeviceWall</b> wifi Password: <b>SC5Rocks</b>"
+        text: '<p>Connect your device to</p>\
+              <p><span>SC5DeviceWall</span> wifi</p>\
+              <p>Password: <span>SC5Rocks</span></p>'
       },
       {
         image: 'test/2.png',
-        text: "Navigate to <b>http://devicewall.sc5.io</b> and select the <b>Control panel icon</b>"
+        text: '<p>Navigate to <span>http://devicewall.sc5.io</span></p>\
+              <p>and select the <span>Control panel</span> icon</p>'
       },
       {
         image: 'test/3.png',
-        text: "Enter the website address you want to test and click <b>GO!</b>"
+        text: '<p>Enter the website address</p>\
+              <p>you want to test</p>\
+              <p>and click <span>GO!</span></p>'
       },
       {
         image: 'test/4.png',
-        text: "Test the site and navigate on any of the devices"
+        text: '<p>Test the site and navigate</p>\
+              <p>on any of the devices</p>'
       },
       {
         image: 'test/5.png',
-        text: "Time to stop the test? Just click <b>Stop all</b> in Control panel"
+        text: '<p>Time to stop the test?</p>\
+              <p>Just click <span>Stop all</span></p>\
+              <p>in Control panel</p>'
       }
     ],
     client: [
       {
         image: 'device/1.png',
-        text: "Connect your device to <b>SC5DeviceWall</b> wifi Password: <b>SC5Rocks</b>"
+        text: '<p>Connect your device to</p>\
+              <p><span>SC5DeviceWall</span> wifi</p>\
+              <p>Password: <span>SC5Rocks</span></p>'
       },
       {
         image: 'device/2.png',
-        text: "Navigate to http://devicewall.sc5.io and tap Add device icon"
+        text: '<p>Navigate to <span>http://devicewall.sc5.io</span></p>\
+              <p>and tap <span>Add device</span> icon</p>'
       },
       {
         image: 'device/3.png',
-        text: "Give device a name and tap OK! You are good to go!"
+        text: '<p>Give device a name</p>\
+              <p>and tap <span>OK</span>!</p>'
+      },
+      {
+        image: 'device/4.png',
+        text: '<p>You are good to go!</p>'
       }
     ]
   };

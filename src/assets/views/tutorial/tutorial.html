@@ -1,6 +1,6 @@
 <script id="template.html" type="text/ng-template">
   <img src="/assets/images/tutorial_images/{{ currentItem.image }}" data-ng-click="selectPage(currentPage+1)" alt="Illustration">
-  <p data-ng-bind-html="safeHtml(currentItem.text)"></p>
+  <p data-ng-bind-html="safeHtml(currentItem.text)" class="tutorial-text"></p>
 
   <div class="tutorial-nav">
     <a
