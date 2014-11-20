@@ -13,11 +13,8 @@ describe('Control panel', function() {
   browser.driver.manage().window().setSize(1280, 1024);
 
   beforeEach(function() {
-    browser.ignoreSynchronization = false;
     browser.get(devicesUrl);
-    browser.driver.wait(function() {
-      return browser.driver.isElementPresent(by.xpath('//*[@id="available-devices-table-heading"]/th[1]'));
-    });
+    browser.waitForAngular();
   });
 
   afterEach(function() {
