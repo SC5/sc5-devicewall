@@ -27,12 +27,9 @@ module.exports = function (app) {
    */
   var s = io(testHost + '/devicewall');
   app.get('/test/reset', function (req, res) {
-    //res.set('Content-Type', 'text/html');
-    console.info('Resetting environment');
     s.emit('reset');
     s.once('resetted', isDone);
     function isDone() {
-      console.info('Reset done');
       res.send(
         '<html><body><div id="test">OK' +
         '<script type="text/javascript">window.localStorage.clear();</script>' +
