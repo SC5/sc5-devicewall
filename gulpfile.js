@@ -301,7 +301,7 @@ gulp.task('test:e2e:ci', function() {
 
 
 gulp.task('default', ['integrate']);
-gulp.task('build', ['clean', 'test:server'], function() {
+gulp.task('build', ['clean'], function() {
   gulp.start('integrate');
 });
 gulp.task('bower', function() {
