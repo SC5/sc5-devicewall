@@ -59,7 +59,8 @@ var Instances = {
           if (previousUrlObject.host === nextUrlObject.host) {
             // same host, just send new location
             instance.set('url', resolvedUrl.href);
-            instance.location(resolvedUrl.path).then(deferred.resolve);
+            instance.location(resolvedUrl.path);
+            deferred.resolve();
             locationChange = true;
           } else {
             // stop before relaunch
@@ -73,9 +74,13 @@ var Instances = {
 
         if (!locationChange) {
           console.log('Ready to start new browserSync instance');
-          instance.start(data).then(deferred.resolve)
+          instance.start(data)
+            .then(function(data) {
+              console.info("Instance.start: browserSync started", data.url);
+              deferred.resolve(data);
+            })
             .fail(function(reason) {
-              console.err("failed to start new instance", reason);
+              console.error("failed to start new instance", reason);
               that.stop(data.user.id).then(function() {
                 deferred.reject(reason);
               });
@@ -93,11 +98,14 @@ var Instances = {
         instance = this.find(userId);
 
     if (instance) {
+      console.log("Stopping instance", userId);
       instance.stop().then(function() {
+        console.log("instance stopped:", userId);
         that.removeInstance(userId);
         deferred.resolve();
       });
     } else {
+      console.log("no instance:", userId);
       deferred.resolve();
     }
     return deferred.promise;    
@@ -107,14 +115,22 @@ var Instances = {
     var that = this,
         deferred = Q.defer(),
         promises = [];
+    console.log("instances.stopAll");
     _.each(this.instances, function(instance) {
       promises.push(instance.stop());
     });
     Q.all(promises).fin(function() {
       that.instances = [];
       deferred.resolve();
+    }, function(err) {
+      console.error(err);
     });
     return deferred.promise;
+  },
+  forceStopAll: function() {
+    _.each(this.instances, function(instance) {
+      instance.forceStop();
+    });
   }
 };
 

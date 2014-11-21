@@ -7,6 +7,9 @@ describe('Frontpage', function() {
   var label = 'testdevice';
   var indexUrl = 'http://' + config.host + ':' + config.port + '/';
 
+  // On CI the window size might be too small, so tests are trying to click out of bounds
+  browser.driver.manage().window().setSize(1280, 1024);
+
   beforeEach(function() {
     ptor = protractor.getInstance();
 
@@ -19,7 +22,7 @@ describe('Frontpage', function() {
   });
 
   afterEach(function() {
-    utils.clearAfterEach();
+    utils.clearDevices();
     browser.executeScript('localStorage.clear();');
   });
 
@@ -46,6 +49,7 @@ describe('Frontpage', function() {
     expect(ptor.getCurrentUrl()).to.eventually.contain('/devices');
   });
 
+  /* disabled automatic redirect because client is unable to access tutorial
   it('should show device mode if device label in localStorage', function() {
     utils.writeSingleTestDevice(label);
     browser.executeScript('localStorage.setItem("label", "' + label + '");');
@@ -57,4 +61,5 @@ describe('Frontpage', function() {
     );
     expect(ptor.getCurrentUrl()).to.eventually.contain('/client');
   });
+  */
 });

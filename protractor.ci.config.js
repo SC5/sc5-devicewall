@@ -1,4 +1,5 @@
 exports.config = {
+  seleniumAddress: 'http://192.168.59.103:4444/wd/hub',
   seleniumPort: 4444,
 
   // -Djava.security.egd=file:///dev/urandom needed for headless SSD configurations
@@ -13,6 +14,6 @@ exports.config = {
   // Options to be passed to Jasmine-node.
   jasmineNodeOpts: {
     showColors: true,
-    defaultTimeoutInterval: 20000
+    defaultTimeoutInterval: 25000
   }
 };

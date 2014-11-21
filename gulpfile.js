@@ -103,7 +103,7 @@ gulp.task('serve', $.serve({
 }));
 
 
-gulp.task('preprocess', ['config', 'scss-lint'], function() {
+gulp.task('preprocess', ['config'/*, 'scss-lint'*/], function() {
   gulp.src(['src/app/**/*.js', 'server*.js'])
     .pipe($.jshint())
     .pipe($.jshint.reporter('default'));
@@ -251,7 +251,8 @@ gulp.task('test:e2e', ['webdriver_manager_update'], function() {
   var args = ['--seleniumServerJar', paths[0], '--baseUrl', 'http://' + testConfig.host + ':' + testConfig.port];
   var protractorConf = {
     configFile: './protractor.config.js',
-    args: [args]
+    args: [args],
+    debug: Boolean($.util.env.debug)
   };
 
   if (!fs.existsSync(testDataDir)) {
@@ -266,6 +267,39 @@ gulp.task('test:e2e', ['webdriver_manager_update'], function() {
       server.kill();
     });
 });
+
+
+gulp.task('test:e2e:ci', function() {
+  var testConfig = require('./config.test.json');
+  var testDataDir = path.dirname(path.resolve(testConfig.devicesJson));
+  var args = [
+    '--baseUrl',
+    'http://' + testConfig.host + ':' + testConfig.port
+  ];
+  var protractorConf = {
+    configFile: './protractor.ci.config.js',
+    args: [args]
+  };
+
+  if (!fs.existsSync(testDataDir)) {
+    fs.mkdirSync(testDataDir);
+  }
+
+  server.listen({path: './server/server.js', env: {"NODE_ENV": "test"}});
+  gulp.src(['tests/e2e/**/*.js'], { read: false })
+    .pipe($.protractor.protractor(protractorConf)).on('error', function() {
+      server.kill();
+      throw new Error('Selenium e2e tests failed.');
+    }).on('end', function() {
+      server.kill();
+    });
+});
+
+
+
+
+
+
 gulp.task('default', ['integrate']);
 gulp.task('build', ['clean', 'test:server'], function() {
   gulp.start('integrate');

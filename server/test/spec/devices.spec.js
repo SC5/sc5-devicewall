@@ -7,6 +7,7 @@ describe("devices collection should", function() {
     devices.init({config: {
       devicesJson: 'server/test/fixtures/devices.json'
     }});
+    devices.read();
   });
 
   afterEach(function() {

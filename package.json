@@ -55,13 +55,13 @@
     "socket.io-client": "^1.0.6"
   },
   "devDependencies": {
-    "chai": "^1.9.2",
-    "chai-as-promised": "^4.1.1",
-    "gulp-istanbul": "^0.3.1",
-    "gulp-jasmine": "^1.0.1",
-    "jasmine": "^2.0.1",
-    "protractor": "^0.22.0",
-    "selenium-webdriver": "^2.41.0"
+    "chai": "~1.9.2",
+    "chai-as-promised": "~4.1.1",
+    "gulp-istanbul": "~0.3.1",
+    "gulp-jasmine": "~1.0.1",
+    "jasmine": "~2.0.1",
+    "protractor": "~1.4.0",
+    "selenium-webdriver": "~2.44.0"
   },
   "scripts": {
     "install": "bundle install && node_modules/gulp/bin/gulp.js install",

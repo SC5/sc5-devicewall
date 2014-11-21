@@ -80,5 +80,7 @@ angular.module('DeviceWall')
     });
 
     resetScreensaverCounter();
-    socket.emit('update', {label: $scope.label});
-});
+    if ($scope.label) {
+      socket.emit('update', {label: $scope.label});
+    }
+  });
