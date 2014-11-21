@@ -9,6 +9,7 @@ describe('Device', function() {
     id: 'testuser',
     displayName: 'testuser'
   };
+  var devicesUrl = 'http://' + config.host + ':' + config.port + '/devices';
   var clientUrl = 'http://' + config.host + ':' + config.port + '/client';
   var clientReturnUrl = '/client';
   var testUrl = 'http://' + config.host + ':' + config.port + '/test';
@@ -36,20 +37,27 @@ describe('Device', function() {
   });
 
   it('should restart testing if device navigates back to device mode page when testing is on going', function() {
+    // setup localStorage label for client
     browser.executeScript('localStorage.setItem("label", "' + label + '");');
-    browser.refresh();
-    socket.start(user, [label], testUrl);
+    browser.get(clientUrl);
 
+    // open control panel
+    browser.get(devicesUrl);
     browser.driver.wait(function() {
       return browser.driver.getCurrentUrl().then(function (url) {
-        return url !== clientUrl;
+        return url === devicesUrl;
       });
     }).then(function() {
-      // test url ok
-      expect(ptor.getCurrentUrl()).to.eventually.contain('/test');
-      // go back to client mode
+      // start test
+      element(by.id('url')).click();
+      utils.clear(element(by.id('url')));
+      element(by.id('url')).sendKeys(testUrl);
+      element(by.id("go-button")).click();
+
+      // go back to client url
       browser.get(clientUrl);
-      // now should be redirected back to test url
+
+      // clientUrl should redirect to test page automatically
       browser.driver.wait(function() {
         return browser.driver.getCurrentUrl().then(function (url) {
           var state = url !== clientUrl && /\/test/.test(url);
@@ -68,7 +76,7 @@ describe('Device', function() {
         return url !== clientUrl;
       });
     }).then(function() {
-      socket.stopAll()
+      socket.stopAll();
       browser.driver.wait(function() {
         return browser.driver.getCurrentUrl().then(function (url) {
           return url.indexOf(clientReturnUrl) > -1;

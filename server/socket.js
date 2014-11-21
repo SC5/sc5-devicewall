@@ -208,10 +208,11 @@ module.exports = function (app, options) {
     // only used with e2e tests
     function resetAppData() {
       console.info("Control <<< reset");
-      instances.stopAll().then(function() {
+      instances.forceStopAll();
+      //instances.stopAll().then(function() {
         console.info(">>> resetted");
         socket.emit("resetted");
-      });
+      //});
       devices.removeAll();
     }
   });

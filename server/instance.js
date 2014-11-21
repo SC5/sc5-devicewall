@@ -84,6 +84,12 @@ Instance.prototype.stop = function() {
   return deferred.promise;
 };
 
+Instance.prototype.forceStop = function() {
+  if (this.childProcess) {
+    this.childProcess.kill('SIGHUP');
+  }
+};
+
 Instance.prototype.location = function(urlPath) {
   var deferred = Q.defer();
   if (this.isConnected()) {

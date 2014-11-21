@@ -126,6 +126,11 @@ var Instances = {
       console.error(err);
     });
     return deferred.promise;
+  },
+  forceStopAll: function() {
+    _.each(this.instances, function(instance) {
+      instance.forceStop();
+    });
   }
 };
 
