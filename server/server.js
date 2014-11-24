@@ -58,12 +58,16 @@ if (process.env.NODE_ENV === "test") {
   });
 }
 
-
-var admin = adminServer.listen(config.port, function () {
-  console.log('Control server listening on port %d', admin.address().port);
+// HTTPS
+var options = {
+  key: fs.readFileSync(config.sslKey, 'utf8'),
+  cert: fs.readFileSync(config.sslCert, 'utf8')
+};
+var server = https.createServer(options, adminServer).listen(config.port, function () {
+  console.log('Control server listening on port %d', config.port);
 });
 
 // Socket IO
-require('./socket.js')(admin, {
+require('./socket.js')(server, {
   config: config
 });
