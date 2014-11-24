@@ -86,5 +86,19 @@ module.exports = {
       targetUrl = url.parse(newTarget.href);
     }
     return targetUrl;
+  },
+  /*
+   * Node url returns 'hostname' + 'port' only if 'host' is missing
+   * http://nodejs.org/api/url.html#url_url_format_urlobj
+   */
+  getURLWithPortString: function(urlString, port) {
+    urlString = urlString || '';
+    port = port || 80;
+
+    var urlObj = url.parse(urlString);
+    urlObj.port = port;
+    urlObj.host = undefined;
+
+    return url.format(urlObj);
   }
 };

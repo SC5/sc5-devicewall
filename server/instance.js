@@ -71,7 +71,7 @@ Instance.prototype.stop = function() {
     });
     this.childProcess.send({
       type: 'location',
-      url: this.config.deviceWallAppURL,
+      url: utils.getURLWithPortString(this.config.deviceWallAppURL, this.config.port),
       timeout: 8000,
       completeMessageType: 'browserSyncExit'
     });
