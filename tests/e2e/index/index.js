@@ -5,7 +5,7 @@ var utils = require('../utils');
 describe('Frontpage', function() {
   var ptor;
   var label = 'testdevice';
-  var indexUrl = 'http://' + config.host + ':' + config.port + '/';
+  var indexUrl = config.protocol + '://' + config.host + ':' + config.port + '/';
 
   // On CI the window size might be too small, so tests are trying to click out of bounds
   browser.driver.manage().window().setSize(1280, 1024);

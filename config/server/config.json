@@ -3,7 +3,7 @@
   "GOOGLE_CLIENT_SECRET": "<GOOGLE_CLIENT_SECRET>",
   "GOOGLE_CALLBACK_URL": "http://devicewall.sc5.io/auth/google/callback",
   "sessionKey": "devicewall12345",
-  "deviceWallAppURL": "http://devicewall.sc5.io/client",
+  "deviceWallAppURL": "https://devicewall.sc5.io/client",
   "clientIdleReturnSeconds": 300,
   "maxSockets": 100,
   "sslKey": "./node_modules/browser-sync/lib/server/certs/server.key",
@@ -11,5 +11,6 @@
   "proxyHost": "devicewall.sc5.io",
   "devicesJson": "./server/data/devices.json",
   "instancesJson": "./server/data/instances.json",
-  "maxRedirects": 10
+  "maxRedirects": 10,
+  "protocol": "https"
 }

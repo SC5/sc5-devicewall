@@ -76,7 +76,7 @@ gulp.task('config', function() {
 
   // Control panel app config
   var clientConfig = JSON.parse(fs.readFileSync(configLocalApp + '/config.json'));
-  clientConfig.appConfig.socketServer = 'http://' + serverConfig.host + ':' + serverConfig.port + '/devicewall';
+  clientConfig.appConfig.socketServer = config.protocol + '://' + serverConfig.host + ':' + serverConfig.port + '/devicewall';
   // read local config
   if (fs.existsSync(configLocalApp+'/config.local.json')) {
     data = JSON.parse(fs.readFileSync(configLocalApp+'/config.local.json'));
@@ -248,7 +248,7 @@ gulp.task('test:e2e', ['webdriver_manager_update'], function() {
   var testConfig = require('./config.test.json');
   var testDataDir = path.dirname(path.resolve(testConfig.devicesJson));
   var paths = find.fileSync(/selenium-server-standalone.*\.jar/, 'node_modules/protractor/selenium');
-  var args = ['--seleniumServerJar', paths[0], '--baseUrl', 'http://' + testConfig.host + ':' + testConfig.port];
+  var args = ['--seleniumServerJar', paths[0], '--baseUrl', config.protocol + '://' + testConfig.host + ':' + testConfig.port];
   var protractorConf = {
     configFile: './protractor.config.js',
     args: [args],
@@ -274,7 +274,7 @@ gulp.task('test:e2e:ci', function() {
   var testDataDir = path.dirname(path.resolve(testConfig.devicesJson));
   var args = [
     '--baseUrl',
-    'http://' + testConfig.host + ':' + testConfig.port
+    config.protocol + '://' + testConfig.host + ':' + testConfig.port
   ];
   var protractorConf = {
     configFile: './protractor.ci.config.js',
