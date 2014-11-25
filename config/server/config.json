@@ -11,5 +11,6 @@
   "proxyHost": "devicewall.sc5.io",
   "devicesJson": "./server/data/devices.json",
   "instancesJson": "./server/data/instances.json",
-  "maxRedirects": 10
+  "maxRedirects": 10,
+  "protocol": "https"
 }

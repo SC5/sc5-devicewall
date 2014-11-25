@@ -1,5 +1,5 @@
 var config = require('../../config.test.json');
-var testHost = 'http://' + config.host + ':' + config.port;
+var testHost = config.protocol + '://' + config.host + ':' + config.port;
 var io = require('socket.io-client');
 
 module.exports = function (app) {
@@ -10,14 +10,14 @@ module.exports = function (app) {
 
   app.get('/test/301', function (req, res) {
     res.writeHead(301, {
-      'Location': 'http://' + config.host + ':' + config.port + '/test'
+      'Location': config.protocol + '://' + config.host + ':' + config.port + '/test'
     });
     res.end();
   });
 
   app.get('/test/302', function (req, res) {
     res.writeHead(302, {
-      'Location': 'http://' + config.host + ':' + config.port + '/test'
+      'Location': config.protocol + '://' + config.host + ':' + config.port + '/test'
     });
     res.end();
   });

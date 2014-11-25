@@ -13,7 +13,7 @@ angular.module('DeviceWall').controller('TutorialController', function($scope, $
       },
       {
         image: 'test/2.png',
-        text: '<p>Navigate to <span>http://devicewall.sc5.io</span></p>' +
+        text: '<p>Navigate to <span>https://devicewall.sc5.io</span></p>' +
               '<p>and select the <span>Control panel</span> icon</p>'
       },
       {
@@ -43,7 +43,7 @@ angular.module('DeviceWall').controller('TutorialController', function($scope, $
       },
       {
         image: 'device/2.png',
-        text: '<p>Navigate to <span>http://devicewall.sc5.io</span></p>' +
+        text: '<p>Navigate to <span>https://devicewall.sc5.io</span></p>' +
               '<p>and tap <span>Add device</span> icon</p>'
       },
       {

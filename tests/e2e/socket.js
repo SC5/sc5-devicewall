@@ -1,5 +1,5 @@
 var config = require('../../config.test.json');
-var testHost = 'http://' + config.host + ':' + config.port;
+var testHost = config.protocol + '://' + config.host + ':' + config.port;
 var socketApp = require('socket.io-client')(testHost + '/devicewallapp');
 var socket = require('socket.io-client')(testHost + '/devicewall');
 var Q = require('q');

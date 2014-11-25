@@ -9,12 +9,13 @@ describe('Device', function() {
     id: 'testuser',
     displayName: 'testuser'
   };
-  var devicesUrl = 'http://' + config.host + ':' + config.port + '/devices';
-  var clientUrl = 'http://' + config.host + ':' + config.port + '/client';
+  var devicesUrl = config.protocol + '://' + config.host + ':' + config.port + '/devices';
+  var clientUrl = config.protocol + '://' + config.host + ':' + config.port + '/client';
   var clientReturnUrl = '/client';
-  var testUrl = 'http://' + config.host + ':' + config.port + '/test';
-  var anotherTestUrl = 'http://' + config.host + ':' + config.testServerPort + '/test';
-  var resetUrl = 'http://' + config.host + ':' + config.port + '/test/reset';
+  var testUrl = config.protocol + '://' + config.host + ':' + config.port + '/test';
+  //var anotherTestUrl = config.protocol + '://' + config.host + ':' + config.testServerPort + '/test';
+  var anotherTestUrl = testUrl;
+  var resetUrl = config.protocol + '://' + config.host + ':' + config.port + '/test/reset';
   var ptor = protractor.getInstance();
 
   // On CI the window size might be too small, so tests are trying to click out of bounds

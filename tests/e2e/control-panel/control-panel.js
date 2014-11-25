@@ -3,11 +3,11 @@ var config = require('../../../config.test.json');
 var utils = require('../utils');
 var socket = require('../socket');
 
-describe('Control panel', function() {
+ddescribe('Control panel', function() {
   var ptor = protractor.getInstance();
-  var testUrl = 'http://' + config.host + ':' + config.port + '/test';
-  var devicesUrl = 'http://' + config.host + ':' + config.port + '/devices';
-  var resetUrl = 'http://' + config.host + ':' + config.port + '/test/reset';
+  var testUrl = config.protocol + '://' + config.host + ':' + config.port + '/test';
+  var devicesUrl = config.protocol + '://' + config.host + ':' + config.port + '/devices';
+  var resetUrl = config.protocol + '://' + config.host + ':' + config.port + '/test/reset';
 
   // On CI the window size might be too small, so tests are trying to click out of bounds
   browser.driver.manage().window().setSize(1280, 1024);
