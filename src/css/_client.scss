@@ -1,0 +1,296 @@
+#container {
+
+  .logo {
+    margin-bottom: 20px;
+    width: 120px;
+  }
+
+  footer {
+    height: 20px;
+    line-height: 20px;
+    text-align: center;
+    font-size: .8rem;
+  }
+
+  &.centerized {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+
+    #content {
+      position: absolute;
+      left: 0;
+      top: 0;
+      margin: 120px 0 0;
+      height: 200px;
+      width: 100%;
+
+      &.devices {
+        top: 120px;
+      }
+    }
+
+    footer {
+      width: 100%;
+      position: absolute;
+      left: 0;
+      bottom: 0;
+    }
+  }
+}
+
+#content {
+  @include transition(top .3s ease-out);
+  padding: 20px 0;
+  text-align: center;
+  font-size: 1rem;
+
+  .buttons {
+    padding: 20px 0;
+  }
+
+  #devices {
+
+    .buttons {
+      margin: 30px 0;
+    }
+  }
+}
+
+
+#{headings(all)} {
+
+}
+
+h1 {
+
+  text-transform: uppercase;
+  font-size: 2.8rem;
+  font-weight: bold;
+  position: relative;
+  margin: 0;
+  padding: 0;
+
+}
+
+h2 {
+  font-size: 1.7rem;
+  font-weight: normal;
+}
+
+table {
+
+  margin: 0 auto;
+  width: 50%;
+  border-collapse: collapse;
+  font-size: .9rem;
+  border: 1px solid rgba(0, 0, 0, .1);
+
+  th,
+  td {
+
+    white-space: nowrap;
+    vertical-align: top;
+    text-align: left;
+    border: 1px solid rgba(0, 0, 0, .1);
+    padding: 5px 15px;
+    background-color: rgba(0, 0, 0, .05);
+    font-weight: normal;
+
+    &[contenteditable] {
+
+      &:not(:focus) {
+        cursor: pointer;
+      }
+
+      &:hover {
+        background-color: rgba(255, 255, 255, .1);
+      }
+
+      &:focus {
+        outline: none;
+      }
+
+    }
+
+    &.emphasize {
+
+      cursor: pointer;
+      font-weight: bold;
+
+      &:hover {
+        background-color: rgba(255, 255, 255, .1);
+      }
+
+    }
+
+    &:last-child {
+      text-align: center;
+    }
+
+  }
+
+}
+
+label {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+button {
+
+  @include box-sizing(content-box);
+  @include linear-gradient(#fff, #ddd);
+
+  overflow: hidden;
+  white-space: nowrap;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  display: inline-block;
+  border: 1px solid #777;
+  border-radius: 5px;
+  background-color: #eee;
+  color: #333;
+  padding: 0 20px;
+  height: 38px;
+  line-height: 38px;
+  font-size: 1.2rem;
+  vertical-align: middle;
+
+  text-shadow: 0 1px #fff;
+  color: #333;
+  cursor: pointer;
+
+  &:active {
+    @include linear-gradient(#ddd, #fff);
+  }
+
+  &.go {
+    height: 48px;
+    line-height: 48px;
+    font-size: 1.6rem;
+  }
+}
+
+.icon-button {
+
+  &.settings {
+    @include icon-button();
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+
+    &:before {
+      margin: 0;
+      display: block;
+      width: 100px;
+      line-height: 100px;
+    }
+  }
+
+  &.control-panel {
+    @include icon-button();
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-size: 100%;
+
+    &:before {
+      margin: 0;
+      display: block;
+      width: 100px;
+      line-height: 100px;
+    }
+  }
+}
+
+input[type=text] {
+  vertical-align: middle;
+  font-size: 1rem;
+  line-height: 1rem;
+  border-radius: 5px;
+  padding: 10px;
+}
+
+input[type=checkbox],
+input[type=checkbox]:checked {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  position: relative;
+  width: 18px;
+  height: 18px;
+  margin: 0 2px;
+  padding: 0;
+  vertical-align: middle;
+}
+
+input[type=checkbox]:after {
+  display: block;
+  width: 16px;
+  height: 16px;
+  content: '';
+  border-radius: 3px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  text-align: center;
+  line-height: 16px;
+  font-size: .8rem;
+}
+
+input[type=checkbox]:checked:after {
+  content: '\2713';
+}
+
+input[type=text],
+input[type=checkbox]:after,
+[contenteditable]:focus,
+[contenteditable]:focus:hover {
+  color: #333;
+  border: 1px solid #777;
+  background-color: #fff;
+}
+
+#screensaver {
+  @include transition(opacity .5s);
+  z-index: 1000;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  color: #fff;
+  font-family: arial, sans-serif;
+  font-size: 62.5%;
+  background-image: url('../assets/images/screensaver_bg.jpg');
+  background-attachment: fixed;
+  background-position: 50%;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-color: #005678;
+  opacity: 0;
+  visibility: hidden;
+
+  .saver-logo {
+    width: 120px;
+  }
+
+  .slogan {
+    width: 100%;
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+  }
+
+  &.visible {
+    opacity: 1;
+    visibility: visible;
+  }
+
+}

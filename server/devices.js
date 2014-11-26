@@ -6,9 +6,8 @@ var _ = require('lodash'),
 var Devices = {
   init: function(options) {
     this.config = options.config;
-    this.devices = [];
+    this.devices = options.devices || [];
     this.updated = false;
-    this.read();
   },
   // if needle is array, return is array of matched objects
   find: function(needle) {
@@ -24,13 +23,18 @@ var Devices = {
   },
   update: function(data) {
     var device = this.find(data.label);
+    if (!data.label) {
+      console.error("empty label", data);
+      throw new Error('Trying to save an empty label');
+    }
     if (!device) {
-      this.devices.push(new Device(data));
+      device = new Device(data);
+      this.devices.push(device);
     } else {
-      // TODO: start to browsersync isntance if needed
       device.update(data);
     }
     this.updated = true;
+    return device;
   },
   remove: function(label) {
     'use strict';
@@ -42,6 +46,7 @@ var Devices = {
     });
     if (removeIndex >= 0) {
       this.devices.splice(removeIndex, 1);
+      this.updated = true;
       return true;
     }
     return false;
@@ -66,9 +71,9 @@ var Devices = {
   },
   write: function() {
     if (this.updated) {
+      var dList = this.toJSON();
       this.updated = false;
-      fs.writeFileSync(this.config.devicesJson, JSON.stringify(this.toJSON(), null, 2));
-      console.log('Updated devices.json');
+      fs.writeFileSync(this.config.devicesJson, JSON.stringify(dList, null, 2));
     }
   },
   sort: function() {
@@ -86,6 +91,12 @@ var Devices = {
       }
       return 0;
     });
+  },
+  removeAll: function() {
+    'use strict';
+    this.devices = [];
+    this.updated = true;
+    this.write();
   }
 };
 

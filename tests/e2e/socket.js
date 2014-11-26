@@ -1,5 +1,5 @@
 var config = require('../../config.test.json');
-var testHost = 'http://' + config.host + ':' + config.port;
+var testHost = config.protocol + '://' + config.host + ':' + config.port;
 var socketApp = require('socket.io-client')(testHost + '/devicewallapp');
 var socket = require('socket.io-client')(testHost + '/devicewall');
 var Q = require('q');
@@ -37,7 +37,9 @@ module.exports.stop = function(user, labels) {
 };
 
 module.exports.stopAll = function() {
-  socket.emit('stopall', {});
+  var deferred = Q.defer();
+  socket.emit('stopall', {}, deferred.resolve);
+  return deferred.promise;
 };
 
 module.exports.update = function() {
@@ -78,4 +80,11 @@ module.exports.removeAllDevices = function() {
     });
   });
   return deferred.promise;
+};
+
+
+module.exports.reloadDevices = function() {
+  var dfd = protractor.promise.defer();
+  socket.emit('reload-devices', {}, dfd.fulfill);
+  return dfd.promise;
 };

@@ -1,8 +1,9 @@
 <!doctype html>
 <html ng-app="DeviceWall">
 <head>
+  <base href="/">
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, user-scalable=no, minimal-ui, initial-scale=1.0">
   <title>Device Wall</title>
   <!-- inject:css -->
   <!-- endinject -->
@@ -11,7 +12,7 @@
   <!-- inject:js -->
   <!-- endinject -->
 </head>
-<body>
+<body broadcast-activity ng-click="sendBroadcast()" ng-touch="sendBroadcast()">
     <img src="/assets/images/sc5logo.png" class="logo">
     <h1>Device Wall</h1>
     <div id="container" ng-view>

@@ -12,6 +12,10 @@
       "customUserAgent": {
         "enabled": true
       }
+    },
+    "client": {
+      "screenSaverTimeoutSeconds": 600,
+      "redirectToClientModeAutomatically": false
     }
   }
 }

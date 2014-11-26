@@ -5,107 +5,121 @@ var _ = require('lodash'),
     url = require('url'),
     Q = require('q');
 
+var STATUS_STARTING = 'starting';
+var STATUS_RUNNING = 'running';
+var STATUS_STOPPING = 'stopping';
+var STATUS_STOPPED = 'stopped';
+
 var Instance =  function (data, options) {
   this.devices = options.devices;
   this.config = options.config;
   this.properties = _.defaults(data, {
-    status: 'new',
+    status: STATUS_STOPPED,
     updated: +new Date()
   });
-  this.startDeferred = Q.defer();
-  this.stopDeferred = Q.defer();
+
 };
 
 Instance.prototype.start = function(data) {
   'use strict';
-  this.startDeferred = Q.defer();
-  this.stopDeferred = Q.defer();
+  var deferred = Q.defer();
 
-  var that = this,
-      deferred = Q.defer();
-  
-  this.whenReady().then(function() {
-    that.set('status', 'starting');
+  if (this.canBeStarted() === false) {
+    deferred.reject('Instance start rejected because it cannot be started when its already running!');
+    return deferred.promise;
+  }
+  this.markDevices(data, STATUS_STARTING);
 
-    // Set and update devices for the instance
-    var instanceLabels = [];
-    _.each(that.getDevices(), function(device) {
-      if (!device.get('usedId') || device.get('userId') === data.user.id) {
-        device.update({
-          userId: data.user.id,
-          userName: data.user.displayName,
-          status: 'starting',
-          lastUsed: +new Date()
-        });
-        instanceLabels.push(device.get('label'));
-      }
-    });
-    /*
-    if (!instanceLabels.length) {
-      console.warn('no devices selected, so rejecting start');
-      deferred.reject('No devices selected');
-      return deferred.promise;
-    }
-    */
-    that.set('labels', data.labels);
+  this.set('status', STATUS_STARTING);
+  this.set('labels', data.labels);
 
-    that.startBrowserSyncProcess(data).then(deferred.resolve, deferred.reject);
-  }).fail(function(reason) {
-    console.err('whenReady failed: ', reason);
-  }).catch(function(err) {
-    console.error(err);
-  });
-
-  return deferred.promise;
+  return this._startBrowserSyncProcess(data);
 };
 
 Instance.prototype.stop = function() {
   'use strict';
+  console.info("instance.stop current status: ", this.get('status'));
   var that = this;
+  var deferred = Q.defer();
+  if (this.canBeStopped() === false) {
+    deferred.reject('Instance.stop(): Instance is not in running state');
+    return deferred.promise;
+  }
 
-  this.whenReady().then(function() {
-    that.set('status', 'stopping');
+  that.set('status', STATUS_STOPPING);
+  console.log("instance stopping");
 
-    if (that.isConnected()) {
-      that.childProcess.send({
-        type: 'location',
-        url: that.config.deviceWallAppURL,
-        timeout: 5000,
-        completeMessageType: 'browserSyncExit'
-      });
-    }
-
-    _.each(that.getDevices(), function(device) {
-      device.update({
-        userId: null,
-        userName: null,
-        status: 'idle',
-        lastUsed: +new Date()
-      });
+  _.each(that.getDevices(), function(device) {
+    device.update({
+      userId: null,
+      userName: null,
+      status: 'idle',
+      lastUsed: +new Date()
     });
   });
 
-  return this.stopDeferred.promise;
+  if (that.isConnected()) {
+    console.log("instance.stop sending browserSyncExit");
+
+    // listen exit event
+    // what if browserSync refuses to stop?
+    // TODO maybe use some force? http://nodejs.org/api/child_process.html#child_process_child_kill_signal
+    this.childProcess.on('exit', function() {
+      that.set('status', STATUS_STOPPED);
+      console.info("child_process exited");
+      deferred.resolve();
+    });
+    this.childProcess.send({
+      type: 'location',
+      url: utils.getURLWithPortString(this.config.deviceWallAppURL, this.config.port),
+      timeout: 8000,
+      completeMessageType: 'browserSyncExit'
+    });
+  } else {
+    console.log("instance.stop child not connected");
+    this.set('status', STATUS_STOPPED);
+    deferred.resolve();
+  }
+
+  return deferred.promise;
 };
 
-Instance.prototype.location = function(data) {
-  var path = url.parse(data.url).path;
-
-  this.startDeferred = Q.defer();
-  this.stopDeferred = Q.defer();
-
-  this.childProcess.send({
-    type: 'location',
-    url: path,
-    timeout: 5000,
-    completeMessageType: 'browserSyncUpdate'
-  });
-
-  return this.startDeferred.promise;
+Instance.prototype.forceStop = function() {
+  if (this.childProcess) {
+    this.childProcess.kill('SIGHUP');
+  }
 };
 
-Instance.prototype.startBrowserSyncProcess = function(data) {
+Instance.prototype.location = function(urlPath) {
+  var deferred = Q.defer();
+  if (this.isConnected()) {
+    this.childProcess.on('message', function(message) {
+      if (message.type === 'browserSyncUpdate') {
+        deferred.resolve();
+      }
+    });
+    this.childProcess.send({
+      type: 'location',
+      url: urlPath,
+      timeout: 5000,
+      completeMessageType: 'browserSyncUpdate'
+    });
+  }
+  return deferred.promise;
+};
+
+Instance.prototype.syncClientLocations = function() {
+  if (this.isConnected()) {
+    this.childProcess.send({
+      type: 'syncLocations',
+      timeout: 5000
+    });
+  }
+};
+
+Instance.prototype._startBrowserSyncProcess = function(data) {
   var that = this;
+  var deferred = Q.defer();
   var debug = process.execArgv.indexOf('--debug') !== -1;
   var forkArgs = {};
   console.log('Starting new browserSync process');
@@ -122,40 +136,23 @@ Instance.prototype.startBrowserSyncProcess = function(data) {
       case 'browserSyncInit':
         console.log('instance: browserSync init confirm');
         that.update({
-          'status': 'running'
+          'status': STATUS_RUNNING,
+          'startUrl': message.browserSync
         });
-        that.startDeferred.resolve({startUrl: message.browserSync});
-        break;
-      case 'browserSyncUpdate':
-        that.update({
-          'status': 'running'
-        });
-        that.startDeferred.resolve({startUrl: data.url});
+        deferred.resolve({startUrl: message.browserSync});
         break;
       case 'browserSyncExit':
-        that.set('status', 'stopped');
+        that.set('status', STATUS_STOPPED);
         console.log('instance.js: browsersync stop');
         that.childProcess.send({type: 'exit'});
-        that.stopDeferred.resolve();
         break;
     }
   });
+
   console.info(">> childProcess init url:", data.url);
   this.childProcess.send({type: 'init', url: data.url, userAgentHeader: data.userAgentHeader});
 
-  return this.startDeferred.promise;
-};
-
-Instance.prototype.whenReady = function() {
-  if (this.get('status') === 'stopping') {
-    return this.stopDeferred.promise;
-  } else if (this.get('status') === 'starting') {
-    return this.startDeferred.promise;
-  } else {
-    var deferred = Q.defer();
-    deferred.resolve();
-    return deferred.promise;
-  }
+  return deferred.promise;
 };
 
 Instance.prototype.getDevices = function() {
@@ -193,5 +190,26 @@ Instance.prototype.get = function(property) {
 Instance.prototype.toJSON = function() {
   return this.properties;
 };
+
+Instance.prototype.canBeStarted = function() {
+  return this.get('status') === STATUS_STOPPED;
+}
+
+Instance.prototype.canBeStopped = function() {
+  return this.get('status') === STATUS_RUNNING;
+}
+
+Instance.prototype.markDevices = function(data, status) {
+  _.each(this.getDevices(), function(device) {
+    if (!device.get('usedId') || device.get('userId') === data.user.id) {
+      device.update({
+        userId: data.user.id,
+        userName: data.user.displayName,
+        status: status,
+        lastUsed: +new Date()
+      });
+    }
+  });
+}
 
 module.exports = Instance;

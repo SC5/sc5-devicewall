@@ -35,50 +35,64 @@ var Instances = {
     'use strict';
     var that = this,
         deferred = Q.defer(),
-        instance = this.find(data.user.id),
-        locationChange = false,
+        userId = data.user.id || 'singleuser',
+        instance = this.find(userId),
         proxyOptions = {};
 
-    data.url = utils.parseUrl(data.url);
     proxyOptions.userAgentHeader = data.userAgentHeader || false;
+    var parsedUrl = url.parse(data.url);
+    if (parsedUrl.protocol === null) {
+      parsedUrl.protocol = 'http';
+    }
 
-    utils.checkProxyTarget(url.parse(data.url), proxyOptions, function(err) {
+    utils.checkProxyTarget(parsedUrl, proxyOptions, function(err, resolvedUrl) {
+      utils.resetRedirectCounter();
       if (err) {
         console.warn('Target URL unreachable.', err);
-        deferred.reject('Target URL unreachable.');
+        deferred.reject(err);
       } else {
+        console.log("url after checking all the redirections: ", resolvedUrl.href);
+        data.url = resolvedUrl.href;
         if (instance && instance.isConnected()) {
           var previousUrlObject = url.parse(instance.get('url'));
-          var nextUrlObject = url.parse(data.url);
-          console.log('START old found: ', previousUrlObject.host, nextUrlObject.host);
+          var nextUrlObject = resolvedUrl;
           if (previousUrlObject.host === nextUrlObject.host) {
             // same host, just send new location
-            instance.set('url', data.url);
-            instance.location(data).then(deferred.resolve);
-            locationChange = true;
+            instance.set('url', resolvedUrl.href);
+            instance.location(resolvedUrl.path);
+            deferred.resolve();
           } else {
             // stop before relaunch
-            instance.stop();
+            that.stop(userId).then(function() {
+              that.startInstance(data, deferred);
+            });
           }
         } else {
           // make new instance
-          instance = new Instance(data, {config: that.config, devices: that.devices});
-          that.instances.push(instance);
-        }
-
-        if (!locationChange) {
-          console.log('Ready to start new browserSync instance');
-          instance.start(data).then(deferred.resolve)
-            .fail(function(reason) {
-              console.err("failed to start new instance", reason);
-              that.stop(data.user.id).then(function() {
-                deferred.reject(reason);
-              });
-            });
+          that.startInstance(data, deferred);
         }
       }
     });
     return deferred.promise;
+  },
+  startInstance: function(data, deferred) {
+    console.log('Ready to start new browserSync instance');
+    console.log(deferred);
+    var that = this;
+    var instance = new Instance(data, {config: that.config, devices: that.devices});
+    that.instances.push(instance);
+
+    instance.start(data)
+      .then(function(data) {
+        console.info("Instance.start: browserSync started", data.url);
+        deferred.resolve(data);
+      })
+      .fail(function(reason) {
+        console.error("failed to start new instance", reason);
+        that.stop(data.user.id).then(function() {
+          deferred.reject(reason);
+        });
+      });
   },
   // Resolves when instance is stopped and removed
   stop: function(userId) {
@@ -88,11 +102,14 @@ var Instances = {
         instance = this.find(userId);
 
     if (instance) {
+      console.log("Stopping instance", userId);
       instance.stop().then(function() {
+        console.log("instance stopped:", userId);
         that.removeInstance(userId);
         deferred.resolve();
       });
     } else {
+      console.log("no instance:", userId);
       deferred.resolve();
     }
     return deferred.promise;    
@@ -102,14 +119,22 @@ var Instances = {
     var that = this,
         deferred = Q.defer(),
         promises = [];
+    console.log("instances.stopAll");
     _.each(this.instances, function(instance) {
       promises.push(instance.stop());
     });
     Q.all(promises).fin(function() {
       that.instances = [];
       deferred.resolve();
+    }, function(err) {
+      console.error(err);
     });
     return deferred.promise;
+  },
+  forceStopAll: function() {
+    _.each(this.instances, function(instance) {
+      instance.forceStop();
+    });
   }
 };
 

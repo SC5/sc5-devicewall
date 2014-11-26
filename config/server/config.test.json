@@ -3,15 +3,17 @@
   "GOOGLE_CLIENT_SECRET": "<GOOGLE_CLIENT_SECRET>",
   "GOOGLE_CALLBACK_URL": "http://devicewall.sc5.io/auth/google/callback",
   "sessionKey": "devicewall12345",
-  "deviceWallAppURL": "http://localhost:8081/client/return",
+  "deviceWallAppURL": "https://localhost:8081/client",
   "clientIdleReturnSeconds": 300,
   "maxSockets": 100,
   "sslKey": "./node_modules/browser-sync/lib/server/certs/server.key",
   "sslCert": "./node_modules/browser-sync/lib/server/certs/server.crt",
-  "proxyHost": false,
+  "proxyHost": "192.168.59.3",
   "devicesJson": "./tests/data/devices.json",
   "instancesJson": "./tests/data/instances.json",
-  "host": "localhost",
+  "host": "192.168.59.3",
   "port": 8081,
-  "testServerPort": 8082
+  "testServerPort": 8082,
+  "maxRedirects": 10,
+  "protocol": "https"
 }

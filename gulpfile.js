@@ -33,12 +33,10 @@ var config = {
 
 // Package management
 /* Install & update Bower dependencies */
-gulp.task('install', ['config', 'integrate'], function() {
-  // FIXME specifying the component directory broken in gulp
-  // For now, use .bowerrc; No need for piping, either
-  $.bower();
+gulp.task('install', ['config', 'bower'], function() {
   // Downloads the Selenium webdriver
   $.protractor.webdriver_update(function() {});
+  gulp.start('integrate');
 });
 
 /* Bump version number for packagejson.json & bower.json */
@@ -65,7 +63,6 @@ gulp.task('config', function() {
     data = JSON.parse(fs.readFileSync(configLocalServer+'/config.local.json'));
     serverConfig = extend(true, serverConfig, data);
   }
-  serverConfig = extend(true, serverConfig, config.server);
   fs.writeFileSync('./config.json', JSON.stringify(serverConfig, null, 2));
 
   // Server test config
@@ -79,7 +76,7 @@ gulp.task('config', function() {
 
   // Control panel app config
   var clientConfig = JSON.parse(fs.readFileSync(configLocalApp + '/config.json'));
-  clientConfig.appConfig.socketServer = 'http://' + serverConfig.host + ':' + serverConfig.port + '/devicewall';
+  clientConfig.appConfig.socketServer = config.protocol + '://' + serverConfig.host + ':' + serverConfig.port + '/devicewall';
   // read local config
   if (fs.existsSync(configLocalApp+'/config.local.json')) {
     data = JSON.parse(fs.readFileSync(configLocalApp+'/config.local.json'));
@@ -106,7 +103,7 @@ gulp.task('serve', $.serve({
 }));
 
 
-gulp.task('preprocess', ['config', 'scss-lint'], function() {
+gulp.task('preprocess', ['config'/*, 'scss-lint'*/], function() {
   gulp.src(['src/app/**/*.js', 'server*.js'])
     .pipe($.jshint())
     .pipe($.jshint.reporter('default'));
@@ -151,7 +148,7 @@ gulp.task('javascript', ['preprocess'], function() {
       '**/app.js'
     ]))
     .pipe($.concat(bundleName))
-    .pipe($.if(!config.debug, $.ngmin()))
+    .pipe($.if(!config.debug, $.ngAnnotate()))
     .pipe($.if(!config.debug, $.uglify()))
     .pipe(gulp.dest('dist'));
 });
@@ -230,20 +227,32 @@ gulp.task('watch', ['build'], function() {
     'src/assets/**/*',
     'src/index.html',
     '!src/app/config.js', // do not listen files which are modified during build process
-    ], ['build']);
+  ], ['build']);
 });
 
 // Tests
 gulp.task('webdriver_manager_update', $.protractor.webdriver_update);
 
+gulp.task('test:server', function(cb) {
+  gulp.src(['server/**/*.js', '!server/test/**/*'])
+    .pipe($.istanbul()) // Covering files
+    .on('finish', function () {
+      gulp.src('server/test/**/*.spec.js')
+        .pipe($.jasmine())
+        .pipe($.istanbul.writeReports()) // Creating the reports after tests runned
+        .on('end', cb);
+    });
+});
+
 gulp.task('test:e2e', ['webdriver_manager_update'], function() {
   var testConfig = require('./config.test.json');
   var testDataDir = path.dirname(path.resolve(testConfig.devicesJson));
   var paths = find.fileSync(/selenium-server-standalone.*\.jar/, 'node_modules/protractor/selenium');
-  var args = ['--seleniumServerJar', paths[0], '--baseUrl', 'http://' + testConfig.host + ':' + testConfig.port];
+  var args = ['--seleniumServerJar', paths[0], '--baseUrl', config.protocol + '://' + testConfig.host + ':' + testConfig.port];
   var protractorConf = {
     configFile: './protractor.config.js',
-    args: [args]
+    args: [args],
+    debug: Boolean($.util.env.debug)
   };
 
   if (!fs.existsSync(testDataDir)) {
@@ -258,9 +267,45 @@ gulp.task('test:e2e', ['webdriver_manager_update'], function() {
       server.kill();
     });
 });
+
+
+gulp.task('test:e2e:ci', function() {
+  var testConfig = require('./config.test.json');
+  var testDataDir = path.dirname(path.resolve(testConfig.devicesJson));
+  var args = [
+    '--baseUrl',
+    config.protocol + '://' + testConfig.host + ':' + testConfig.port
+  ];
+  var protractorConf = {
+    configFile: './protractor.ci.config.js',
+    args: [args]
+  };
+
+  if (!fs.existsSync(testDataDir)) {
+    fs.mkdirSync(testDataDir);
+  }
+
+  server.listen({path: './server/server.js', env: {"NODE_ENV": "test"}});
+  gulp.src(['tests/e2e/**/*.js'], { read: false })
+    .pipe($.protractor.protractor(protractorConf)).on('error', function() {
+      server.kill();
+      throw new Error('Selenium e2e tests failed.');
+    }).on('end', function() {
+      server.kill();
+    });
+});
+
+
+
+
+
+
 gulp.task('default', ['integrate']);
 gulp.task('build', ['clean'], function() {
   gulp.start('integrate');
+});
+gulp.task('bower', function() {
+  return $.bower();
 });
 
 

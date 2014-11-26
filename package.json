@@ -1,6 +1,6 @@
 {
   "name": "sc5-devicewall",
-  "version": "1.0.0-rc7",
+  "version": "1.0.0",
   "engines": {
     "node": ">=0.10.10",
     "npm": ">=1.2.15"
@@ -32,8 +32,8 @@
     "gulp-jshint": "^1.5.5",
     "gulp-livereload": "^1.5.0",
     "gulp-load-plugins": "^0.5.3",
+    "gulp-ng-annotate": "^0.3.5",
     "gulp-ng-constant": "~0.2.0",
-    "gulp-ngmin": "^0.3.0",
     "gulp-nodemon": "~1.0.4",
     "gulp-order": "^1.1.1",
     "gulp-plumber": "^0.6.1",
@@ -51,22 +51,22 @@
     "passport-google-oauth": "^0.1.5",
     "q": "~1.0.1",
     "request": "^2.34.0",
-    "sc5-devicewall-app": "git+ssh://git@bitbucket.org:SC5/devicewallapp.git",
     "socket.io": "^1.0.6",
     "socket.io-client": "^1.0.6"
   },
   "devDependencies": {
-    "chai": "^1.9.2",
-    "chai-as-promised": "^4.1.1",
-    "phantomjs": "^1.9.11",
-    "phantomjs-server": "^1.9.2-1",
-    "protractor": "^0.22.0",
-    "selenium-webdriver": "^2.41.0"
+    "chai": "~1.9.2",
+    "chai-as-promised": "~4.1.1",
+    "gulp-istanbul": "~0.3.1",
+    "gulp-jasmine": "~1.0.1",
+    "jasmine": "~2.0.1",
+    "protractor": "~1.4.0",
+    "selenium-webdriver": "~2.44.0"
   },
   "scripts": {
-    "install": "bundle install && gulp install",
-    "build": "gulp",
-    "test": "gulp test",
+    "install": "bundle install && node_modules/gulp/bin/gulp.js install",
+    "build": "node_modules/gulp/bin/gulp.js",
+    "test": "node_modules/gulp/bin/gulp.js test",
     "start": "node server/server.js"
   },
   "config": {

@@ -1,9 +1,10 @@
 angular.module('DeviceWall')
   .controller(
     'MainController',
-    function($rootScope, $scope, $window, $http, $timeout, DeviceList, lodash, appConfig, $log, socket) {
+    function($rootScope, $scope, $window, $http, $timeout, DeviceList, lodash, appConfig, $log, socketConnect) {
       'use strict';
       var _ = lodash;
+      var socket = socketConnect.connect('/devicewall');
 
       $log.debug('loading main controller');
       $scope.indicatorWaiting = {show: true};
@@ -149,6 +150,15 @@ angular.module('DeviceWall')
         });
       });
 
+      socket.on('rename', function(data) {
+        $log.debug('rename', data);
+        if (DeviceList.has({label: data.oldLabel})) {
+          var device = DeviceList.get(data.oldLabel);
+          DeviceList.remove(device);
+          device.label = data.newLabel;
+          DeviceList.add(device);
+        }
+      });
       socket.on('update', function (data) {
         $scope.$apply(function() {
           _.each(data, function(device) {
