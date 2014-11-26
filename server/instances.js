@@ -35,8 +35,8 @@ var Instances = {
     'use strict';
     var that = this,
         deferred = Q.defer(),
-        instance = this.find(data.user.id),
-        locationChange = false,
+        userId = data.user.id || 'singleuser',
+        instance = this.find(userId),
         proxyOptions = {};
 
     proxyOptions.userAgentHeader = data.userAgentHeader || false;
@@ -61,34 +61,38 @@ var Instances = {
             instance.set('url', resolvedUrl.href);
             instance.location(resolvedUrl.path);
             deferred.resolve();
-            locationChange = true;
           } else {
             // stop before relaunch
-            instance.stop();
+            that.stop(userId).then(function() {
+              that.startInstance(data, deferred);
+            });
           }
         } else {
           // make new instance
-          instance = new Instance(data, {config: that.config, devices: that.devices});
-          that.instances.push(instance);
-        }
-
-        if (!locationChange) {
-          console.log('Ready to start new browserSync instance');
-          instance.start(data)
-            .then(function(data) {
-              console.info("Instance.start: browserSync started", data.url);
-              deferred.resolve(data);
-            })
-            .fail(function(reason) {
-              console.error("failed to start new instance", reason);
-              that.stop(data.user.id).then(function() {
-                deferred.reject(reason);
-              });
-            });
+          that.startInstance(data, deferred);
         }
       }
     });
     return deferred.promise;
+  },
+  startInstance: function(data, deferred) {
+    console.log('Ready to start new browserSync instance');
+    console.log(deferred);
+    var that = this;
+    var instance = new Instance(data, {config: that.config, devices: that.devices});
+    that.instances.push(instance);
+
+    instance.start(data)
+      .then(function(data) {
+        console.info("Instance.start: browserSync started", data.url);
+        deferred.resolve(data);
+      })
+      .fail(function(reason) {
+        console.error("failed to start new instance", reason);
+        that.stop(data.user.id).then(function() {
+          deferred.reject(reason);
+        });
+      });
   },
   // Resolves when instance is stopped and removed
   stop: function(userId) {
