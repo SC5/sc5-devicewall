@@ -285,7 +285,7 @@ input[type=checkbox]:after,
     position: absolute;
     top: 50%;
     left: 0;
-    transform: translateY(-50%);
+    @include translateY(-50%);
   }
 
   &.visible {

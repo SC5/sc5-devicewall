@@ -116,3 +116,17 @@
 
   }
 }
+
+@media only screen and (max-height: 350px) {
+  .logo, #screensaver .saver-logo {
+    width: auto;
+    height: 80px;
+  }
+
+  #screensaver .slogan {
+    top: initial;
+    transform: none;
+    bottom: 0;
+    @include translateY(0px);
+  }
+}
