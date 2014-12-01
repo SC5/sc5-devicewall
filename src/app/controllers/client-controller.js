@@ -83,4 +83,8 @@ angular.module('DeviceWall')
     if ($scope.label) {
       socket.emit('update', {label: $scope.label});
     }
+
+    $scope.$on('$destroy', function() {
+      socket.removeAllListeners();
+    });
   });
