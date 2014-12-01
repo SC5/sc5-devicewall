@@ -44,21 +44,32 @@ body {
   }
 
   .accordion {
-    @include transition(all .5s ease-out);
+    // @include transition(all .5s ease-out);
     position: relative;
     max-height: 1200px;
 
     h2 {
       cursor: pointer;
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
 
       &:before {
         content: '\e822';
         position: absolute;
         left: 10px;
-        top: 0;
+        top: 10px;
         font-family: 'entypo';
         font-size: 1em;
-        line-height: 2em;
+        line-height: 1em;
+        height: 0.5em;
+        width: 1em;
+        vertical-align: middle;
+        background-color: $sc5-blue;
+        padding-bottom: 0.5em;
+        border-radius: 5px;
       }
     }
 
