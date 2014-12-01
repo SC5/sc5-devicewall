@@ -65,10 +65,45 @@ Gulp task will check these files and includes them when found.
     config/server/config.local.json
     config/app/config.local.json
 
-#### Local server configuration
+### Local server configuration
 
-To auto-detect your IP use, "proxyHost": false in 
-config/server/config.local.json
+##### proxyHost
+To define proxy host use param eg. "192.168.0.1" or use false to use auto-detection
+
+    "proxyHost": false # proxyHost is autodetected, otherwise will be host string
+#### protocol
+To use HTTPS or HTTP protocol with Devicewall
+
+    "protocol": "https" # https-protocol is used
+#### sslKey
+SSL certificate key path when protocol HTTPS used
+
+    "sslKey": "./node_modules/browser-sync/lib/server/certs/server.key"
+#### sslKey
+SSL certificate path when protocol HTTPS used
+
+    "sslCert": "./node_modules/browser-sync/lib/server/certs/server.crt"
+#### deviceWallAppURL
+This URL is represents idle mode URL. Used when client jumps from testing back to idle.
+
+    "deviceWallAppURL": "https://devicewall.sc5.io/client" # clients returns from browserSync to this URL
+#### clientIdleReturnSeconds
+Client is automatically redirected back to idle mode after clientIdleReturnSeconds is exceeded
+
+    "clientIdleReturnSeconds": 300 # client returns from testing automatically after 300 seconds
+### Application configuration
+
+#### connectionSetup
+Connection setup represents control panel configuration tab which is used to give different kind of settings
+
+    "connectionsSetup": {
+      "enabled: true, # connection setup tab enabled
+      "customUserAgent": true # Custom user agent header setting enabled
+      "client": {
+        "screenSaverTimeoutSeconds": 600, # screen saver enabled after 600s
+        "redirectToClientModeAutomatically": false # automatic redirect disabled from main page if device detected as client
+      }
+
 
 ## Building
 
