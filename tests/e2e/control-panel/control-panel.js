@@ -3,7 +3,7 @@ var config = require('../../../config.test.json');
 var utils = require('../utils');
 var socket = require('../socket');
 
-ddescribe('Control panel', function() {
+describe('Control panel', function() {
   var ptor = protractor.getInstance();
   var testUrl = config.protocol + '://' + config.host + ':' + config.port + '/test';
   var devicesUrl = config.protocol + '://' + config.host + ':' + config.port + '/devices';
