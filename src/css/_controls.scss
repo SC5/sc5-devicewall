@@ -1,0 +1,39 @@
+.angucomplete-holder {
+
+    .angucomplete-searching {
+        display: none;
+    }
+
+    .angucomplete-dropdown {
+        border-color: #ececec;
+        border-width: 0px;
+        border-style: solid;
+        border-radius: 2px;
+        box-sizing: border-box;
+        width: 100%;
+        padding: 0px;
+        cursor: pointer;
+        z-index: 9999;
+        position: absolute;
+        /*top: 32px;
+        left: 0px;
+        */
+        margin-top: -2px;
+        background-color: #ffffff;
+        text-align: left;
+        max-height: 150px;
+        overflow: auto;
+    }
+
+    .angucomplete-row {
+        padding: 5px 10px;
+        color: #000000;
+        margin-bottom: 4px;
+        clear: both;
+    }
+
+    .angucomplete-selected-row {
+        background-color: $sc5-blue;
+        color: #ffffff;
+    }
+}

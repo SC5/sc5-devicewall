@@ -9,7 +9,24 @@
 
         <span class="input">
           <span id="tooltip-error" class="tooltip" data-ng-show="tooltipError.show">{{tooltipError.content}}</span>
-          <input type="url" name="url" size="50" placeholder="http://www.sc5.io/" id="url" data-ng-click="url.click()" ng-model="url.value">
+          <angucomplete-alt
+            id="url"
+            type="url"
+            name="url"
+            focus-in="url.click()"
+            input-changed="url.inputChanged"
+            placeholder="http://www.sc5.io/"
+            selected-object="url.selectedValue"
+            initial-value="{{url.value}}"
+            override-suggestions="true"
+            auto-match="true"
+            local-data="url.visitedUrls"
+            search-fields="url"
+            title-field="url"
+            minlength="1"
+            text-searching=""
+            text-no-results=""
+            inputclass="form-control form-control-small" />
         </span>
 
 
