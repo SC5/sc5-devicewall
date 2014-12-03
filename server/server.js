@@ -41,22 +41,16 @@ require('./routes/auth.js')(adminServer, {
 require('./routes/user.js')(adminServer);
 require('./routes/devices.js')(adminServer, '/api/devices/:deviceLabel', config.devicesJson);
 
-adminServer.use(express.static(__dirname + '/../dist'));
-adminServer.use(/\/(devices|client|tutorial|info)/, express.static(__dirname + '/../dist'));
 // Performance testing
 adminServer.use('/perf-test', express.static(__dirname + '/perf-test'));
 
 // Testing
 if (process.env.NODE_ENV === "test") {
-  //var testServer = express();
-
   require('./routes/test.js')(adminServer);
-  //require('./routes/test.js')(testServer);
-
-  //var test = testServer.listen(config.testServerPort, function () {
-  //  console.log('Test server listening on port %d', test.address().port);
-  //});
 }
+
+adminServer.use(express.static(__dirname + '/../dist'));
+adminServer.use('/*', express.static(__dirname + '/../dist'));
 
 // HTTPS
 var options = {

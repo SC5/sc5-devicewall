@@ -188,9 +188,15 @@ gulp.task('favicon', function() {
 });
 
 gulp.task('integrate', ['javascript', 'stylesheets', 'assets', 'favicon'], function() {
-  return gulp.src(['dist/*.js', 'dist/css/*.css'])
-    .pipe($.inject('src/index.html', { ignorePath: ['/dist/'], addRootSlash: false }))
+  var target = gulp.src('src/index.html');
+  var sources = gulp.src(['dist/*.js', 'dist/css/*.css'], {read: false});
+  return target.pipe($.inject(sources, { ignorePath: ['/dist/'], addRootSlash: false }))
     .pipe(gulp.dest('./dist'));
+  /*
+  return gulp.src(['dist/*.js', 'dist/css/*.css'])
+    .pipe($.inject(gulp.src('src/index.html', { ignorePath: ['/dist/'], addRootSlash: false })))
+    .pipe(gulp.dest('./dist'));
+    */
 });
 
 gulp.task('livereload', function() {
