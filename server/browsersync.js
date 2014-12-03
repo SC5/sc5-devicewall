@@ -27,7 +27,7 @@ function deferredEmit(socket, event, data, timeout) {
     deferred.resolve();
   });
   return deferred.promise;
-}
+};
 
 process.on('message', function(message) {
   'use strict';
@@ -61,12 +61,33 @@ process.on('message', function(message) {
       if (config.proxyHost) {
         browserSyncConfig.host = config.proxyHost;
       }
-
-      bs = browserSync.init(null, browserSyncConfig);
+      evt.on('client:connected', function(client) {
+        var referer = url.parse(client.referer);
+        var rooms = [];
+        Object.keys(client.rooms).forEach(function(room) {
+          rooms.push(room);
+        });
+        if (referer.query && referer.query.indexOf('devicewall=') > -1) {
+          // First connection, save the devicewall websocket id
+          var devicewall = referer.query.substring(referer.query.lastIndexOf('=') + 1);
+          process.send({
+            type: 'browserSyncSocketId',
+            browsersync: rooms,
+            devicewall: devicewall
+          });
+        } else {
+          // Clicking links on the UI, save the browsersync socket ids
+          process.send({
+            type: 'browserSyncSocketRoomsUpdate',
+            browsersync: rooms
+          });
+        }
+      });
       evt.on('init', function(api) {
         console.log("browserSync process: initialized");
         process.send({type: 'browserSyncInit', browserSync: api.options.urls.external});
       });
+      bs = browserSync.init(null, browserSyncConfig);
       break;
     case 'location':
       var promisesLoc = [];
@@ -84,6 +105,20 @@ process.on('message', function(message) {
             process.send({type: message.completeMessageType});
           }
         }
+      });
+      break;
+    case 'returnDeviceHome':
+      var promises = [];
+      bs.io.sockets.sockets.forEach(function(socket) {
+        if (message.device.browsersync.indexOf(socket.id) > -1) {
+          promises.push(deferredEmit(socket, 'location', {url: bs.options.idleReturn.returnUrl }, 5000));
+        }
+      });
+      Q.all(promises).fin(function() {
+        process.send({
+          type: 'browserSyncReturnedDeviceHome',
+          device: message.device
+        });
       });
       break;
     case 'syncLocations':

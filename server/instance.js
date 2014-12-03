@@ -8,7 +8,7 @@ var STATUS_RUNNING = 'running';
 var STATUS_STOPPING = 'stopping';
 var STATUS_STOPPED = 'stopped';
 
-var Instance =  function (data, options) {
+var Instance = function (data, options) {
   this.devices = options.devices;
   this.config = options.config;
   this.properties = _.defaults(data, {
@@ -34,6 +34,39 @@ Instance.prototype.start = function(data) {
   return this._startBrowserSyncProcess(data);
 };
 
+
+Instance.prototype.clearDevice = function(device) {
+  if (device) {
+    device.update({
+      userId: null,
+      userName: null,
+      status: 'idle',
+      lastUsed: +new Date()
+    });
+  }
+};
+
+Instance.prototype.callDeviceHome = function(device) {
+  var deferred = Q.defer();
+  if (this.isConnected()) {
+    this.childProcess.send({
+      type: 'returnDeviceHome',
+      device: device
+    });
+
+    // Wait for message from childProcess before resolving deferred
+    this.childProcess.on('message', function(message) {
+      if (message.type === 'browserSyncReturnedDeviceHome' &&
+        _.intersection(message.device.browsersync, device.get('browsersync')).length > 0) {
+        deferred.resolve();
+      }
+    });
+  } else {
+    deferred.reject();
+  }
+  return deferred.promise;
+};
+
 Instance.prototype.stop = function() {
   'use strict';
   console.info("instance.stop current status: ", this.get('status'));
@@ -48,12 +81,7 @@ Instance.prototype.stop = function() {
   console.log("instance stopping");
 
   _.each(that.getDevices(), function(device) {
-    device.update({
-      userId: null,
-      userName: null,
-      status: 'idle',
-      lastUsed: +new Date()
-    });
+    that.clearDevice(device);
   });
 
   if (that.isConnected()) {
@@ -143,6 +171,22 @@ Instance.prototype._startBrowserSyncProcess = function(data) {
         that.set('status', STATUS_STOPPED);
         console.log('instance.js: browsersync stop');
         that.childProcess.send({type: 'exit'});
+        break;
+      case 'browserSyncSocketId':
+        var device =_.find(that.getDevices(), function(device) {
+          return device.get('devicewall') === message.devicewall;
+        });
+        if (device) {
+          device.set('browsersync', message.browsersync);
+        }
+        break;
+      case 'browserSyncSocketRoomsUpdate':
+        var device = _.find(that.getDevices(), function(device) {
+          return _.intersection(message.browsersync, device.get('browsersync')).length > 0;
+        });
+        if (device) {
+          device.set('browsersync', message.browsersync);
+        }
         break;
     }
   });
