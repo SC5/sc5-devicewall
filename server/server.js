@@ -3,14 +3,10 @@ var
   cookieParser = require('cookie-parser'),
   bodyParser = require('body-parser'),
   expressSession = require('express-session'),
-  passport = require('passport'),
-  GoogleStrategy = require('passport-google-oauth').OAuth2Strategy,
   https = require('https'),
   http = require('http'),
   config = require('../config.json'),
-  url = require('url'),
-  fs = require('fs'),
-  io;
+  fs = require('fs');
 
 if (process.env.NODE_ENV === "test") {
   config = require('../config.test.json');
@@ -30,15 +26,8 @@ var adminServer = express();
 adminServer.use(cookieParser());
 adminServer.use(expressSession({secret: config.sessionKey, resave: true, saveUninitialized: true}));
 adminServer.use(bodyParser.urlencoded({extended: true}));
-adminServer.use(passport.initialize());
-adminServer.use(passport.session());
 
-require('./routes/auth.js')(adminServer, {
-  config: config,
-  passport: passport,
-  GoogleStrategy: GoogleStrategy
-});
-require('./routes/user.js')(adminServer);
+// Device information api request
 require('./routes/devices.js')(adminServer, '/api/devices/:deviceLabel', config.devicesJson);
 
 // Performance testing

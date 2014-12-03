@@ -1,9 +1,7 @@
 // Instance class
 var _ = require('lodash'),
-    fork = require('child_process').fork,
-    utils = require('./utils'),
-    url = require('url'),
-    Q = require('q');
+  fork = require('child_process').fork,
+  Q = require('q');
 
 var STATUS_STARTING = 'starting';
 var STATUS_RUNNING = 'running';
