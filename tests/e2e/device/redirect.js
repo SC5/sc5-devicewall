@@ -50,9 +50,9 @@ describe('Device', function() {
       });
     }).then(function() {
       // start test
-      element(by.id('url')).click();
-      utils.clear(element(by.id('url')));
-      element(by.id('url')).sendKeys(testUrl);
+      element(by.id('url_value')).click();
+      utils.clear(element(by.id('url_value')));
+      element(by.id('url_value')).sendKeys(testUrl);
       element(by.id("go-button")).click();
 
       // go back to client url

@@ -247,8 +247,7 @@ gulp.task('test:server', function(cb) {
 gulp.task('test:e2e', ['webdriver_manager_update'], function() {
   var testConfig = require('./config.test.json');
   var testDataDir = path.dirname(path.resolve(testConfig.devicesJson));
-  var paths = find.fileSync(/selenium-server-standalone.*\.jar/, 'node_modules/protractor/selenium');
-  var args = ['--seleniumServerJar', paths[0], '--baseUrl', config.protocol + '://' + testConfig.host + ':' + testConfig.port];
+  var args = [ '--baseUrl', config.protocol + '://' + testConfig.host + ':' + testConfig.port];
   var protractorConf = {
     configFile: './protractor.config.js',
     args: [args],
@@ -261,7 +260,7 @@ gulp.task('test:e2e', ['webdriver_manager_update'], function() {
 
   server.listen({path: './server/server.js', env: {"NODE_ENV": "test"}});
   gulp.src(['tests/e2e/**/*.js'], { read: false })
-    .pipe($.protractor.protractor(protractorConf)).on('error', function(e) {
+    .pipe($.protractor.protractor(protractorConf)).on('error', function() {
       server.kill();
     }).on('end', function() {
       server.kill();

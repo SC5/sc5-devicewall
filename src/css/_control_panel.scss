@@ -357,6 +357,7 @@ select {
   display: inline-block;
   vertical-align: middle;
   position: relative;
+  width: 235px;
 
   .tooltip {
 
@@ -396,7 +397,8 @@ input {
 }
 
 input[type=text],
-input[type=url] {
+input[type=url],
+.angucomplete-holder input {
   vertical-align: middle;
   font-size: 1rem;
   border-radius: 5px;
@@ -404,9 +406,12 @@ input[type=url] {
   line-height: 1rem;
 }
 
-input[type=url] {
+input[type=url],
+.angucomplete-holder input[type=text] {
   width: 100%;
   box-sizing: border-box;
+  border: 0;
+  border-radius: 2px;
 }
 
 input[type=checkbox] {
