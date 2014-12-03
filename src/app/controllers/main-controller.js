@@ -234,5 +234,8 @@ angular.module('DeviceWall')
 
       $scope.$watch('deviceList', $scope.checkGoButtonStatus, true);
       $scope.$watch('openUrl', $scope.checkGoButtonStatus);
+      $scope.$on('$destroy', function() {
+        socket.removeAllListeners();
+      });
     });
 
