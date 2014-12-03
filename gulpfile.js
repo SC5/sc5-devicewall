@@ -192,11 +192,6 @@ gulp.task('integrate', ['javascript', 'stylesheets', 'assets', 'favicon'], funct
   var sources = gulp.src(['dist/*.js', 'dist/css/*.css'], {read: false});
   return target.pipe($.inject(sources, { ignorePath: ['/dist/'], addRootSlash: false }))
     .pipe(gulp.dest('./dist'));
-  /*
-  return gulp.src(['dist/*.js', 'dist/css/*.css'])
-    .pipe($.inject(gulp.src('src/index.html', { ignorePath: ['/dist/'], addRootSlash: false })))
-    .pipe(gulp.dest('./dist'));
-    */
 });
 
 gulp.task('livereload', function() {
