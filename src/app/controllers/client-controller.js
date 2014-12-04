@@ -1,6 +1,6 @@
 /*jshint -W072 */
 angular.module('DeviceWall')
-  .controller('ClientController', function($rootScope, $scope, $timeout, socketConnect, $window, appConfig, $log) {
+  .controller('ClientController', function($rootScope, $scope, $timeout, socketConnect, $window, appConfig, Util, $log) {
     var screensaverTimeoutPromise;
     var screensaverTimeoutSeconds = appConfig.client.screenSaverTimeoutSeconds || 60;
     var socket = socketConnect.connect('/devicewallapp');
@@ -32,9 +32,11 @@ angular.module('DeviceWall')
     };
 
     socket.on('start', function(data) {
-      socket.emit('started', $scope.label);
-      if(data.labels.indexOf($window.localStorage.getItem('label')) !== -1) {
-        $window.location.href = data.url;
+      var id = socket.io().engine.id;
+      socket.emit('started', { label: $scope.label, socketId: id });
+      if (data.labels.indexOf($window.localStorage.getItem('label')) !== -1) {
+        var url = Util.addSearchParamaterToURL(data.url, 'devicewall=' + id);
+        $window.location.href = url;
       }
     });
 
