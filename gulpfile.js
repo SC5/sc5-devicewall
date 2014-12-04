@@ -237,6 +237,7 @@ gulp.task('webdriver_manager_update', $.protractor.webdriver_update);
 gulp.task('test:server', function(cb) {
   gulp.src(['server/**/*.js', '!server/test/**/*'])
     .pipe($.istanbul()) // Covering files
+    .pipe($.istanbul.hookRequire())
     .on('finish', function () {
       gulp.src('server/test/**/*.spec.js')
         .pipe($.jasmine())
