@@ -129,7 +129,16 @@ module.exports = function (app, options) {
           appData.url = startData.startUrl;
 
           console.log('Control >> socket "update"');
-          nsCtrl.emit('update', devices.toJSON());
+          // Add site and proxy URIs to control panel 'update' event
+          var devicesClone = devices.toJSON();
+          _.each(devicesClone, function(device) {
+            if (data.labels.indexOf(device.label) > -1) {
+              device.site = data.url;
+              device.proxy = startData.startUrl;
+            }
+          });
+          nsCtrl.emit('update', devicesClone);
+
           console.log('Control >> start"', data);
           nsCtrl.emit('start', data);
           console.log('Client >> start"', appData);
