@@ -251,7 +251,8 @@ table {
 
     }
 
-    &:nth-child(8),
+    // Test and Trash columns
+    &:nth-last-child(2),
     &:last-child {
       text-align: center;
     }
@@ -295,6 +296,14 @@ table {
         background-image: -webkit-linear-gradient(left, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, .3) 80%), -webkit-linear-gradient(#fff 0%, #fff 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
+      }
+
+    }
+
+    &.hidden {
+
+      span {
+        visibility: hidden;
       }
 
     }

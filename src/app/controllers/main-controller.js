@@ -47,7 +47,7 @@ angular.module('DeviceWall')
         visitedUrls: $window.localStorage.getItem('visitedUrls') ? JSON.parse($window.localStorage.getItem('visitedUrls')) : [],
         click: function() {
           if (!$scope.url.selectedValue || $scope.url.value === '' || !$scope.url.value) {
-            $scope.url.value = 'http://www.';
+            $scope.url.value = 'http://';
           }
         },
         inputChanged: function(str) {

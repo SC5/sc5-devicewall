@@ -104,6 +104,8 @@
               <th class="small-viewport-hidden">Version</th>
               <th data-ng-hide="true" class="small-viewport-hidden">Battery</th>
               <th class="small-viewport-hidden" ng-hide="config.singleUser">User</th>
+              <th class="small-viewport-hidden">Site</th>
+              <th class="small-viewport-hidden">Proxy</th>
               <th>Last used</th>
               <th>Test</th>
               <th></th>
@@ -129,7 +131,13 @@
                   <span style="{{ device.batteryStatus | batteryStyle }}">&#128267;</span>
                 </td>
                 <td class="small-viewport-hidden" ng-hide="config.singleUser">{{ device.userName }}</td>
-                <td><time>{{ device.lastUsed | timeSince }}</time></td>
+                <td class="small-viewport-hidden" data-ng-class="{ hidden : !device.userId }">
+                  <span>{{ device.site }}</span>
+                </td>
+                <td class="small-viewport-hidden" data-ng-class="{ hidden : !device.userId }">
+                  <span>{{ device.proxy }}</span>
+                </td>
+                <td data-ng-class="{'is-running': device.userId}"><time>{{ device.lastUsed | timeSince }}</time></td>
                 <td>
                   <input
                     type="checkbox"
