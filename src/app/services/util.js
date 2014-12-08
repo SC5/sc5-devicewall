@@ -13,6 +13,6 @@
         parser.search += token + param;
         return parser.href;
       }
-    }
+    };
   });
 })();
