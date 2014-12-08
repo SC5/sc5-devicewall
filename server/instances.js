@@ -86,7 +86,8 @@ var Instances = {
     console.log('Ready to start new browserSync instance');
     var that = this;
 
-    that._callDevices(data).then(function(usedLabels) {
+    that._callDevices(data)
+      .then(function(usedLabels) {
       var clone = _.clone(that.devices);
       clone.devices = _.filter(clone.devices, function(device) {
         return usedLabels.indexOf(device.get('label')) > -1;
@@ -105,7 +106,13 @@ var Instances = {
             deferred.reject(reason);
           });
         });
-    });
+    })
+      .fail(function() {
+        console.error('Instances::Devices did not return, stopping all processes.');
+        that.stopAll().then(function() {
+          console.error('Instances::All processes stopped.');
+        });
+      });
   },
   _callDevices: function(data) {
     var deferred = Q.defer();
@@ -127,12 +134,18 @@ var Instances = {
         }
       });
     }
+    var timer = 30000;
+    var timeout = setTimeout(function() {
+      deferred.reject();
+    }, timer);
+
     Q.all(promises).fin(function() {
-      // First the devices that were called home
+      clearTimeout(timeout);
+      // The devices that were called home
       var labels = _.map(returnedDevices, function(device) {
         return device.get('label');
       });
-      // Then the devices that were in the original UI request
+      // The devices that were in the original UI request
       labels = _.union(labels, data.labels);
       deferred.resolve(labels);
     });
