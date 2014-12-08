@@ -25,7 +25,6 @@ describe('Control panel', function() {
     });
   });
 
-
   it('should render correctly', function() {
     expect(element(by.id('go-button')).isDisplayed()).to.eventually.equal(true);
     expect(element(by.id('stop-button')).isDisplayed()).to.eventually.equal(false);
@@ -33,7 +32,7 @@ describe('Control panel', function() {
     expect(element(by.css('#available-devices h2')).getText()).to.eventually.contain('Available devices');
     expect(element(by.id('select-all')).isDisplayed()).to.eventually.equal(true);
     expect(element(by.id('select-none')).isDisplayed()).to.eventually.equal(true);
-    expect(element.all(by.css('#available-devices-table-heading th')).count()).to.eventually.equal(9);
+    expect(element.all(by.css('#available-devices-table-heading th')).count()).to.eventually.equal(11);
   });
 
   it('should toggle the accordion when clicked', function() {
@@ -82,13 +81,13 @@ describe('Control panel', function() {
 
   it('should set url value to http://www when clicked', function() {
     element(by.id('url_value')).click();
-    expect(element(by.id('url_value')).getAttribute('value')).to.eventually.equal('http://www.');
+    expect(element(by.id('url_value')).getAttribute('value')).to.eventually.equal('http://');
   });
 
   it('should have user inputted URL in the input field', function() {
     element(by.id('url_value')).click();
     element(by.id('url_value')).sendKeys('domain.com');
-    expect(element(by.id('url_value')).getAttribute('value')).to.eventually.equal('http://www.domain.com');
+    expect(element(by.id('url_value')).getAttribute('value')).to.eventually.equal('http://domain.com');
   });
 
   it('should show Stop buttons if Go button is clicked', function() {
