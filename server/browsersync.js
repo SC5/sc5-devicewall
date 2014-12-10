@@ -110,7 +110,7 @@ process.on('message', function(message) {
     case 'returnDeviceHome':
       var promises = [];
       bs.io.sockets.sockets.forEach(function(socket) {
-        if (message.device.browsersync.indexOf(socket.id) > -1) {
+        if (message.device && message.device.browsersync && message.device.browsersync.indexOf(socket.id) > -1) {
           promises.push(deferredEmit(socket, 'location', {url: bs.options.idleReturn.returnUrl }, 5000));
         }
       });
