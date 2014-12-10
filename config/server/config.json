@@ -9,5 +9,6 @@
   "devicesJson": "./server/data/devices.json",
   "instancesJson": "./server/data/instances.json",
   "maxRedirects": 10,
+  "maxListeners": 100,
   "protocol": "https"
 }

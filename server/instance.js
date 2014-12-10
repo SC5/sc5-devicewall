@@ -54,14 +54,14 @@ Instance.prototype.callDeviceHome = function(device) {
       device: device
     });
 
-    var timer = 5000;
+    var timer = 10000;
     var timeout = setTimeout(function() {
       console.error('Instance::Child process did not respond in ' + timer/1000 + ' seconds.');
       deferred.reject();
     }, timer);
 
     // Wait for message from childProcess before resolving deferred
-    this.childProcess.on('message', function(message) {
+    this.childProcess.once('message', function(message) {
       if (message.type === 'browserSyncReturnedDeviceHome' &&
         _.intersection(message.device.browsersync, device.get('browsersync')).length > 0) {
         clearTimeout(timeout);
@@ -164,6 +164,7 @@ Instance.prototype._startBrowserSyncProcess = function(data) {
     forkArgs.execArgv = ['--debug-brk=6001'];
   }
   this.childProcess = fork('./server/browsersync.js', forkArgs);
+  this.childProcess.setMaxListeners(this.config.maxListeners);
 
   this.childProcess.on('message', function(message) {
     switch (message.type) {
