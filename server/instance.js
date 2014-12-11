@@ -11,6 +11,7 @@ var STATUS_STOPPED = 'stopped';
 var Instance = function (data, options) {
   this.devices = options.devices;
   this.config = options.config;
+  this.recalled = [];
   this.properties = _.defaults(data, {
     status: STATUS_STOPPED,
     updated: +new Date()
@@ -48,15 +49,15 @@ Instance.prototype.clearDevice = function(device) {
 
 Instance.prototype.callDeviceHome = function(device) {
   var deferred = Q.defer();
+  var that = this;
   if (this.isConnected()) {
     this.childProcess.send({
       type: 'returnDeviceHome',
       device: device
     });
 
-    var timer = 10000;
+    var timer = 5000;
     var timeout = setTimeout(function() {
-      console.error('Instance::Child process did not respond in ' + timer/1000 + ' seconds.');
       deferred.reject();
     }, timer);
 
@@ -65,14 +66,33 @@ Instance.prototype.callDeviceHome = function(device) {
       if (message.type === 'browserSyncReturnedDeviceHome' &&
         _.intersection(message.device.browsersync, device.get('browsersync')).length > 0) {
         clearTimeout(timeout);
+        that.recalled.push(device);
+        that.shouldInstanceStop();
         deferred.resolve();
       }
     });
   } else {
     console.error('Instance::No child process or child process is not connected.');
+    this.shouldInstanceStop({ force: true });
     deferred.reject();
   }
   return deferred.promise;
+};
+
+Instance.prototype.shouldInstanceStop = function(options) {
+  var that = this;
+  options = options || {};
+  var original = this.getDevices().length;
+  var recalled = this.recalled.length;
+
+  if (recalled >= original || options.force === true) {
+    setTimeout(function() {
+      console.log('Instance::Stopping Empty Instance.');
+      that.stop().then(function() {
+        console.log('Instance::Empty Instance Stopped.');
+      });
+    }, 5000);
+  }
 };
 
 Instance.prototype.stop = function() {
