@@ -12,5 +12,6 @@
   "port": 8081,
   "testServerPort": 8082,
   "maxRedirects": 10,
-  "protocol": "https"
+  "protocol": "https",
+  "maxListeners": 100
 }
