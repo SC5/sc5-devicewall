@@ -546,3 +546,9 @@ input[type=text].error {
   line-height: 2rem;
   margin: 0 5px;
 }
+
+#available-devices-table-heading {
+  th a {
+    color: #fff;
+  }
+}
