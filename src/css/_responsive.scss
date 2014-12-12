@@ -9,12 +9,6 @@
     font-size: 2.8rem;
   }
 
-  #devices {
-    input[type=text] {
-      width: 90%;
-    }
-  }
-
   #content {
     @include translateY(0);
     margin-top: 30px;
@@ -56,6 +50,10 @@
 }
 
 @media only screen and (max-width : 320px) {
+
+  #devices .input{
+    width: 90%;
+  }
 
   h1 {
     font-size: 30px;
@@ -114,5 +112,19 @@
       }
     }
 
+  }
+}
+
+@media only screen and (max-height: 350px) {
+  .logo, #screensaver .saver-logo {
+    width: auto;
+    height: 80px;
+  }
+
+  #screensaver .slogan {
+    top: initial;
+    transform: none;
+    bottom: 0;
+    @include translateY(0px);
   }
 }

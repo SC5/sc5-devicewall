@@ -3,7 +3,8 @@ var module = angular.module('DeviceWall', [
   'ngRoute',
   'ngLodash',
   'btford.socket-io',
-  'configuration'
+  'configuration',
+  'angucomplete-alt'
 ]);
 
 

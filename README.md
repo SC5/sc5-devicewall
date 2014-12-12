@@ -65,10 +65,45 @@ Gulp task will check these files and includes them when found.
     config/server/config.local.json
     config/app/config.local.json
 
-#### Local server configuration
+### Local server configuration
 
-To auto-detect your IP use, "proxyHost": false in 
-config/server/config.local.json
+##### proxyHost
+To define proxy host use param eg. "192.168.0.1" or use false to use auto-detection
+
+    "proxyHost": false # proxyHost is autodetected, otherwise will be host string
+#### protocol
+To use HTTPS or HTTP protocol with Devicewall
+
+    "protocol": "https" # https-protocol is used
+#### sslKey
+SSL certificate key path when protocol HTTPS used
+
+    "sslKey": "./node_modules/browser-sync/lib/server/certs/server.key"
+#### sslKey
+SSL certificate path when protocol HTTPS used
+
+    "sslCert": "./node_modules/browser-sync/lib/server/certs/server.crt"
+#### deviceWallAppURL
+This URL is represents idle mode URL. Used when client jumps from testing back to idle.
+
+    "deviceWallAppURL": "https://devicewall.sc5.io/client" # clients returns from browserSync to this URL
+#### clientIdleReturnSeconds
+Client is automatically redirected back to idle mode after clientIdleReturnSeconds is exceeded
+
+    "clientIdleReturnSeconds": 300 # client returns from testing automatically after 300 seconds
+### Application configuration
+
+#### connectionSetup
+Connection setup represents control panel configuration tab which is used to give different kind of settings
+
+    "connectionsSetup": {
+      "enabled: true, # connection setup tab enabled
+      "customUserAgent": true # Custom user agent header setting enabled
+      "client": {
+        "screenSaverTimeoutSeconds": 600, # screen saver enabled after 600s
+        "redirectToClientModeAutomatically": false # automatic redirect disabled from main page if device detected as client
+      }
+
 
 ## Building
 
@@ -129,4 +164,24 @@ Simplified instructions:
 
 ## License
 
-Copyright (c) 2014 [SC5](http://sc5.io/)
+    The MIT License (MIT)
+
+    Copyright (c) 2014 SC5 Online Oy
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+    THE SOFTWARE.

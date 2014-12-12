@@ -3,7 +3,7 @@ var config = require('../../../config.test.json');
 var utils = require('../utils');
 var socket = require('../socket');
 
-ddescribe('Control panel', function() {
+describe('Control panel', function() {
   var ptor = protractor.getInstance();
   var testUrl = config.protocol + '://' + config.host + ':' + config.port + '/test';
   var devicesUrl = config.protocol + '://' + config.host + ':' + config.port + '/devices';
@@ -25,7 +25,6 @@ ddescribe('Control panel', function() {
     });
   });
 
-
   it('should render correctly', function() {
     expect(element(by.id('go-button')).isDisplayed()).to.eventually.equal(true);
     expect(element(by.id('stop-button')).isDisplayed()).to.eventually.equal(false);
@@ -33,7 +32,7 @@ ddescribe('Control panel', function() {
     expect(element(by.css('#available-devices h2')).getText()).to.eventually.contain('Available devices');
     expect(element(by.id('select-all')).isDisplayed()).to.eventually.equal(true);
     expect(element(by.id('select-none')).isDisplayed()).to.eventually.equal(true);
-    expect(element.all(by.css('#available-devices-table-heading th')).count()).to.eventually.equal(9);
+    expect(element.all(by.css('#available-devices-table-heading th')).count()).to.eventually.equal(11);
   });
 
   it('should toggle the accordion when clicked', function() {
@@ -81,14 +80,14 @@ ddescribe('Control panel', function() {
   });
 
   it('should set url value to http://www when clicked', function() {
-    element(by.id('url')).click();
-    expect(element(by.id('url')).getAttribute('value')).to.eventually.equal('http://www.');
+    element(by.id('url_value')).click();
+    expect(element(by.id('url_value')).getAttribute('value')).to.eventually.equal('http://');
   });
 
   it('should have user inputted URL in the input field', function() {
-    element(by.id('url')).click();
-    element(by.id('url')).sendKeys('domain.com');
-    expect(element(by.id('url')).getAttribute('value')).to.eventually.equal('http://www.domain.com');
+    element(by.id('url_value')).click();
+    element(by.id('url_value')).sendKeys('domain.com');
+    expect(element(by.id('url_value')).getAttribute('value')).to.eventually.equal('http://domain.com');
   });
 
   it('should show Stop buttons if Go button is clicked', function() {
@@ -99,9 +98,9 @@ ddescribe('Control panel', function() {
     });
     expect(element(by.id('go-button')).isEnabled()).to.eventually.equal(true);
     expect(element(by.css('#available-devices table input[type=checkbox]')).isSelected()).to.eventually.equal(true);
-    element(by.id('url')).click();
-    utils.clear(element(by.id('url')));
-    element(by.id('url')).sendKeys(testUrl);
+    element(by.id('url_value')).click();
+    utils.clear(element(by.id('url_value')));
+    element(by.id('url_value')).sendKeys(testUrl);
     element(by.id("go-button")).click();
     browser.driver.wait(function() {
       return browser.driver.isElementPresent(by.xpath("//div[@id='server-status' and text()='running']"));
@@ -118,9 +117,9 @@ ddescribe('Control panel', function() {
     browser.driver.wait(function() {
       return browser.driver.isElementPresent(by.xpath("//td[text()='testdevice']"));
     });
-    element(by.id('url')).click();
-    utils.clear(element(by.id('url')));
-    element(by.id('url')).sendKeys(testUrl);
+    element(by.id('url_value')).click();
+    utils.clear(element(by.id('url_value')));
+    element(by.id('url_value')).sendKeys(testUrl);
     element(by.id("go-button")).click();
     browser.driver.wait(function() {
       return browser.driver.isElementPresent(by.xpath("//div[@id='server-status' and text()='running']"));
@@ -165,8 +164,8 @@ ddescribe('Control panel', function() {
     browser.driver.wait(function() {
       return browser.driver.isElementPresent(by.xpath("//td[text()='testdevice']"));
     });
-    element(by.id('url')).click();
-    element(by.id('url')).sendKeys('dsfkjasdfasdfasdfasdflassdkjajskd.sad');
+    element(by.id('url_value')).click();
+    element(by.id('url_value')).sendKeys('dsfkjasdfasdfasdfasdflassdkjajskd.sad');
     element(by.id("go-button")).click();
     browser.driver.wait(function() {
       return browser.driver.isElementPresent(by.xpath("//span[@id='tooltip-error' and text()='Unreachable']"));

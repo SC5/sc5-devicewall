@@ -63,15 +63,16 @@ module.exports = function (app, options) {
           }
         }
       }
-      console.log("Controlt >>>> update", devices.toJSON());
+      console.log("Control >>>> update", devices.toJSON());
       nsCtrl.emit('update', devices.toJSON());
     }
 
-    function started(label) {
-      console.log("Client <<< started", label);
-      var device = devices.find(label);
+    function started(options) {
+      console.log("Client <<< started: ", options.label, options.socketId);
+      var device = devices.find(options.label);
       if (device) {
         device.set('status', 'running');
+        device.set('devicewall', options.socketId);
         nsCtrl.emit('update', devices.toJSON());
       }
     }
@@ -128,7 +129,16 @@ module.exports = function (app, options) {
           appData.url = startData.startUrl;
 
           console.log('Control >> socket "update"');
-          nsCtrl.emit('update', devices.toJSON());
+          // Add site and proxy URIs to control panel 'update' event
+          var devicesClone = devices.toJSON();
+          _.each(devicesClone, function(device) {
+            if (data.labels.indexOf(device.label) > -1) {
+              device.site = data.url;
+              device.proxy = startData.startUrl;
+            }
+          });
+          nsCtrl.emit('update', devicesClone);
+
           console.log('Control >> start"', data);
           nsCtrl.emit('start', data);
           console.log('Client >> start"', appData);
@@ -144,7 +154,7 @@ module.exports = function (app, options) {
 
     function stop(data) {
       console.log("Control <<< stop", data);
-      instances.stop(data.user.id).then(function() {
+      instances.stop(data.url).then(function() {
         console.log('Control >> update', devices.toJSON());
         nsCtrl.emit('update', devices.toJSON());
         console.log('Control >> stop', data);

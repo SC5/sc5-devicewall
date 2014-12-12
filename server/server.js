@@ -3,14 +3,10 @@ var
   cookieParser = require('cookie-parser'),
   bodyParser = require('body-parser'),
   expressSession = require('express-session'),
-  passport = require('passport'),
-  GoogleStrategy = require('passport-google-oauth').OAuth2Strategy,
   https = require('https'),
   http = require('http'),
   config = require('../config.json'),
-  url = require('url'),
-  fs = require('fs'),
-  io;
+  fs = require('fs');
 
 if (process.env.NODE_ENV === "test") {
   config = require('../config.test.json');
@@ -30,33 +26,20 @@ var adminServer = express();
 adminServer.use(cookieParser());
 adminServer.use(expressSession({secret: config.sessionKey, resave: true, saveUninitialized: true}));
 adminServer.use(bodyParser.urlencoded({extended: true}));
-adminServer.use(passport.initialize());
-adminServer.use(passport.session());
 
-require('./routes/auth.js')(adminServer, {
-  config: config,
-  passport: passport,
-  GoogleStrategy: GoogleStrategy
-});
-require('./routes/user.js')(adminServer);
+// Device information api request
 require('./routes/devices.js')(adminServer, '/api/devices/:deviceLabel', config.devicesJson);
 
-adminServer.use(express.static(__dirname + '/../dist'));
-adminServer.use(/\/(devices|client|tutorial|info)/, express.static(__dirname + '/../dist'));
 // Performance testing
 adminServer.use('/perf-test', express.static(__dirname + '/perf-test'));
 
 // Testing
 if (process.env.NODE_ENV === "test") {
-  //var testServer = express();
-
   require('./routes/test.js')(adminServer);
-  //require('./routes/test.js')(testServer);
-
-  //var test = testServer.listen(config.testServerPort, function () {
-  //  console.log('Test server listening on port %d', test.address().port);
-  //});
 }
+
+adminServer.use(express.static(__dirname + '/../dist'));
+adminServer.use('/*', express.static(__dirname + '/../dist'));
 
 // HTTPS
 var options = {

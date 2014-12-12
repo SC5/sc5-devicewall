@@ -9,7 +9,24 @@
 
         <span class="input">
           <span id="tooltip-error" class="tooltip" data-ng-show="tooltipError.show">{{tooltipError.content}}</span>
-          <input type="url" name="url" size="50" placeholder="http://www.sc5.io/" id="url" data-ng-click="url.click()" ng-model="url.value">
+          <angucomplete-alt
+            id="url"
+            type="url"
+            name="url"
+            focus-in="url.click()"
+            input-changed="url.inputChanged"
+            placeholder="http://www.sc5.io/"
+            selected-object="url.selectedValue"
+            initial-value="{{url.value}}"
+            override-suggestions="true"
+            auto-match="true"
+            local-data="url.visitedUrls"
+            search-fields="url"
+            title-field="url"
+            minlength="1"
+            text-searching=""
+            text-no-results=""
+            inputclass="form-control form-control-small" />
         </span>
 
 
@@ -81,18 +98,20 @@
 
           <table spellcheck="false">
             <tr id="available-devices-table-heading">
-              <th>Label</th>
-              <th class="small-viewport-hidden">Model</th>
-              <th class="small-viewport-hidden">Platform</th>
-              <th class="small-viewport-hidden">Version</th>
+              <th><a href="" ng-click="predicate = 'label'; reverse=!reverse">Label</a></th>
+              <th class="small-viewport-hidden"><a href="" ng-click="predicate = 'model'; reverse=!reverse">Model</a></th>
+              <th class="small-viewport-hidden"><a href="" ng-click="predicate = 'platform'; reverse=!reverse">Platform</a></th>
+              <th class="small-viewport-hidden"><a href="" ng-click="predicate = 'version'; reverse=!reverse">Version</a></th>
               <th data-ng-hide="true" class="small-viewport-hidden">Battery</th>
               <th class="small-viewport-hidden" ng-hide="config.singleUser">User</th>
+              <th class="small-viewport-hidden">Site</th>
+              <th class="small-viewport-hidden">Proxy</th>
               <th>Last used</th>
               <th>Test</th>
               <th></th>
             </tr>
             <tbody id="devices-list" ng-if="deviceList.length > 0">
-              <tr ng-repeat="device in deviceList" data-ng-class="{'is-running': device.userId}">
+              <tr ng-repeat="device in deviceList | orderBy:predicate:reverse" data-ng-class="{'is-running': device.userId}">
                 <td>{{ device.label }}</td>
                 <td class="small-viewport-hidden editable">
                   <input blurevent type="text" placeholder="model" data-ng-model="device.model" />
@@ -112,7 +131,13 @@
                   <span style="{{ device.batteryStatus | batteryStyle }}">&#128267;</span>
                 </td>
                 <td class="small-viewport-hidden" ng-hide="config.singleUser">{{ device.userName }}</td>
-                <td><time>{{ device.lastUsed | timeSince }}</time></td>
+                <td class="small-viewport-hidden" data-ng-class="{ hidden : !device.userId }">
+                  <span>{{ device.site }}</span>
+                </td>
+                <td class="small-viewport-hidden" data-ng-class="{ hidden : !device.userId }">
+                  <span>{{ device.proxy }}</span>
+                </td>
+                <td data-ng-class="{'is-running': device.userId}"><time>{{ device.lastUsed | timeSince }}</time></td>
                 <td>
                   <input
                     type="checkbox"

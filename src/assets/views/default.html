@@ -1,4 +1,7 @@
-<div id="content">
+<div data-ng-show="error">
+  <p data-ng-bind="error"></p>
+</div>
+<div id="content" data-ng-hide="error">
     <div class="mode-button-wrapper">
       <div class="mode-button button-device" ng-click="onConnectDeviceClick()">
         <div class="icon icon-mobile"></div>

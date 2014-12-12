@@ -25,10 +25,16 @@ var Instances = {
       });
     }
   },
-  removeInstance: function(userId) {
+  findInstanceByUrl: function(urlString) {
+    'use strict';
+    return _.find(this.instances, function(instance) {
+      return instance.get('url') === urlString;
+    });
+  },
+  removeInstance: function(urlString) {
     'use strict';
     this.instances = _.filter(this.instances, function(instance) {
-      return instance.get('user').id !== userId;
+      return instance.get('url') !== urlString;
     });
   },
   start: function(data) {
@@ -36,7 +42,8 @@ var Instances = {
     var that = this,
         deferred = Q.defer(),
         userId = data.user.id || 'singleuser',
-        instance = this.find(userId),
+        urlString = data.url,
+        instance = this.findInstanceByUrl(urlString),
         proxyOptions = {};
 
     proxyOptions.userAgentHeader = data.userAgentHeader || false;
@@ -63,7 +70,7 @@ var Instances = {
             deferred.resolve();
           } else {
             // stop before relaunch
-            that.stop(userId).then(function() {
+            that.stop(urlString).then(function() {
               that.startInstance(data, deferred);
             });
           }
@@ -77,39 +84,90 @@ var Instances = {
   },
   startInstance: function(data, deferred) {
     console.log('Ready to start new browserSync instance');
-    console.log(deferred);
     var that = this;
-    var instance = new Instance(data, {config: that.config, devices: that.devices});
-    that.instances.push(instance);
 
-    instance.start(data)
-      .then(function(data) {
-        console.info("Instance.start: browserSync started", data.url);
-        deferred.resolve(data);
-      })
-      .fail(function(reason) {
-        console.error("failed to start new instance", reason);
-        that.stop(data.user.id).then(function() {
-          deferred.reject(reason);
+    that._callDevices(data)
+      .then(function(usedLabels) {
+      var clone = _.clone(that.devices);
+      clone.devices = _.filter(clone.devices, function(device) {
+        return usedLabels.indexOf(device.get('label')) > -1;
+      });
+      var instance = new Instance(data, {config: that.config, devices: clone});
+      that.instances.push(instance);
+
+      instance.start(data)
+        .then(function(data) {
+          console.info("Instance.start: browserSync started", data.url);
+          deferred.resolve(data);
+        })
+        .fail(function(reason) {
+          console.error("failed to start new instance", reason);
+          that.stop(data.user.id).then(function() {
+            deferred.reject(reason);
+          });
+        });
+    })
+      .fail(function() {
+        console.error('Instances::Devices did not return, stopping all processes.');
+        that.stopAll().then(function() {
+          console.error('Instances::All processes stopped.');
         });
       });
   },
+  _callDevices: function(data) {
+    var deferred = Q.defer();
+    var promises = [];
+    var returnedDevices = [];
+
+    if (this.instances.length > 0) {
+      // Check if we have to call any devices back home first
+      _.each(this.instances, function(instance) {
+        var devicesToBeCalledHome = _.filter(instance.getDevices(), function(device) {
+          return data.labels.indexOf(device.get('label')) > -1;
+        });
+        if (devicesToBeCalledHome.length > 0) {
+          _.each(devicesToBeCalledHome, function(device) {
+            returnedDevices.push(device);
+            instance.clearDevice(device);
+            promises.push(instance.callDeviceHome(device));
+          });
+        }
+      });
+    }
+    var timer = 30000;
+    var timeout = setTimeout(function() {
+      deferred.reject();
+    }, timer);
+
+    Q.all(promises).fin(function() {
+      clearTimeout(timeout);
+      // The devices that were called home
+      var labels = _.map(returnedDevices, function(device) {
+        return device.get('label');
+      });
+      // The devices that were in the original UI request
+      labels = _.union(labels, data.labels);
+      deferred.resolve(labels);
+    });
+    return deferred.promise;
+  },
+
   // Resolves when instance is stopped and removed
-  stop: function(userId) {
+  stop: function(urlString) {
     'use strict';
     var that = this,
         deferred = Q.defer(),
-        instance = this.find(userId);
+        instance = this.findInstanceByUrl(urlString);
 
     if (instance) {
-      console.log("Stopping instance", userId);
+      console.log("Stopping instance", urlString);
       instance.stop().then(function() {
-        console.log("instance stopped:", userId);
-        that.removeInstance(userId);
+        console.log("instance stopped:", urlString);
+        that.removeInstance(urlString);
         deferred.resolve();
       });
     } else {
-      console.log("no instance:", userId);
+      console.log("no instance:", urlString);
       deferred.resolve();
     }
     return deferred.promise;    

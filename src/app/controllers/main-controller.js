@@ -6,11 +6,16 @@ angular.module('DeviceWall')
       var _ = lodash;
       var socket = socketConnect.connect('/devicewall');
 
+
       $log.debug('loading main controller');
-      $scope.indicatorWaiting = {show: true};
+      $scope.indicatorWaiting = {show: false};
       $scope.config = appConfig;
       $scope.deviceList = DeviceList.toArray();
       $scope.serverStatus = 'stopped';
+
+      // Default device sort order
+      $scope.predicate = 'label';
+      $scope.reverse = false;
 
       // TODO move these somewhere
       $scope.userAgent = {selected: {}};
@@ -40,19 +45,20 @@ angular.module('DeviceWall')
           displayName: $window.localStorage.getItem('name')
         };
       }
+
       $scope.url = {
         value: '',
+        visitedUrls: $window.localStorage.getItem('visitedUrls') ? JSON.parse($window.localStorage.getItem('visitedUrls')) : [],
         click: function() {
-          if (!$scope.url.value || $scope.url.value === '') {
-            $scope.url.value = 'http://www.';
+          if (!$scope.url.selectedValue || $scope.url.value === '' || !$scope.url.value) {
+            $scope.url.value = 'http://';
           }
+        },
+        inputChanged: function(str) {
+          // set the url model value to input text
+          $scope.url.value = str;
         }
       };
-
-      // maybe there is an old url in localstorage already..
-      if ($window.localStorage.getItem('url') !== null) {
-        $scope.url.value = $window.localStorage.getItem('url');
-      }
 
       $scope.btnGo =              {show: true};
       $scope.btnStopAllTesting =  {show: false};
@@ -67,6 +73,15 @@ angular.module('DeviceWall')
 
 
       $scope.submitUrl = function() {
+        if ($scope.url.selectedValue) {
+          // If user has selected an existing url from the autocomplete array, use that value
+          $scope.url.value = $scope.url.selectedValue.originalObject.url;
+        } else {
+          // Add new url to visitedUrls array and to local storage
+          $scope.url.visitedUrls.push({url: $scope.url.value});
+          $window.localStorage.setItem('visitedUrls', JSON.stringify($scope.url.visitedUrls));
+        }
+
         $log.debug('Submit url ', $scope.url.value);
         if ($scope.url.value.length <= 4) {
           $scope.tooltipError = {
@@ -234,5 +249,10 @@ angular.module('DeviceWall')
 
       $scope.$watch('deviceList', $scope.checkGoButtonStatus, true);
       $scope.$watch('openUrl', $scope.checkGoButtonStatus);
-    });
+
+      $scope.$on('$destroy', function() {
+        socket.removeAllListeners();
+      });
+    }
+  );
 

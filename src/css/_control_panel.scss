@@ -44,21 +44,32 @@ body {
   }
 
   .accordion {
-    @include transition(all .5s ease-out);
+    // @include transition(all .5s ease-out);
     position: relative;
     max-height: 1200px;
 
     h2 {
       cursor: pointer;
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
 
       &:before {
         content: '\e822';
         position: absolute;
         left: 10px;
-        top: 0;
+        top: 10px;
         font-family: 'entypo';
         font-size: 1em;
-        line-height: 2em;
+        line-height: 1em;
+        height: 0.5em;
+        width: 1em;
+        vertical-align: middle;
+        background-color: $sc5-blue;
+        padding-bottom: 0.5em;
+        border-radius: 5px;
       }
     }
 
@@ -240,7 +251,8 @@ table {
 
     }
 
-    &:nth-child(8),
+    // Test and Trash columns
+    &:nth-last-child(2),
     &:last-child {
       text-align: center;
     }
@@ -284,6 +296,14 @@ table {
         background-image: -webkit-linear-gradient(left, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, .3) 80%), -webkit-linear-gradient(#fff 0%, #fff 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
+      }
+
+    }
+
+    &.hidden {
+
+      span {
+        visibility: hidden;
       }
 
     }
@@ -346,6 +366,7 @@ select {
   display: inline-block;
   vertical-align: middle;
   position: relative;
+  width: 235px;
 
   .tooltip {
 
@@ -385,7 +406,8 @@ input {
 }
 
 input[type=text],
-input[type=url] {
+input[type=url],
+.angucomplete-holder input {
   vertical-align: middle;
   font-size: 1rem;
   border-radius: 5px;
@@ -393,9 +415,12 @@ input[type=url] {
   line-height: 1rem;
 }
 
-input[type=url] {
+input[type=url],
+.angucomplete-holder input[type=text] {
   width: 100%;
   box-sizing: border-box;
+  border: 0;
+  border-radius: 2px;
 }
 
 input[type=checkbox] {
@@ -520,4 +545,10 @@ input[type=text].error {
   font-size: 4rem;
   line-height: 2rem;
   margin: 0 5px;
+}
+
+#available-devices-table-heading {
+  th a {
+    color: #fff;
+  }
 }
