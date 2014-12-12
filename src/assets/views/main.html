@@ -98,10 +98,10 @@
 
           <table spellcheck="false">
             <tr id="available-devices-table-heading">
-              <th>Label</th>
-              <th class="small-viewport-hidden">Model</th>
-              <th class="small-viewport-hidden">Platform</th>
-              <th class="small-viewport-hidden">Version</th>
+              <th><a href="" ng-click="predicate = 'label'; reverse=!reverse">Label</a></th>
+              <th class="small-viewport-hidden"><a href="" ng-click="predicate = 'model'; reverse=!reverse">Model</a></th>
+              <th class="small-viewport-hidden"><a href="" ng-click="predicate = 'platform'; reverse=!reverse">Platform</a></th>
+              <th class="small-viewport-hidden"><a href="" ng-click="predicate = 'version'; reverse=!reverse">Version</a></th>
               <th data-ng-hide="true" class="small-viewport-hidden">Battery</th>
               <th class="small-viewport-hidden" ng-hide="config.singleUser">User</th>
               <th class="small-viewport-hidden">Site</th>
@@ -111,7 +111,7 @@
               <th></th>
             </tr>
             <tbody id="devices-list" ng-if="deviceList.length > 0">
-              <tr ng-repeat="device in deviceList" data-ng-class="{'is-running': device.userId}">
+              <tr ng-repeat="device in deviceList | orderBy:predicate:reverse" data-ng-class="{'is-running': device.userId}">
                 <td>{{ device.label }}</td>
                 <td class="small-viewport-hidden editable">
                   <input blurevent type="text" placeholder="model" data-ng-model="device.model" />

@@ -8,10 +8,14 @@ angular.module('DeviceWall')
 
 
       $log.debug('loading main controller');
-      $scope.indicatorWaiting = {show: true};
+      $scope.indicatorWaiting = {show: false};
       $scope.config = appConfig;
       $scope.deviceList = DeviceList.toArray();
       $scope.serverStatus = 'stopped';
+
+      // Default device sort order
+      $scope.predicate = 'label';
+      $scope.reverse = false;
 
       // TODO move these somewhere
       $scope.userAgent = {selected: {}};
