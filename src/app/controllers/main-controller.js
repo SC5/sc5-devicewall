@@ -73,17 +73,26 @@ angular.module('DeviceWall')
 
 
       $scope.submitUrl = function() {
-        if ($scope.url.selectedValue) {
-          // If user has selected an existing url from the autocomplete array, use that value
+        if (
+          _.has($scope.url, "selectedValue") &&
+          _.has($scope.url.selectedValue, "originalObject") &&
+          _.has($scope.url.selectedValue.originalObject, "url")
+        ) {
           $scope.url.value = $scope.url.selectedValue.originalObject.url;
-        } else {
-          // Add new url to visitedUrls array and to local storage
-          $scope.url.visitedUrls.push({url: $scope.url.value});
-          $window.localStorage.setItem('visitedUrls', JSON.stringify($scope.url.visitedUrls));
+        } else if (_.has($scope.url.selectedValue, "originalObject")) {
+          $scope.url.value = $scope.url.selectedValue.originalObject;
         }
 
+        // Add new url to visitedUrls array and to local storage
+        $scope.url.visitedUrls.push({url: $scope.url.value});
+        $scope.url.visitedUrls = _.unique($scope.url.visitedUrls, function(obj) {
+          return obj.url;
+        });
+        $window.localStorage.setItem('visitedUrls', JSON.stringify($scope.url.visitedUrls));
+
         $log.debug('Submit url ', $scope.url.value);
-        if ($scope.url.value.length <= 4) {
+
+        if (!$scope.url.value || $scope.url.value.length <= 4) {
           $scope.tooltipError = {
             show: true,
             content: 'Invalid url'
