@@ -4,7 +4,6 @@ var utils = require('../utils');
 var socket = require('../socket');
 
 describe('Control panel', function() {
-  var ptor = protractor.getInstance();
   var testUrl = config.protocol + '://' + config.host + ':' + config.port + '/test';
   var devicesUrl = config.protocol + '://' + config.host + ':' + config.port + '/devices';
   var resetUrl = config.protocol + '://' + config.host + ':' + config.port + '/test/reset';

@@ -2,7 +2,6 @@ var expect = require('../expect');
 var config = require('../../../server/config.js');
 var utils = require('../utils');
 var socket = require('../socket');
-
 describe('Device', function() {
   var label = 'testdevice';
   var user = {
@@ -13,7 +12,6 @@ describe('Device', function() {
   var clientReturnUrl = '/client';
   var testUrl = config.protocol + '://' + config.host + ':' + config.port + '/test';
   var resetUrl = config.protocol + '://' + config.host + ':' + config.port + '/test/reset';
-  var ptor = protractor.getInstance();
 
   // On CI the window size might be too small, so tests are trying to click out of bounds
   browser.driver.manage().window().setSize(1280, 1024);
@@ -62,14 +60,14 @@ describe('Device', function() {
     browser.executeScript('localStorage.setItem("label", "' + label + '");');
     browser.refresh();
     element(by.css('#connection .control-panel')).click();
-    expect(ptor.getCurrentUrl()).to.eventually.contain('/devices');
+    expect(browser.getCurrentUrl()).to.eventually.contain('/devices');
   });
 
   it('should navigate back to label selection if device button clicked', function() {
     browser.executeScript('localStorage.setItem("label", "' + label + '");');
     browser.refresh();
     element(by.css('#connection .settings')).click();
-    expect(ptor.getCurrentUrl()).to.eventually.contain('/client');
+    expect(browser.getCurrentUrl()).to.eventually.contain('/client');
     expect(utils.hasClass(element(by.id('label')), 'ng-hide')).to.eventually.equal(false);
     expect(utils.hasClass(element(by.id('connection')), 'ng-hide')).to.eventually.equal(true);
   });
@@ -83,7 +81,7 @@ describe('Device', function() {
           return url !== clientUrl;
       });
     }).then(function() {
-      expect(ptor.getCurrentUrl()).to.eventually.contain('/test');
+      expect(browser.getCurrentUrl()).to.eventually.contain('/test');
       expect(element(by.id('test')).isPresent()).to.eventually.equal(true);
       browser.driver.wait(function() {
         return browser.driver.isElementPresent(by.xpath("//div[@id='test']"));
@@ -94,7 +92,7 @@ describe('Device', function() {
             return url.indexOf(clientReturnUrl) > -1;
           });
         }).then(function() {
-          expect(ptor.getCurrentUrl()).to.eventually.contain(clientReturnUrl);
+          expect(browser.getCurrentUrl()).to.eventually.contain(clientReturnUrl);
         });
       });
     });

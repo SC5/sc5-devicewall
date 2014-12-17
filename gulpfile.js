@@ -264,6 +264,7 @@ gulp.task('test:e2e', ['webdriver_manager_update'], function() {
   gulp.src(['tests/e2e/**/*.js'], { read: false })
     .pipe($.protractor.protractor(protractorConf)).on('error', function() {
       server.kill();
+      throw new Error('Selenium e2e tests failed.');
     }).on('end', function() {
       server.kill();
     });
