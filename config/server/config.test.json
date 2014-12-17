@@ -1,17 +1,15 @@
 {
   "sessionKey": "devicewall12345",
-  "deviceWallAppURL": "https://localhost:8081/client",
+  "deviceWallAppURL": "http://localhost:8081/client",
   "clientIdleReturnSeconds": 300,
   "maxSockets": 100,
   "sslKey": "./node_modules/browser-sync/lib/server/certs/server.key",
   "sslCert": "./node_modules/browser-sync/lib/server/certs/server.crt",
-  "proxyHost": "192.168.59.3",
+  "proxyHost": "localhost",
   "devicesJson": "./tests/data/devices.json",
-  "instancesJson": "./tests/data/instances.json",
-  "host": "192.168.59.3",
+  "host": "localhost",
   "port": 8081,
-  "testServerPort": 8082,
   "maxRedirects": 10,
-  "protocol": "https",
+  "protocol": "http",
   "maxListeners": 100
 }

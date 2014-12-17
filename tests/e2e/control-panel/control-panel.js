@@ -1,5 +1,5 @@
 var expect = require('../expect');
-var config = require('../../../config.test.json');
+var config = require('../../../server/config.js');
 var utils = require('../utils');
 var socket = require('../socket');
 

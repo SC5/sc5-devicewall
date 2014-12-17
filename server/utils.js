@@ -1,7 +1,7 @@
 var url   = require('url');
 var http  = require('http');
 var https = require('https');
-var maxRedirects = require('./../config.json').maxRedirects;
+var maxRedirects = require('./config.js').maxRedirects;
 
 var redirectionCodes = [301, 302, 303, 304, 305, 307];
 

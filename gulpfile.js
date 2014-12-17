@@ -300,7 +300,7 @@ gulp.task('test:e2e:ci', function() {
 
 
 
-
+gulp.task('test', ['test:e2e']);
 gulp.task('default', ['integrate']);
 gulp.task('build', ['clean'], function() {
   gulp.start('integrate');
