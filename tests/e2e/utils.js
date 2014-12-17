@@ -1,4 +1,4 @@
-var config = require("../../config.test.json");
+var config = require('../../server/config.js');
 var fs = require("fs");
 var path = require("path");
 var socket = require("./socket");

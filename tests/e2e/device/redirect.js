@@ -1,5 +1,5 @@
 var expect = require('../expect');
-var config = require('../../../config.test.json');
+var config = require('../../../server/config.js');
 var utils = require('../utils');
 var socket = require('../socket');
 
@@ -16,7 +16,6 @@ describe('Device', function() {
   //var anotherTestUrl = config.protocol + '://' + config.host + ':' + config.testServerPort + '/test';
   var anotherTestUrl = testUrl;
   var resetUrl = config.protocol + '://' + config.host + ':' + config.port + '/test/reset';
-  var ptor = protractor.getInstance();
 
   // On CI the window size might be too small, so tests are trying to click out of bounds
   browser.driver.manage().window().setSize(1280, 1024);
@@ -83,7 +82,7 @@ describe('Device', function() {
           return url.indexOf(clientReturnUrl) > -1;
         });
       }).then(function() {
-        expect(ptor.getCurrentUrl()).to.eventually.contain(clientReturnUrl);
+        expect(browser.getCurrentUrl()).to.eventually.contain(clientReturnUrl);
       });
     });
   });
@@ -97,14 +96,14 @@ describe('Device', function() {
         return url !== clientUrl;
       });
     }).then(function() {
-      ptor.sleep(5000);
+      browser.sleep(5000);
       socket.stopAll().then(function(){
         browser.driver.wait(function() {
           return browser.driver.getCurrentUrl().then(function (url) {
             return url.indexOf(clientReturnUrl) > -1;
           });
         }).then(function() {
-          expect(ptor.getCurrentUrl()).to.eventually.contain(clientReturnUrl);
+          expect(browser.getCurrentUrl()).to.eventually.contain(clientReturnUrl);
         });
       });
     });

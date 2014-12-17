@@ -1,4 +1,4 @@
-var config = require('../../config.test.json');
+var config = require('../config.js');
 var testHost = config.protocol + '://' + config.host + ':' + config.port;
 var io = require('socket.io-client');
 
