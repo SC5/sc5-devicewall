@@ -34,8 +34,6 @@ var config = {
 // Package management
 /* Install & update Bower dependencies */
 gulp.task('install', ['config', 'bower'], function() {
-  // Downloads the Selenium webdriver
-  $.protractor.webdriver_update(function() {});
   gulp.start('integrate');
 });
 
