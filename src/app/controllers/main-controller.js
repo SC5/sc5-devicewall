@@ -47,6 +47,7 @@ angular.module('DeviceWall')
       }
 
       $scope.url = {
+        selectedValue: {},
         value: '',
         visitedUrls: $window.localStorage.getItem('visitedUrls') ? JSON.parse($window.localStorage.getItem('visitedUrls')) : [],
         click: function() {
