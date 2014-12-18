@@ -28,9 +28,8 @@ module.exports = {
         'User-Agent': proxyOptions.userAgentHeader
       };
     }
-
+    var redirected = false;
     var req = protocol.get(options,  function (res) {
-      var redirected = false;
       if(that._isRedirectionCode(res.statusCode)) {
         if (that._isMaxRedirectionsReached()) {
           console.error('Max amount of redirects reached: ' + maxRedirects);
@@ -47,24 +46,25 @@ module.exports = {
       res.on("data", function (data) {
         chunks.push(data);
       });
-      res.on("end", function() {
+      res.once("end", function() {
         if (redirected === false) {
           cb(null, targetUrl);
         }
       });
-    }).on("error", function (err) {
+    }).once("error", function (err) {
       if (err.code === "ENOTFOUND" || err.code === "ECONNREFUSED") {
         cb("Unreachable");
       }
-    }).on("close", function () {
-      if (!chunks.length) {
+    }).once("close", function () {
+      if (!redirected && !chunks.length) {
         cb("Unreachable");
       }
     });
 
-    req.on("socket", function (socket) {
+    req.once("socket", function (socket) {
       socket.setTimeout(5000);
       socket.on("timeout", function() {
+        console.log("timed out");
         req.abort();
       });
     });
