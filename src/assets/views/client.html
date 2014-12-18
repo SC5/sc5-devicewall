@@ -1,7 +1,7 @@
 <a class="home icon-layout" href="/"></a>
 <section id="connection" ng-show="view.connection">
-    <h3>Ready for testing</h3>
-	<div ng-click="showSettings()" class="icon-button settings icon-mobile"></div>
+  <h3 data-ng-bind="statusMessage"></h3>
+  <div ng-click="showSettings()" class="icon-button settings icon-mobile"></div>
   <div ng-click="showControlPanel()" class="icon-button control-panel icon-gauge"></div>
 </section>
 <section id="label" ng-show="view.label">

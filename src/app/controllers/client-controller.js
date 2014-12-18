@@ -1,10 +1,12 @@
 /*jshint -W072 */
 angular.module('DeviceWall')
-  .controller('ClientController', function($rootScope, $scope, $timeout, socketConnect, $window, appConfig, Util, $log) {
+  .controller('ClientController',
+  function($rootScope, $scope, $timeout, socketConnect, $window, appConfig, Util, $log) {
     var screensaverTimeoutPromise;
     var screensaverTimeoutSeconds = appConfig.client.screenSaverTimeoutSeconds || 60;
     var socket = socketConnect.connect('/devicewallapp');
     // Scope variables
+    $scope.statusMessage = "Initializing connection";
     $scope.label = $window.localStorage.getItem('label') || '';
     $scope.oldLabel = $scope.label;
     $scope.model = '';
@@ -30,6 +32,14 @@ angular.module('DeviceWall')
         '/devices';
       $window.location.href = url;
     };
+
+    socket.on('connect', function() {
+      $scope.statusMessage = "Ready for testing";
+    });
+
+    socket.on('disconnect', function() {
+      $scope.statusMessage = "Not connected";
+    });
 
     socket.on('start', function(data) {
       var id = socket.io().engine.id;
