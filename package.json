@@ -64,12 +64,5 @@
     "build": "node_modules/gulp/bin/gulp.js",
     "test": "node_modules/gulp/bin/gulp.js test",
     "start": "node server/server.js"
-  },
-  "config": {
-    "server": {
-      "host": "devicewall.sc5.io",
-      "maxSockets": 100,
-      "port": 8080
-    }
   }
 }
