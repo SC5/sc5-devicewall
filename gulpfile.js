@@ -70,6 +70,7 @@ gulp.task('config', function() {
     data = JSON.parse(fs.readFileSync(configLocalServer + '/config.test.local.json'));
     serverTestConfig = extend(true, serverTestConfig, data);
   }
+  serverTestConfig = extend(true, serverConfig, serverTestConfig);
   fs.writeFileSync('./config.test.json', JSON.stringify(serverTestConfig, null, 2));
 
   // Control panel app config
