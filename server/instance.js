@@ -1,12 +1,14 @@
 // Instance class
 var _ = require('lodash'),
   fork = require('child_process').fork,
+  events = require('events'),
   Q = require('q');
 
 var STATUS_STARTING = 'starting';
 var STATUS_RUNNING = 'running';
 var STATUS_STOPPING = 'stopping';
 var STATUS_STOPPED = 'stopped';
+
 
 var Instance = function (data, options) {
   this.devices = options.devices;
@@ -16,7 +18,13 @@ var Instance = function (data, options) {
     status: STATUS_STOPPED,
     updated: +new Date()
   });
+};
 
+// Event emitters
+Instance.prototype.__proto__ = events.EventEmitter.prototype;
+
+Instance.prototype.externalUrl = function(url) {
+  this.emit('click:externalurl', url);
 };
 
 Instance.prototype.start = function(data) {
@@ -216,6 +224,12 @@ Instance.prototype._startBrowserSyncProcess = function(data) {
         if (device) {
           device.set('browsersync', message.browsersync);
         }
+        break;
+      case 'browserSyncExternalLink':
+        that.externalUrl({
+          href: message.href,
+          properties: that.properties
+        });
         break;
     }
   });

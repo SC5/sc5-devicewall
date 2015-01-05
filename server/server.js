@@ -6,7 +6,8 @@ var
   https = require('https'),
   http = require('http'),
   config = require('./config.js'),
-  fs = require('fs');
+  fs = require('fs')
+  socket = require('./socket.js');
 
 if (process.env.NODE_ENV === "test") {
   if (fs.existsSync(config.devicesJson)) {
@@ -57,6 +58,6 @@ server.listen(config.port, function () {
 });
 
 // Socket IO
-require('./socket.js')(server, {
+socket.init(server, {
   config: config
 });
