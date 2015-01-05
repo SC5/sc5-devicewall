@@ -11,7 +11,8 @@ var STATUS_STOPPED = 'stopped';
 var Instance = function (data, options) {
   this.devices = options.devices;
   this.config = options.config;
-  this.recalled = [];
+  this.returned = [];
+  this.stopping = false;
   this.properties = _.defaults(data, {
     status: STATUS_STOPPED,
     updated: +new Date()
@@ -49,49 +50,52 @@ Instance.prototype.clearDevice = function(device) {
 
 Instance.prototype.callDeviceHome = function(device) {
   var deferred = Q.defer();
-  var that = this;
   if (this.isConnected()) {
-    this.childProcess.send({
-      type: 'returnDeviceHome',
-      device: device
-    });
-
     var timer = 5000;
     var timeout = setTimeout(function() {
       deferred.reject();
     }, timer);
 
-    // Wait for message from childProcess before resolving deferred
-    this.childProcess.once('message', function(message) {
-      if (message.type === 'browserSyncReturnedDeviceHome' &&
-        _.intersection(message.device.browsersync, device.get('browsersync')).length > 0) {
-        clearTimeout(timeout);
-        that.recalled.push(device);
-        that.shouldInstanceStop();
-        deferred.resolve();
-      }
+    this.returned.push({
+      device: device,
+      deferred: deferred,
+      timeout: timeout,
+      done: false
     });
+
+    this.childProcess.send({
+      type: 'returnDeviceHome',
+      device: device
+    });
+
   } else {
     console.error('Instance::No child process or child process is not connected.');
-    this.shouldInstanceStop({ force: true });
+    this.stop();
     deferred.reject();
   }
   return deferred.promise;
 };
 
-Instance.prototype.shouldInstanceStop = function(options) {
+Instance.prototype.shouldInstanceStop = function() {
+  if (this.stopping === true) {
+    console.info('Instance::Already stopping.');
+    return;
+  }
   var that = this;
-  options = options || {};
   var original = this.getDevices().length;
-  var recalled = this.recalled.length;
+  var recalled = this.returned.length;
 
-  if (recalled >= original || options.force === true) {
-    setTimeout(function() {
-      console.log('Instance::Stopping Empty Instance.');
-      that.stop().then(function() {
-        console.log('Instance::Empty Instance Stopped.');
-      });
-    }, 5000);
+  if (recalled >= original) {
+    this.stopping = true;
+    console.log('Instance::Stopping Empty Instance.');
+    this.stop()
+    .then(function() {
+      console.log('Instance::Empty Instance Stopped.');
+    })
+    .fail(function() {
+      console.error('Instance::Failed to stop instance, force stopping.');
+      that.forceStop();
+    });
   }
 };
 
@@ -215,6 +219,22 @@ Instance.prototype._startBrowserSyncProcess = function(data) {
         });
         if (device) {
           device.set('browsersync', message.browsersync);
+        }
+        break;
+      case 'browserSyncReturnedDeviceHome':
+        if (message.device && message.device.label) {
+          var msgLabel = message.device.label;
+          _.each(that.returned, function(obj) {
+            var objLabel = obj.device.properties.label;
+            if (obj.done === false && objLabel.indexOf(msgLabel) > -1) {
+              clearTimeout(obj.timeout);
+              obj.deferred.resolve();
+              obj.done = true;
+            }
+          });
+          that.shouldInstanceStop();
+        } else {
+          console.error('Instance::No device object in ReturnedDeviceHome message.');
         }
         break;
     }
