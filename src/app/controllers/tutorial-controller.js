@@ -1,4 +1,4 @@
-angular.module('DeviceWall').controller('TutorialController', function($scope, $log, $sce) {
+angular.module('DeviceWall').controller('TutorialController', function($scope, $log, $sce, appConfig) {
 
   $scope.hideMain = false;
   $scope.currentTutorial = '';
@@ -8,12 +8,12 @@ angular.module('DeviceWall').controller('TutorialController', function($scope, $
       {
         image: 'test/1.png',
         text: '<p>Connect your device to</p>' +
-              '<p><span>SC5DeviceWall</span> wifi</p>' +
-              '<p>Password: <span>SC5Rocks</span></p>'
+              '<p><span>' + appConfig.tutorial.wifi.SSID + '</span> wifi</p>' +
+              '<p>Password: <span>' + appConfig.tutorial.wifi.password + '</span></p>'
       },
       {
         image: 'test/2.png',
-        text: '<p>Navigate to <span>https://devicewall.sc5.io</span></p>' +
+        text: '<p>Navigate to <span>' + appConfig.tutorial.url + '</span></p>' +
               '<p>and select the <span>Control panel</span> icon</p>'
       },
       {
@@ -38,12 +38,12 @@ angular.module('DeviceWall').controller('TutorialController', function($scope, $
       {
         image: 'device/1.png',
         text: '<p>Connect your device to</p>' +
-              '<p><span>SC5DeviceWall</span> wifi</p>' +
-              '<p>Password: <span>SC5Rocks</span></p>'
+              '<p><span>' + appConfig.tutorial.wifi.SSID + '</span> wifi</p>' +
+              '<p>Password: <span>' + appConfig.tutorial.wifi.password + '</span></p>'
       },
       {
         image: 'device/2.png',
-        text: '<p>Navigate to <span>https://devicewall.sc5.io</span></p>' +
+        text: '<p>Navigate to <span>' + appConfig.tutorial.url + '</span></p>' +
               '<p>and tap <span>Add device</span> icon</p>'
       },
       {
