@@ -79,6 +79,8 @@ h1 {
 h2 {
   font-size: 1.7rem;
   font-weight: normal;
+  margin: 0;
+  padding: 0;
 }
 
 table {
@@ -293,4 +295,10 @@ input[type=checkbox]:after,
     visibility: visible;
   }
 
+  .device-info {
+    position: absolute;
+    bottom: 10px;
+    width: 100%;
+    text-align: center;
+  }
 }

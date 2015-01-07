@@ -1,5 +1,6 @@
 <a class="home icon-layout" href="/"></a>
 <section id="connection" ng-show="view.connection">
+  <h2>Label: {{ label }}</h2>
   <h3 data-ng-bind="statusMessage"></h3>
   <div ng-click="showSettings()" class="icon-button settings icon-mobile"></div>
   <div ng-click="showControlPanel()" class="icon-button control-panel icon-gauge"></div>
@@ -15,6 +16,7 @@
   </p>
 </section>
 <div id="screensaver" class="{{view.screensaver ? 'visible' : 'not-visible'}}">
-<img src="assets/images/sc5logo_w.png" class="saver-logo">
-<img src="assets/images/screensaver_slogan.png" class="slogan">
+  <img src="assets/images/sc5logo_w.png" class="saver-logo">
+  <img src="assets/images/screensaver_slogan.png" class="slogan">
+  <div class="device-info"><h2>Label: {{ label }}</h2></div>
 </div>
