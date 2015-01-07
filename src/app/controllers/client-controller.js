@@ -1,7 +1,7 @@
 /*jshint -W072 */
 angular.module('DeviceWall')
   .controller('ClientController',
-  function($rootScope, $scope, $timeout, socketConnect, $window, appConfig, Util, $log) {
+  function($rootScope, $scope, $location, $timeout, socketConnect, $window, appConfig, Util, $log) {
     var screensaverTimeoutPromise;
     var screensaverTimeoutSeconds = appConfig.client.screenSaverTimeoutSeconds || 60;
     var socket = socketConnect.connect('/devicewallapp');
@@ -27,10 +27,7 @@ angular.module('DeviceWall')
     };
 
     $scope.showControlPanel = function() {
-      var portString = $window.location.port.length > 0 ? ':' + $window.location.port : '';
-      var url = $window.location.protocol + '//' + $window.location.hostname + portString +
-        '/devices';
-      $window.location.href = url;
+      $location.path('/devices');
     };
 
     socket.on('connect', function() {
