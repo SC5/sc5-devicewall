@@ -46,9 +46,10 @@
         </div>
       </div>
 
-      <section data-ng-show="config.connectionSetup.enabled">
+      <section data-ng-show="config.connectionSetup.enabled" id="connection-setup">
         <div class="section-wrapper accordion collapsed">
         <h2 toggle-accordion>Connection setup</h2>
+        <div class="selected-options" id="connection-setup-selected-options">{{ userAgent.selected.value ? 'User agent: ' + userAgent.selected.value : ''}}</div>
         <div class="connection-setup accordion-content">
           <div data-ng-hide="true" class="checkbox">
             <label>

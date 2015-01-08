@@ -78,7 +78,7 @@ describe('Control panel', function() {
     expect(element(by.id('go-button')).isEnabled()).to.eventually.equal(true);
   });
 
-  it('should set url value to http://www when clicked', function() {
+  it('should set url value to http:// when clicked', function() {
     element(by.id('url_value')).click();
     expect(element(by.id('url_value')).getAttribute('value')).to.eventually.equal('http://');
   });
@@ -206,5 +206,14 @@ describe('Control panel', function() {
     expect(element(by.css('#devices-list input[data-ng-model="device.model"]')).getAttribute('value')).to.eventually.equal('iPhone');
     expect(element(by.css('#devices-list input[data-ng-model="device.platform"]')).getAttribute('value')).to.eventually.equal('iOS');
     expect(element(by.css('#devices-list input[data-ng-model="device.version"]')).getAttribute('value')).to.eventually.equal('6.1');
+  });
+
+  it('should show selected user agent under heading when accordion collapsed', function() {
+    element(by.css('#connection-setup h2')).click();
+    element(by.cssContainingText('option', 'desktop (OS X)')).click();
+    expect(element(by.css("#connection-setup-selected-options")).getText()).to.eventually.equal('');
+    element(by.css('#connection-setup h2')).click();
+    expect(element(by.css("#connection-setup .accordion-content")).isDisplayed()).to.eventually.equal(false);
+    expect(element(by.css("#connection-setup-selected-options")).getText()).to.eventually.contain("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062.124 Safari/537.36");
   });
 });
