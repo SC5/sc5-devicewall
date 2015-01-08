@@ -77,12 +77,27 @@ body {
       background-color: #808080;
     }
 
+    .selected-options {
+      display: none;
+    }
+
     &.collapsed {
       overflow: hidden;
-      max-height: 30px;
+
+      h2 {
+        margin-bottom: 0;
+      }
 
       h2:before {
         content: '\e825';
+      }
+
+      .accordion-content {
+        display: none;
+      }
+
+      .selected-options {
+        display: block;
       }
     }
   }
