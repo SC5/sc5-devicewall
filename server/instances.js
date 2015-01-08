@@ -179,7 +179,7 @@ var Instances = {
         promises = [];
     console.log("instances.stopAll");
     _.each(this.instances, function(instance) {
-      promises.push(instance.stop());
+      promises.push(instance.stop({ all: true }));
     });
     Q.all(promises).fin(function() {
       that.instances = [];

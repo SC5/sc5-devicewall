@@ -99,11 +99,12 @@ Instance.prototype.shouldInstanceStop = function() {
   }
 };
 
-Instance.prototype.stop = function() {
+Instance.prototype.stop = function(options) {
   'use strict';
   console.info("instance.stop current status: ", this.get('status'));
   var that = this;
   var deferred = Q.defer();
+  options = options || {};
   if (this.canBeStopped() === false) {
     deferred.reject('Instance.stop(): Instance is not in running state');
     return deferred.promise;
@@ -112,9 +113,11 @@ Instance.prototype.stop = function() {
   that.set('status', STATUS_STOPPING);
   console.log("instance stopping");
 
-  _.each(that.getDevices(), function(device) {
-    that.clearDevice(device);
-  });
+  if (options.all) {
+    _.each(that.getDevices(), function(device) {
+      that.clearDevice(device);
+    });
+  }
 
   if (that.isConnected()) {
     console.log("instance.stop sending browserSyncExit");
@@ -284,11 +287,11 @@ Instance.prototype.toJSON = function() {
 
 Instance.prototype.canBeStarted = function() {
   return this.get('status') === STATUS_STOPPED;
-}
+};
 
 Instance.prototype.canBeStopped = function() {
   return this.get('status') === STATUS_RUNNING;
-}
+};
 
 Instance.prototype.markDevices = function(data, status) {
   _.each(this.getDevices(), function(device) {
@@ -301,6 +304,6 @@ Instance.prototype.markDevices = function(data, status) {
       });
     }
   });
-}
+};
 
 module.exports = Instance;
