@@ -15,8 +15,9 @@
     <button ng-click="updateLabel()">Ok</button>
   </p>
 </section>
-<div id="screensaver" class="{{view.screensaver ? 'visible' : 'not-visible'}}">
+<div id="screensaver" class="{{view.screensaver ? 'visible' : 'not-visible'}} {{view.screensaverClass}}">
   <img src="assets/images/sc5logo_w.png" class="saver-logo">
   <img src="assets/images/screensaver_slogan.png" class="slogan">
   <div class="device-info"><h2>Label: {{ label }}</h2></div>
+  <div class="mask"></div>
 </div>
