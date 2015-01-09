@@ -111,7 +111,7 @@ describe('Control panel', function() {
     });
   });
 
-  it('should hide Stop buttons if Stop all button is clicked', function() {
+  it('should hide Stop buttons and enable Go button after Stop all finishes', function() {
     utils.addSingleTestDevice("testdevice");
     browser.driver.wait(function() {
       return browser.driver.isElementPresent(by.xpath("//td[text()='testdevice']"));
@@ -129,6 +129,7 @@ describe('Control panel', function() {
       return browser.driver.isElementPresent(by.xpath("//div[@id='server-status' and text()='stopped']"));
     });
     expect(element(by.id('stop-all-button')).isDisplayed()).to.eventually.equal(false);
+    expect(element(by.id('go-button')).isEnabled()).to.eventually.equal(true);
   });
 
   it('should select all if Select all clicked', function() {
