@@ -31,6 +31,10 @@ angular.module('DeviceWall')
       $location.path('/devices');
     };
 
+    $scope.showTutorial = function() {
+      $location.path('/tutorial');
+    };
+
     socket.on('connect', function() {
       $scope.statusMessage = "Ready for testing";
     });
