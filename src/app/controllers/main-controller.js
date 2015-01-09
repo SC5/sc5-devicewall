@@ -61,9 +61,9 @@ angular.module('DeviceWall')
         }
       };
 
-      $scope.btnGo =              {show: true};
-      $scope.btnStopAllTesting =  {show: false};
-      $scope.btnStopTesting =     {show: false};
+      $scope.btnGo =              {show: true, disabled: false};
+      $scope.btnStopAllTesting =  {show: false, disabled: false};
+      $scope.btnStopTesting =     {show: false, disabled: false};
 
       $scope.tooltipError = {
         show: false,
@@ -144,6 +144,7 @@ angular.module('DeviceWall')
 
       $scope.stopAllTesting = function() {
         $log.debug('stop All testing');
+        $scope.setButtonsDisabled(true);
         socket.emit('stopall');
       };
 
@@ -233,8 +234,15 @@ angular.module('DeviceWall')
         $scope.setButtonsStatus(true);
       });
 
-      // simple helper for buttons
+      // simple helpers for buttons
+      $scope.setButtonsDisabled = function(disabled) {
+        $scope.btnStopAllTesting.disabled = disabled;
+        $scope.btnStopTesting.disabled = disabled;
+        $scope.btnGo.disabled = disabled;
+      };
+
       $scope.setButtonsStatus = function(status) {
+        $scope.setButtonsDisabled(false);
         $scope.btnStopAllTesting.show = !status;
         $scope.btnStopTesting.show = !status;
         $scope.btnGo.show = true;
@@ -249,6 +257,9 @@ angular.module('DeviceWall')
         });
         if (disableGoButton && scope.openUrl) {
           disableGoButton = false;
+        }
+        if (scope.btnStopAllTesting.disabled) {
+          disableGoButton = true;
         }
         $scope.btnGo.disabled = disableGoButton;
       };

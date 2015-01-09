@@ -41,8 +41,8 @@
             class="large"
             id="go-button"
           >Go</button>
-          <button type="button" data-ng-show="btnStopTesting.show" class="large ng-hide" data-ng-click="stopTesting()" style="display:none" id="stop-button">Stop</button>
-          <button type="button" data-ng-show="btnStopAllTesting.show" class="large" data-ng-click="stopAllTesting()" id="stop-all-button">Stop all</button>
+          <button type="button" data-ng-show="btnStopTesting.show" data-ng-disabled="btnStopTesting.disabled" class="large ng-hide" data-ng-click="stopTesting()" style="display:none" id="stop-button">Stop</button>
+          <button type="button" data-ng-show="btnStopAllTesting.show" data-ng-disabled="btnStopAllTesting.disabled" class="large" data-ng-click="stopAllTesting()" id="stop-all-button">Stop all</button>
         </div>
       </div>
 
