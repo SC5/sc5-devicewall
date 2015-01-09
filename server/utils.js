@@ -100,5 +100,15 @@ module.exports = {
     urlObj.host = undefined;
 
     return url.format(urlObj);
+  },
+  guessURI: function(uri) {
+    if (/:\//g.test(uri) === true) {
+      if (/^(http|https):\/\//i.test(uri) === false) {
+        return false;
+      }
+    } else {
+      uri = 'http://' + uri;
+    }
+    return uri;
   }
 };

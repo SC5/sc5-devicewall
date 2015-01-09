@@ -173,6 +173,20 @@ describe('Control panel', function() {
     //expect(element(by.id('stop-all-button')).isDisplayed()).to.eventually.equal(false);
   });
 
+  it('should display tooltip error if website URL is invalid', function() {
+    utils.addSingleTestDevice("testdevice");
+    browser.driver.wait(function() {
+      return browser.driver.isElementPresent(by.xpath("//td[text()='testdevice']"));
+    });
+    element(by.id('url_value')).click();
+    utils.clear(element(by.id('url_value')));
+    element(by.id('url_value')).sendKeys('http:/invalidurl.com');
+    element(by.id("go-button")).click();
+    browser.driver.wait(function() {
+      return browser.driver.isElementPresent(by.xpath("//span[@id='tooltip-error' and text()='Invalid URL']"));
+    });
+  });
+
   it('should remove device when trash icon clicked', function() {
     utils.addSingleTestDevice("testdevice");
     browser.driver.wait(function() {

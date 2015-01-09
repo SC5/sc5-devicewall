@@ -1,5 +1,6 @@
 var _ = require('lodash');
 var socketio = require('socket.io');
+var utils = require('./utils.js');
 
 module.exports = function (app, options) {
   'use strict';
@@ -123,6 +124,16 @@ module.exports = function (app, options) {
 
     function start(data) {
       console.log("Control <<< start", data);
+      var uri = utils.guessURI(data.url);
+      if (uri === false) {
+        console.log("Invalid URL: " + data.url);
+        var emitData = {user: data.user, reason: "Invalid URL"};
+        console.log('Control >> server-stop', emitData);
+        nsCtrl.emit('server-stop', emitData);
+        return;
+      }
+      data.url = uri;
+
       instances.start(data).then(
         function(startData) {
           var appData = _.clone(data);
