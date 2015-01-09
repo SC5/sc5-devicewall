@@ -283,11 +283,15 @@ input[type=checkbox]:after,
   }
 
   .slogan {
-    width: 100%;
+    width: 80%;
     position: absolute;
     top: 50%;
-    left: 0;
+    left: 10%;
     @include translateY(-50%);
+
+    &.slogan-link {
+      border: 2px solid #ffffff;
+    }
   }
 
   &.visible {
@@ -298,7 +302,70 @@ input[type=checkbox]:after,
   .device-info {
     position: absolute;
     bottom: 10px;
-    width: 100%;
+    left: 10px;
+    right: 10px;
     text-align: center;
+  }
+
+  &.left {
+    text-align: left;
+    background: #0072a3;
+
+    .slogan {
+      left: 0;
+
+      &.slogan-text {
+        display: block;
+      }
+
+      &.slogan-link {
+        display: none;
+      }
+    }
+
+    .device-info {
+      text-align: left;
+    }
+  }
+
+  &.right {
+    text-align: right;
+    background: #000000;
+
+    .slogan {
+      left: auto;
+      right: 0;
+
+      &.slogan-text {
+        display: block;
+      }
+
+      &.slogan-link {
+        display: none;
+      }
+    }
+
+    .device-info {
+      text-align: right;
+    }
+  }
+
+  &.center {
+    text-align: center;
+
+    .slogan {
+      &.slogan-text {
+        display: none;
+      }
+
+      &.slogan-link {
+        display: block;
+        cursor: pointer;
+      }
+    }
+
+    .device-info {
+      text-align: center;
+    }
   }
 }

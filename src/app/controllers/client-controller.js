@@ -16,9 +16,10 @@ angular.module('DeviceWall')
     $scope.online = '';
     $scope.batteryStatus = {level: '', isPlugged: ''};
     $scope.view = {
-      label:        $scope.label === '',
-      connection:   $scope.label !== '',
-      screensaver:  false
+      label: $scope.label === '',
+      connection: $scope.label !== '',
+      screensaver: false,
+      screensaverClass: "center"
     };
 
     $scope.showSettings = function() {
@@ -28,6 +29,10 @@ angular.module('DeviceWall')
 
     $scope.showControlPanel = function() {
       $location.path('/devices');
+    };
+
+    $scope.showTutorial = function() {
+      $location.path('/tutorial');
     };
 
     socket.on('connect', function() {
@@ -69,7 +74,18 @@ angular.module('DeviceWall')
     };
 
     function showScreensaver() {
+      var random = Math.random();
+      var previousClass = $scope.view.screensaverClass;
+      var allClasses = ["left", "center", "right"];
+      var classes = [];
+      for (var i = 0; i < allClasses.length; i++) {
+        if (previousClass !== allClasses[i]) {
+          classes.push(allClasses[i]);
+        }
+      }
+      $scope.view.screensaverClass = random <= 0.5 ? classes[0] : classes[1];
       $scope.view.screensaver = true;
+      screensaverTimeoutPromise = $timeout(showScreensaver, screensaverTimeoutSeconds*1000);
     }
 
     function hideScreensaver() {
