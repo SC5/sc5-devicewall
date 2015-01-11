@@ -83,6 +83,14 @@ process.on('message', function(message) {
           });
         }
       });
+      evt.on('click:externalurl', function(data) {
+        if (data.href) {
+          process.send({
+            type: 'browserSyncExternalUrl',
+            href: data.href
+          });
+        }
+      });
       evt.on('init', function(api) {
         console.log("browserSync process: initialized");
         process.send({type: 'browserSyncInit', browserSync: api.options.urls.external});

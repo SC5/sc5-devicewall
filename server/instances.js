@@ -11,6 +11,7 @@ var Instances = {
     this.instances = [];
     this.config = options.config;
     this.devices = options.devices;
+    this.emitter = options.emitter;
   },
   // if needle is array, return is array of matched objects
   find: function(needle) {
@@ -92,7 +93,11 @@ var Instances = {
       clone.devices = _.filter(clone.devices, function(device) {
         return usedLabels.indexOf(device.get('label')) > -1;
       });
-      var instance = new Instance(data, {config: that.config, devices: clone});
+      var instance = new Instance(data, {
+        config: that.config,
+        devices: clone,
+        emitter: that.emitter
+      });
       that.instances.push(instance);
 
       instance.start(data)

@@ -7,6 +7,7 @@ module.exports = function (app, options) {
   var
     io = socketio(app),
     config = options.config,
+    emitter = options.emitter,
     nsApp = io.of('/devicewallapp'),
     nsCtrl = io.of('/devicewall'),
     devices = require('./devices'),
@@ -122,47 +123,6 @@ module.exports = function (app, options) {
       socket.on('reset', resetAppData);
     }
 
-    function start(data) {
-      console.log("Control <<< start", data);
-      var uri = utils.guessURI(data.url);
-      if (uri === false) {
-        console.log("Invalid URL: " + data.url);
-        var emitData = {user: data.user, reason: "Invalid URL"};
-        console.log('Control >> server-stop', emitData);
-        nsCtrl.emit('server-stop', emitData);
-        return;
-      }
-      data.url = uri;
-
-      instances.start(data).then(
-        function(startData) {
-          var appData = _.clone(data);
-          appData.url = startData.startUrl;
-
-          console.log('Control >> socket "update"');
-          // Add site and proxy URIs to control panel 'update' event
-          var devicesClone = devices.toJSON();
-          _.each(devicesClone, function(device) {
-            if (data.labels.indexOf(device.label) > -1) {
-              device.site = data.url;
-              device.proxy = startData.startUrl;
-            }
-          });
-          nsCtrl.emit('update', devicesClone);
-
-          console.log('Control >> start"', data);
-          nsCtrl.emit('start', data);
-          console.log('Client >> start"', appData);
-          nsApp.emit('start', appData);
-        },
-        function(reason) {
-          var emitData = {user: data.user, reason: reason};
-          console.log('Control >> server-stop', emitData);
-          nsCtrl.emit('server-stop', emitData);
-        }
-      );
-    }
-
     function stop(data) {
       console.log("Control <<< stop", data);
       instances.stop(data.url).then(function() {
@@ -238,11 +198,58 @@ module.exports = function (app, options) {
     }
   });
 
+  function start(data) {
+    console.log("Control <<< start", data);
+    var uri = utils.guessURI(data.url);
+    if (uri === false) {
+      console.log("Invalid URL: " + data.url);
+      var emitData = {user: data.user, reason: "Invalid URL"};
+      console.log('Control >> server-stop', emitData);
+      nsCtrl.emit('server-stop', emitData);
+      return;
+    }
+    data.url = uri;
+
+    instances.start(data).then(
+      function(startData) {
+        var appData = _.clone(data);
+        appData.url = startData.startUrl;
+
+        console.log('Control >> socket "update"');
+        // Add site and proxy URIs to control panel 'update' event
+        var devicesClone = devices.toJSON();
+        _.each(devicesClone, function(device) {
+          if (data.labels.indexOf(device.label) > -1) {
+            device.site = data.url;
+            device.proxy = startData.startUrl;
+          }
+        });
+        nsCtrl.emit('update', devicesClone);
+
+        console.log('Control >> start"', data);
+        nsCtrl.emit('start', data);
+        console.log('Client >> start"', appData);
+        nsApp.emit('start', appData);
+      },
+      function(reason) {
+        var emitData = {user: data.user, reason: reason};
+        console.log('Control >> server-stop', emitData);
+        nsCtrl.emit('server-stop', emitData);
+      }
+    );
+  };
+
+  // Events
+  emitter.on('click:externalurl', function(data) {
+    start(data);
+  });
+
   devices.init({config: config});
   devices.read();
   instances.init({
     config: config,
-    devices: devices
+    devices: devices,
+    emitter: emitter
   });
   setInterval(function() {
     devices.write();
