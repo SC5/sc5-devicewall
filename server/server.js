@@ -5,6 +5,7 @@ var
   expressSession = require('express-session'),
   https = require('https'),
   http = require('http'),
+  EventEmitter = require('events').EventEmitter;
   config = require('./config.js'),
   fs = require('fs');
 
@@ -58,5 +59,6 @@ server.listen(config.port, function () {
 
 // Socket IO
 require('./socket.js')(server, {
-  config: config
+  config: config,
+  emitter: new EventEmitter()
 });

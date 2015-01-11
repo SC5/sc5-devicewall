@@ -11,13 +11,13 @@ var STATUS_STOPPED = 'stopped';
 var Instance = function (data, options) {
   this.devices = options.devices;
   this.config = options.config;
+  this.emitter = options.emitter;
   this.returned = [];
   this.stopping = false;
   this.properties = _.defaults(data, {
     status: STATUS_STOPPED,
     updated: +new Date()
   });
-
 };
 
 Instance.prototype.start = function(data) {
@@ -240,6 +240,16 @@ Instance.prototype._startBrowserSyncProcess = function(data) {
           console.error('Instance::No device object in ReturnedDeviceHome message.');
         }
         break;
+      case 'browserSyncExternalUrl':
+        if (message.href) {
+          that.emitter.emit('click:externalurl', {
+            url: message.href,
+            labels: that.getActiveDeviceLabels(),
+            user: that.properties.user,
+            userAgentHeader: that.properties.userAgentHeader
+          });
+        }
+        break;
     }
   });
 
@@ -251,6 +261,22 @@ Instance.prototype._startBrowserSyncProcess = function(data) {
 
 Instance.prototype.getDevices = function() {
   return this.devices.find(this.get('labels'));
+};
+
+Instance.prototype.getDeviceLabels = function() {
+  return _.map(this.getDevices(), function(device) {
+    return device.get('label');
+  });
+};
+
+Instance.prototype.getReturnedDeviceLabels = function() {
+  return _.map(this.returned, function(obj) {
+    return obj.device.get('label');
+  });
+};
+
+Instance.prototype.getActiveDeviceLabels = function() {
+  return _.difference(this.getDeviceLabels(), this.getReturnedDeviceLabels());
 };
 
 Instance.prototype.update = function(data) {
