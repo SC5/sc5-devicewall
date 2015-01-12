@@ -104,6 +104,10 @@ Connection setup represents control panel configuration tab which is used to giv
         "redirectToClientModeAutomatically": false # automatic redirect disabled from main page if device detected as client
       }
 
+#### screenSaverTimeoutSeconds
+Controls the time after screen saver appears. Screen saver is supposed to keep devices displays to not burn.
+
+    "connectionsSetup.client.screenSaverTimeoutSeconds": 300 # Screen saver will appear after 300 seconds idle
 
 ## Building
 
