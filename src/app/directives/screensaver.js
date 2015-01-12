@@ -3,6 +3,9 @@
     var screensaverTimeoutSeconds = appConfig.client.screenSaverTimeoutSeconds || 60;
     return {
       link: function($scope, element) {
+        if (appConfig.client.screenSaverTimeoutSeconds === 0) {
+          return;
+        }
         $log.debug("init screen saver directive");
         screensaverTimeoutPromise = $timeout(showScreensaver, screensaverTimeoutSeconds*1000);
         element.on('click', function() {

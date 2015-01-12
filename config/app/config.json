@@ -14,7 +14,7 @@
       }
     },
     "client": {
-      "screenSaverTimeoutSeconds": 600,
+      "screenSaverTimeoutSeconds": 0,
       "redirectToClientModeAutomatically": false
     },
     "tutorial": {
