@@ -1,12 +1,10 @@
-(function () {
-  'use strict';
-
   angular.module('DeviceWall').directive('screensaver', function($window, $timeout, $log, appConfig) {
     var screensaverTimeoutPromise;
     var screensaverTimeoutSeconds = appConfig.client.screenSaverTimeoutSeconds || 60;
     return {
       link: function($scope, element) {
         $log.debug("init screen saver directive");
+        screensaverTimeoutPromise = $timeout(showScreensaver, screensaverTimeoutSeconds*1000);
         element.on('click', function() {
           $scope.$apply(function() {
             resetScreensaverCounter();
@@ -46,5 +44,3 @@
       }
     };
   });
-
-})();
