@@ -73,42 +73,6 @@ angular.module('DeviceWall')
       }
     };
 
-    function showScreensaver() {
-      var random = Math.random();
-      var previousClass = $scope.view.screensaverClass;
-      var allClasses = ["left", "center", "right"];
-      var classes = [];
-      for (var i = 0; i < allClasses.length; i++) {
-        if (previousClass !== allClasses[i]) {
-          classes.push(allClasses[i]);
-        }
-      }
-      $scope.view.screensaverClass = random <= 0.5 ? classes[0] : classes[1];
-      $scope.view.screensaver = true;
-      screensaverTimeoutPromise = $timeout(showScreensaver, screensaverTimeoutSeconds*1000);
-    }
-
-    function hideScreensaver() {
-      $scope.view.screensaver = false;
-    }
-
-    function resetScreensaverCounter() {
-      $timeout.cancel(screensaverTimeoutPromise);
-      if ($scope.view.screensaver) {
-        hideScreensaver();
-      }
-      screensaverTimeoutPromise = $timeout(showScreensaver, screensaverTimeoutSeconds*1000);
-    }
-
-    $scope.$on('app-activity', function() {
-      resetScreensaverCounter();
-    });
-
-    resetScreensaverCounter();
-    if ($scope.label) {
-      socket.emit('update', {label: $scope.label});
-    }
-
     $scope.$on('$destroy', function() {
       socket.removeAllListeners();
     });
