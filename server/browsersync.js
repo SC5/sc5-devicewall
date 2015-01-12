@@ -63,23 +63,25 @@ process.on('message', function(message) {
       }
       evt.on('client:connected', function(client) {
         var referer = url.parse(client.referer);
-        var rooms = [];
+        var currentRoom = '';
         Object.keys(client.rooms).forEach(function(room) {
-          rooms.push(room);
+          if (room === client.id) {
+            currentRoom = room;
+          }
         });
         if (referer.query && referer.query.indexOf('devicewall=') > -1) {
           // First connection, save the devicewall websocket id
           var devicewall = referer.query.substring(referer.query.lastIndexOf('=') + 1);
           process.send({
             type: 'browserSyncSocketId',
-            browsersync: rooms,
+            browsersync: currentRoom,
             devicewall: devicewall
           });
         } else {
           // Clicking links on the UI, save the browsersync socket ids
           process.send({
             type: 'browserSyncSocketRoomsUpdate',
-            browsersync: rooms
+            browsersync: currentRoom
           });
         }
       });
