@@ -29,7 +29,7 @@ var Instances = {
   findInstanceByUrl: function(urlString) {
     'use strict';
     return _.find(this.instances, function(instance) {
-      return instance.get('url') === urlString;
+      return instance.get('url') === url.parse(urlString).href;
     });
   },
   removeInstance: function(urlString) {
@@ -62,19 +62,10 @@ var Instances = {
         console.log("url after checking all the redirections: ", resolvedUrl.href);
         data.url = resolvedUrl.href;
         if (instance && instance.isConnected()) {
-          var previousUrlObject = url.parse(instance.get('url'));
-          var nextUrlObject = resolvedUrl;
-          if (previousUrlObject.host === nextUrlObject.host) {
-            // same host, just send new location
-            instance.set('url', resolvedUrl.href);
-            instance.location(resolvedUrl.path);
-            deferred.resolve();
-          } else {
-            // stop before relaunch
-            that.stop(urlString).then(function() {
-              that.startInstance(data, deferred);
-            });
-          }
+          // stop before relaunch
+          that.stop(urlString).then(function() {
+            that.startInstance(data, deferred);
+          });
         } else {
           // make new instance
           that.startInstance(data, deferred);
@@ -166,7 +157,7 @@ var Instances = {
 
     if (instance) {
       console.log("Stopping instance", urlString);
-      instance.stop().then(function() {
+      instance.stop({ active: true }).then(function() {
         console.log("instance stopped:", urlString);
         that.removeInstance(urlString);
         deferred.resolve();
