@@ -6,7 +6,8 @@ var browserSync = require('browser-sync'),
     http = require('http'),
     https = require('https'),
     Q = require('q'),
-    path = require('path');
+    path = require('path'),
+    browserSyncTimeout;
 
 https.globalAgent.maxSockets = config.maxSockets || 5;
 http.globalAgent.maxSockets = config.maxSockets || 5;
@@ -27,7 +28,16 @@ function deferredEmit(socket, event, data, timeout) {
     deferred.resolve();
   });
   return deferred.promise;
-};
+}
+
+function resetTimeout() {
+  clearTimeout(browserSyncTimeout);
+  browserSyncTimeout = setTimeout(function() {
+    process.send({
+      type: 'browserSyncIdleTimeout'
+    });
+  }, config.clientIdleReturnSeconds*1000);
+}
 
 process.on('message', function(message) {
   'use strict';
@@ -93,9 +103,13 @@ process.on('message', function(message) {
           });
         }
       });
+      evt.on('resetTimeout', function() {
+        resetTimeout();
+      });
       evt.on('init', function(api) {
         console.log("browserSync process: initialized");
         process.send({type: 'browserSyncInit', browserSync: api.options.urls.external});
+        resetTimeout();
       });
       bs = browserSync.init(null, browserSyncConfig);
       break;
