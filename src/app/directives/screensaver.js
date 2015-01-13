@@ -32,6 +32,7 @@
           $scope.screensaverClass = Math.random() <= 0.5 ? classes[0] : classes[1];
           $scope.screensaver = true;
           $scope.label = $window.localStorage.getItem('label') || '';
+          screensaverTimeoutPromise = $interval(showScreensaver, screensaverTimeoutSeconds*1000);
         }
 
         function resetScreensaverCounter() {
