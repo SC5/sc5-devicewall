@@ -181,8 +181,12 @@ angular.module('DeviceWall')
         if (DeviceList.has({label: data.oldLabel})) {
           var device = DeviceList.get(data.oldLabel);
           DeviceList.remove(device);
+          if (DeviceList.has({label: data.newLabel})) {
+            DeviceList.remove(DeviceList.get(data.newLabel));
+          }
           device.label = data.newLabel;
           DeviceList.add(device);
+          $scope.deviceList = DeviceList.toArray();
         }
       });
       socket.on('update', function (data) {
