@@ -226,10 +226,14 @@ module.exports = function (app, options) {
         });
         nsCtrl.emit('update', devicesClone);
 
-        console.log('Control >> start"', data);
+        console.log('Control >> start', data);
         nsCtrl.emit('start', data);
-        console.log('Client >> start"', appData);
+        console.log('Client >> start', appData);
         nsApp.emit('start', appData);
+        instances.waitForClientConnections(data.labels.length).then(function() {
+          console.log('Control >> running', data);
+          nsCtrl.emit('running', data);
+        });
       },
       function(reason) {
         var emitData = {user: data.user, reason: reason};
@@ -238,6 +242,7 @@ module.exports = function (app, options) {
       }
     );
   };
+
 
   // Events
   emitter.on('click:externalurl', function(data) {

@@ -113,6 +113,7 @@ angular.module('DeviceWall')
         $scope.tooltipError.content = '';
         socket.emit('start', formData);
         $scope.setButtonsStatus(false);
+        $scope.setButtonsDisabled(true);
       };
 
       $scope.selectAll = function(status) {
@@ -206,7 +207,7 @@ angular.module('DeviceWall')
       socket.on('start', function (data) {
         if (data.user.id === $scope.user.id) {
           $scope.setButtonsStatus(false);
-          $scope.serverStatus = 'running';
+          $scope.setButtonsDisabled(true);
           if ($scope.openUrl) {
             $log.debug('Opening a popup view');
             if ($scope.popupWindow && !$scope.popupWindow.closed) {
@@ -216,6 +217,13 @@ angular.module('DeviceWall')
               $scope.popupWindow = $window.open(data.url, '_blank');
             }
           }
+        }
+      });
+
+      socket.on('running', function (data) {
+        if (data.user.id === $scope.user.id) {
+          $scope.setButtonsDisabled(false);
+          $scope.serverStatus = 'running';
         }
       });
 

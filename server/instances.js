@@ -175,7 +175,7 @@ var Instances = {
       console.log("no instance:", urlString);
       deferred.resolve();
     }
-    return deferred.promise;    
+    return deferred.promise;
   },
   stopAll: function() {
     'use strict';
@@ -198,6 +198,26 @@ var Instances = {
     _.each(this.instances, function(instance) {
       instance.forceStop();
     });
+  },
+  waitForClientConnections: function(amount) {
+    var that = this;
+    var deferred = Q.defer();
+    var deviceAmount = amount;
+    var timeout = setTimeout(function() {
+      that.emitter.removeAllListeners("connect:browsersync");
+      deferred.resolve();
+    }, 5000);
+    this.emitter.on("connect:browsersync", function() {
+      deviceAmount--;
+      if (deviceAmount === 0) {
+        if (timeout) {
+          clearTimeout(timeout);
+        }
+        that.emitter.removeAllListeners("connect:browsersync");
+        deferred.resolve();
+      }
+    });
+    return deferred.promise;
   }
 };
 

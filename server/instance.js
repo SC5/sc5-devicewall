@@ -220,6 +220,7 @@ Instance.prototype._startBrowserSyncProcess = function(data) {
         });
         if (device) {
           device.set('browsersync', message.browsersync);
+          that.emitter.emit('connect:browsersync');
         }
         break;
       case 'browserSyncSocketRoomsUpdate':
