@@ -119,6 +119,12 @@ Instance.prototype.stop = function(options) {
     });
   }
 
+  if (options.timedout) {
+    _.each(that.getActiveDevices(), function(device) {
+      that.clearDevice(device);
+    });
+  }
+
   if (that.isConnected()) {
     console.log("instance.stop sending browserSyncExit");
 
@@ -252,7 +258,7 @@ Instance.prototype._startBrowserSyncProcess = function(data) {
         break;
       case 'browserSyncIdleTimeout':
         console.log('BrowserSync timeout, stopping.');
-        that.stop();
+        that.stop({ timedout: true });
         break;
     }
   });
@@ -265,6 +271,13 @@ Instance.prototype._startBrowserSyncProcess = function(data) {
 
 Instance.prototype.getDevices = function() {
   return this.devices.find(this.get('labels'));
+};
+
+Instance.prototype.getActiveDevices = function() {
+  var activeDevices = this.getActiveDeviceLabels();
+  return _.filter(this.getDevices(), function(device) {
+    return activeDevices.indexOf(device.get('label')) > -1;
+  });
 };
 
 Instance.prototype.getDeviceLabels = function() {
