@@ -250,6 +250,10 @@ Instance.prototype._startBrowserSyncProcess = function(data) {
           });
         }
         break;
+      case 'browserSyncIdleTimeout':
+        console.log('BrowserSync timeout, stopping.');
+        that.stop();
+        break;
     }
   });
 
