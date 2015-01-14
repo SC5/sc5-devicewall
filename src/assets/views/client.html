@@ -1,6 +1,6 @@
 <a class="home icon-layout" href="/"></a>
 <section id="connection" ng-show="view.connection">
-  <h2>Label: {{ label }}</h2>
+  <h2 ng-show="label">Label: {{ label }}</h2>
   <h3 data-ng-bind="statusMessage"></h3>
   <div ng-click="showSettings()" class="icon-button settings icon-mobile"></div>
   <div ng-click="showControlPanel()" class="icon-button control-panel icon-gauge"></div>

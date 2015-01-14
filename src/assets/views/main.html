@@ -105,6 +105,7 @@
               <th class="small-viewport-hidden" ng-hide="config.singleUser">User</th>
               <th class="small-viewport-hidden">Site</th>
               <th class="small-viewport-hidden">Proxy</th>
+              <th>Last seen</th>
               <th>Last used</th>
               <th>Test</th>
               <th></th>
@@ -136,6 +137,7 @@
                 <td class="small-viewport-hidden" data-ng-class="{ hidden : !device.userId }">
                   <span>{{ device.proxy }}</span>
                 </td>
+                <td><time>{{ device.lastSeen | timeSince }}</time></td>
                 <td data-ng-class="{'is-running': device.userId}"><time>{{ device.lastUsed | timeSince }}</time></td>
                 <td>
                   <input

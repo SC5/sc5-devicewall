@@ -1,13 +1,13 @@
 /*jshint -W072 */
 angular.module('DeviceWall')
   .controller('ClientController',
-  function($rootScope, $scope, $location, $timeout, socketConnect, $window, appConfig, Util, $log) {
+  function($rootScope, $scope, $location, $timeout, $interval, socketConnect, $window, appConfig, Util, $log) {
     var screensaverTimeoutPromise;
     var screensaverTimeoutSeconds = appConfig.client.screenSaverTimeoutSeconds || 60;
-    var socket = socketConnect.connect('/devicewallapp');
+    $scope.label = $window.localStorage.getItem('label') || '';
+    var socket = socketConnect.connect('/devicewallapp', $scope.label);
     // Scope variables
     $scope.statusMessage = "Initializing connection";
-    $scope.label = $window.localStorage.getItem('label') || '';
     $scope.oldLabel = $scope.label;
     $scope.model = '';
     $scope.platform = '';
@@ -76,7 +76,14 @@ angular.module('DeviceWall')
     if ($scope.label) {
       socket.emit('update', {label: $scope.label});
     }
-    
+
+    $interval(function() {
+      if (socket) {
+        socket.emit('ping', {label: $scope.label});
+      } else {
+        $scope.statusMessage = "Not connected";
+      }
+    }, appConfig.client.pingIntervalSeconds*1000);
     $scope.$on('$destroy', function() {
       socket.removeAllListeners();
     });

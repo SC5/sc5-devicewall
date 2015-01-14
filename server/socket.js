@@ -14,9 +14,17 @@ module.exports = function (app, options) {
     instances = require('./instances');
 
   // Device
+  nsApp.use(function(socket, next) {
+    var label = socket.handshake.query.label;
+    if (label) {
+      utils.updateLastSeen(label, devices);
+    }
+    next();
+  });
   nsApp.on('connection', function (socket) {
     console.log('Test device connected!');
 
+    socket.on('ping', pingApp);
     socket.on('rename', rename);
     socket.on('update', update);
     socket.on('started', started);
@@ -24,6 +32,12 @@ module.exports = function (app, options) {
     socket.on('disconnect', disconnect);
     socket.on('check-platform', checkPlatform);
 
+    function pingApp(data) {
+      if (data.label) {
+        utils.updateLastSeen(data.label, devices);
+        console.log(new Date().toISOString() + " Client <<<< ping " + data.label);
+      }
+    }
     function rename(data) {
       console.log("Client <<<< rename ", data);
       var device = devices.find(data.oldLabel);

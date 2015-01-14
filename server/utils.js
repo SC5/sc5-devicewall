@@ -110,5 +110,12 @@ module.exports = {
       uri = 'http://' + uri;
     }
     return uri;
+  },
+  updateLastSeen: function(label, devices) {
+    var device = devices.find(label);
+    if (device) {
+      device.set('lastSeen', new Date().getTime());
+      devices.update(device.toJSON());
+    }
   }
 };

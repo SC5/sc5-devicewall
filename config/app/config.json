@@ -15,7 +15,8 @@
     },
     "client": {
       "screenSaverTimeoutSeconds": 600,
-      "redirectToClientModeAutomatically": false
+      "redirectToClientModeAutomatically": false,
+      "pingIntervalSeconds": 10
     },
     "tutorial": {
       "wifi": {
