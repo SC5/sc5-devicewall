@@ -169,7 +169,7 @@ module.exports = function (app, options) {
         devices.update(device.toJSON());
       }
       app.emit('update-devices');
-      socket.broadcast.emit('update', devices);
+      socket.broadcast.emit('update', devices.toJSON());
     }
 
     function removeDevices(data) {
@@ -178,7 +178,7 @@ module.exports = function (app, options) {
         devices.remove(label);
       });
       app.emit('update-devices');
-      socket.broadcast.emit('update', devices);
+      socket.broadcast.emit('remove', data.labels);
     }
 
     function reloadDevices() {
@@ -243,6 +243,18 @@ module.exports = function (app, options) {
     );
   };
 
+  function removeGhostDevices() {
+    var labels = devices.getGhostDevices();
+    if (labels.length) {
+      console.log("Control <<< removeGhostDevices", labels);
+      labels.forEach(function(label) {
+        devices.remove(label);
+      });
+      app.emit('update-devices');
+      nsCtrl.emit('remove', labels);
+    }
+  }
+
 
   // Events
   emitter.on('click:externalurl', function(data) {
@@ -251,6 +263,7 @@ module.exports = function (app, options) {
 
   devices.init({config: config});
   devices.read();
+  removeGhostDevices();
   instances.init({
     config: config,
     devices: devices,
@@ -259,5 +272,7 @@ module.exports = function (app, options) {
   setInterval(function() {
     devices.write();
   }, 10000);
-
+  setInterval(function() {
+    removeGhostDevices();
+  }, 86400000);
 };
