@@ -190,6 +190,7 @@ angular.module('DeviceWall')
           $scope.deviceList = DeviceList.toArray();
         }
       });
+
       socket.on('update', function (data) {
         $scope.$apply(function() {
           _.each(data, function(device) {
@@ -202,6 +203,16 @@ angular.module('DeviceWall')
           });
           $scope.deviceList = DeviceList.toArray();
         });
+      });
+
+      socket.on('remove', function (data) {
+        var device;
+        _.each(data, function(label) {
+          if (DeviceList.has({label: label})) {
+            DeviceList.remove(DeviceList.get(label));
+          }
+        });
+        $scope.deviceList = DeviceList.toArray();
       });
 
       socket.on('start', function (data) {

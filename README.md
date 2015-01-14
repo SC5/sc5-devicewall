@@ -91,6 +91,11 @@ This URL is represents idle mode URL. Used when client jumps from testing back t
 Client is automatically redirected back to idle mode after clientIdleReturnSeconds is exceeded
 
     "clientIdleReturnSeconds": 300 # client returns from testing automatically after 300 seconds
+#### removeDeviceAfterUnusedDays
+Unused devices are removed completely after defined amount of days
+
+    "removeDeviceAfterUnusedDays": 30 # device removed from server after unused for 30 days
+
 ### Application configuration
 
 #### connectionSetup
