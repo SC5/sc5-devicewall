@@ -34,8 +34,8 @@ var Instances = {
   },
   removeInstance: function(urlString) {
     'use strict';
-    this.instances = _.filter(this.instances, function(instance) {
-      return instance.get('url') !== urlString;
+    this.instances = _.reject(this.instances, function(instance) {
+      return instance.get('url') === url.parse(urlString).href;
     });
   },
   start: function(data) {
