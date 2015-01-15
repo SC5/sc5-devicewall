@@ -98,6 +98,7 @@
           <table spellcheck="false">
             <tr id="available-devices-table-heading">
               <th><a href="" ng-click="predicate = 'label'; reverse=!reverse">Label</a></th>
+              <th><a href="" ng-click="predicate = 'browsersyncStatus'; reverse=!reverse">Status</a></th>
               <th class="small-viewport-hidden"><a href="" ng-click="predicate = 'model'; reverse=!reverse">Model</a></th>
               <th class="small-viewport-hidden"><a href="" ng-click="predicate = 'platform'; reverse=!reverse">Platform</a></th>
               <th class="small-viewport-hidden"><a href="" ng-click="predicate = 'version'; reverse=!reverse">Version</a></th>
@@ -106,13 +107,13 @@
               <th class="small-viewport-hidden">Site</th>
               <th class="small-viewport-hidden">Proxy</th>
               <th>Last seen</th>
-              <th>Last used</th>
               <th>Test</th>
               <th></th>
             </tr>
             <tbody id="devices-list" ng-if="deviceList.length > 0">
               <tr ng-repeat="device in deviceList | orderBy:predicate:reverse" data-ng-class="{'is-running': device.userId, 'is-offline': isOffline(device)}">
                 <td>{{ device.label }}</td>
+                <td>{{ device.browsersyncStatus }}</td>
                 <td class="small-viewport-hidden editable">
                   <input blurevent type="text" placeholder="model" data-ng-model="device.model" />
                 </td>
@@ -138,7 +139,6 @@
                   <span>{{ device.proxy }}</span>
                 </td>
                 <td><time>{{ device.lastSeen | timeSince }}</time></td>
-                <td><time>{{ device.lastUsed | timeSince }}</time></td>
                 <td>
                   <input
                     type="checkbox"
