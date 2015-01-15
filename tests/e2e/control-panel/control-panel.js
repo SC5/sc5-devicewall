@@ -31,7 +31,7 @@ describe('Control panel', function() {
     expect(element(by.css('#available-devices h2')).getText()).to.eventually.contain('Available devices');
     expect(element(by.id('select-all')).isDisplayed()).to.eventually.equal(true);
     expect(element(by.id('select-none')).isDisplayed()).to.eventually.equal(true);
-    expect(element.all(by.css('#available-devices-table-heading th')).count()).to.eventually.equal(11);
+    expect(element.all(by.css('#available-devices-table-heading th')).count()).to.eventually.equal(12);
   });
 
   it('should toggle the accordion when clicked', function() {
