@@ -118,8 +118,10 @@ angular.module('DeviceWall')
 
       $scope.selectAll = function(status) {
         _.each(DeviceList.toArray(), function(device) {
-          device.selected = status;
-          DeviceList.update(device);
+          if (!$scope.isOffline(device)) {
+            device.selected = status;
+            DeviceList.update(device);
+          }
         });
         $scope.deviceList = DeviceList.toArray();
       };
