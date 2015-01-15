@@ -38,6 +38,12 @@ angular.module('DeviceWall')
     socket.on('connect', function() {
       $scope.statusMessage = "Ready for testing";
     });
+    socket.on('version', function(data) {
+      if (data !== appConfig.version) {
+        $log.debug('old version reloading browser');
+        $window.location.reload();
+      }
+    });
 
     socket.on('disconnect', function() {
       $scope.statusMessage = "Not connected";
@@ -56,7 +62,6 @@ angular.module('DeviceWall')
       $log.debug('stop: ', data);
     });
 
-
     $scope.updateLabel = function() {
       if ($scope.label) {
         $window.localStorage.setItem('label', $scope.label);
@@ -68,7 +73,7 @@ angular.module('DeviceWall')
           socket.emit('rename', {oldLabel: $scope.oldLabel, newLabel: $scope.label});
           $scope.oldLabel = $scope.label;
         } else {
-          socket.emit('update', {label: $scope.label});
+          socket.emit('update', {label: $scope.label, version: appConfig.version});
         }
       }
     };

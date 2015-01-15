@@ -1,7 +1,7 @@
 var url   = require('url');
 var http  = require('http');
 var https = require('https');
-var maxRedirects = require('./config.js').maxRedirects;
+var config = require('./config.js');
 
 var redirectionCodes = [301, 302, 303, 304, 305, 307];
 
@@ -32,7 +32,7 @@ module.exports = {
     var req = protocol.get(options,  function (res) {
       if(that._isRedirectionCode(res.statusCode)) {
         if (that._isMaxRedirectionsReached()) {
-          console.error('Max amount of redirects reached: ' + maxRedirects);
+          console.error('Max amount of redirects reached: ' + config.maxRedirects);
           cb('Maximum allowed redirects reached, aborting.');
           return;
         }
@@ -75,7 +75,7 @@ module.exports = {
   },
   _isMaxRedirectionsReached: function () {
     'use strict';
-    return redirectedCount >= maxRedirects;
+    return redirectedCount >= config.maxRedirects;
   },
   _getNewTargetUrl: function(oldTarget, newTarget) {
     'use strict';
@@ -117,5 +117,8 @@ module.exports = {
       device.set('lastSeen', new Date().getTime());
       devices.update(device.toJSON());
     }
+  },
+  getVersion: function() {
+    return config.version;
   }
 };

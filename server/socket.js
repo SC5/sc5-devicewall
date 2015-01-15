@@ -23,6 +23,7 @@ module.exports = function (app, options) {
   });
   nsApp.on('connection', function (socket) {
     console.log('Test device connected!');
+    nsApp.emit("version", utils.getVersion());
 
     socket.on('ping', pingApp);
     socket.on('rename', rename);
@@ -63,6 +64,11 @@ module.exports = function (app, options) {
         console.error("Client sent an empty label", data);
         return;
       }
+      if (_.has(data, 'version')) {
+        if (data.version !== utils.getVersion()) {
+          nsApp.emit("version", utils.getVersion());
+        }
+      };
       device = devices.update(data);
       if (device.get('userId')) {
         var instance = instances.find(device.get('userId'));
