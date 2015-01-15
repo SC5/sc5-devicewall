@@ -111,7 +111,7 @@
               <th></th>
             </tr>
             <tbody id="devices-list" ng-if="deviceList.length > 0">
-              <tr ng-repeat="device in deviceList | orderBy:predicate:reverse" data-ng-class="{'is-running': device.userId}">
+              <tr ng-repeat="device in deviceList | orderBy:predicate:reverse" data-ng-class="{'is-running': device.userId, 'is-offline': isOffline(device)}">
                 <td>{{ device.label }}</td>
                 <td class="small-viewport-hidden editable">
                   <input blurevent type="text" placeholder="model" data-ng-model="device.model" />
@@ -138,12 +138,12 @@
                   <span>{{ device.proxy }}</span>
                 </td>
                 <td><time>{{ device.lastSeen | timeSince }}</time></td>
-                <td data-ng-class="{'is-running': device.userId}"><time>{{ device.lastUsed | timeSince }}</time></td>
+                <td><time>{{ device.lastUsed | timeSince }}</time></td>
                 <td>
                   <input
                     type="checkbox"
                     ng-model="device.selected"
-                    ng-disabled="{{ device.userId ? false : false }}"
+                    ng-disabled="isOffline(device)"
                   >
                 </td>
                 <td class="remove" data-ng-click="removeDevice(device)"><span class="icon-trash"></span></td>

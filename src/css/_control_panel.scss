@@ -74,7 +74,12 @@ body {
     }
 
     .is-running {
+      background-color: rgba(0, 0, 0, 0.1);
+    }
+
+    .is-offline {
       background-color: #808080;
+      color: #cccccc;
     }
 
     .selected-options {
