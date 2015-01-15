@@ -55,6 +55,7 @@ gulp.task('config', function() {
 
   // Server config
   var serverConfig = JSON.parse(fs.readFileSync(configLocalServer+'/config.json'));
+  serverConfig.version = packagejson.version;
   serverConfig = extend(true, serverConfig, config.server);
   // read local config
   if (fs.existsSync(configLocalServer+'/config.local.json')) {
@@ -75,6 +76,7 @@ gulp.task('config', function() {
 
   // Control panel app config
   var clientConfig = JSON.parse(fs.readFileSync(configLocalApp + '/config.json'));
+  clientConfig.appConfig.version = packagejson.version;
   clientConfig.appConfig.socketServer = config.protocol + '://' + serverConfig.host + ':' + serverConfig.port + '/devicewall';
   // read local config
   if (fs.existsSync(configLocalApp+'/config.local.json')) {
