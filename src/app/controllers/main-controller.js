@@ -196,7 +196,7 @@ angular.module('DeviceWall')
           _.each(data, function(device) {
             if (DeviceList.has(device)) {
               var currentDevice = DeviceList.get(device.label);
-              device.selected = $scope.isOffline(device) ? false : currentDevice.selected;
+              device.selected = $scope.isOffline(device) ? false : !$scope.isOffline(currentDevice) ? currentDevice.selected : true;
               DeviceList.update(device);
             } else {
               device.selected = !$scope.isOffline(device);
