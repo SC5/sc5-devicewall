@@ -37,7 +37,7 @@ module.exports = function (app, options) {
     function pingApp(data) {
       if (data.label) {
         utils.updateLastSeen(data.label, devices);
-        console.log(new Date().toISOString() + " Client <<<< ping " + data.label);
+        //console.log(new Date().toISOString() + " Client <<<< ping " + data.label);
       }
     }
 
