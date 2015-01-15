@@ -1,10 +1,9 @@
 var expect = require('../expect');
-var config = require('../../../config.test.json');
+var config = require('../../../server/config.js');
 var utils = require('../utils');
 var socket = require('../socket');
 
 describe('Control panel', function() {
-  var ptor = protractor.getInstance();
   var testUrl = config.protocol + '://' + config.host + ':' + config.port + '/test';
   var devicesUrl = config.protocol + '://' + config.host + ':' + config.port + '/devices';
   var resetUrl = config.protocol + '://' + config.host + ':' + config.port + '/test/reset';
@@ -32,7 +31,7 @@ describe('Control panel', function() {
     expect(element(by.css('#available-devices h2')).getText()).to.eventually.contain('Available devices');
     expect(element(by.id('select-all')).isDisplayed()).to.eventually.equal(true);
     expect(element(by.id('select-none')).isDisplayed()).to.eventually.equal(true);
-    expect(element.all(by.css('#available-devices-table-heading th')).count()).to.eventually.equal(11);
+    expect(element.all(by.css('#available-devices-table-heading th')).count()).to.eventually.equal(12);
   });
 
   it('should toggle the accordion when clicked', function() {
@@ -79,7 +78,7 @@ describe('Control panel', function() {
     expect(element(by.id('go-button')).isEnabled()).to.eventually.equal(true);
   });
 
-  it('should set url value to http://www when clicked', function() {
+  it('should set url value to http:// when clicked', function() {
     element(by.id('url_value')).click();
     expect(element(by.id('url_value')).getAttribute('value')).to.eventually.equal('http://');
   });
@@ -112,7 +111,7 @@ describe('Control panel', function() {
     });
   });
 
-  it('should hide Stop buttons if Stop all button is clicked', function() {
+  it('should hide Stop buttons and enable Go button after Stop all finishes', function() {
     utils.addSingleTestDevice("testdevice");
     browser.driver.wait(function() {
       return browser.driver.isElementPresent(by.xpath("//td[text()='testdevice']"));
@@ -130,6 +129,7 @@ describe('Control panel', function() {
       return browser.driver.isElementPresent(by.xpath("//div[@id='server-status' and text()='stopped']"));
     });
     expect(element(by.id('stop-all-button')).isDisplayed()).to.eventually.equal(false);
+    expect(element(by.id('go-button')).isEnabled()).to.eventually.equal(true);
   });
 
   it('should select all if Select all clicked', function() {
@@ -173,6 +173,20 @@ describe('Control panel', function() {
     //expect(element(by.id('stop-all-button')).isDisplayed()).to.eventually.equal(false);
   });
 
+  it('should display tooltip error if website URL is invalid', function() {
+    utils.addSingleTestDevice("testdevice");
+    browser.driver.wait(function() {
+      return browser.driver.isElementPresent(by.xpath("//td[text()='testdevice']"));
+    });
+    element(by.id('url_value')).click();
+    utils.clear(element(by.id('url_value')));
+    element(by.id('url_value')).sendKeys('http:/invalidurl.com');
+    element(by.id("go-button")).click();
+    browser.driver.wait(function() {
+      return browser.driver.isElementPresent(by.xpath("//span[@id='tooltip-error' and text()='Invalid URL']"));
+    });
+  });
+
   it('should remove device when trash icon clicked', function() {
     utils.addSingleTestDevice("testdevice");
     browser.driver.wait(function() {
@@ -207,5 +221,14 @@ describe('Control panel', function() {
     expect(element(by.css('#devices-list input[data-ng-model="device.model"]')).getAttribute('value')).to.eventually.equal('iPhone');
     expect(element(by.css('#devices-list input[data-ng-model="device.platform"]')).getAttribute('value')).to.eventually.equal('iOS');
     expect(element(by.css('#devices-list input[data-ng-model="device.version"]')).getAttribute('value')).to.eventually.equal('6.1');
+  });
+
+  it('should show selected user agent under heading when accordion collapsed', function() {
+    element(by.css('#connection-setup h2')).click();
+    element(by.cssContainingText('option', 'desktop (OS X)')).click();
+    expect(element(by.css("#connection-setup-selected-options")).getText()).to.eventually.equal('');
+    element(by.css('#connection-setup h2')).click();
+    expect(element(by.css("#connection-setup .accordion-content")).isDisplayed()).to.eventually.equal(false);
+    expect(element(by.css("#connection-setup-selected-options")).getText()).to.eventually.contain("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062.124 Safari/537.36");
   });
 });

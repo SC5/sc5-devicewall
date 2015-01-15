@@ -11,12 +11,13 @@ var STATUS_STOPPED = 'stopped';
 var Instance = function (data, options) {
   this.devices = options.devices;
   this.config = options.config;
-  this.recalled = [];
+  this.emitter = options.emitter;
+  this.returned = [];
+  this.stopping = false;
   this.properties = _.defaults(data, {
     status: STATUS_STOPPED,
     updated: +new Date()
   });
-
 };
 
 Instance.prototype.start = function(data) {
@@ -49,57 +50,61 @@ Instance.prototype.clearDevice = function(device) {
 
 Instance.prototype.callDeviceHome = function(device) {
   var deferred = Q.defer();
-  var that = this;
   if (this.isConnected()) {
-    this.childProcess.send({
-      type: 'returnDeviceHome',
-      device: device
-    });
-
     var timer = 5000;
     var timeout = setTimeout(function() {
       deferred.reject();
     }, timer);
 
-    // Wait for message from childProcess before resolving deferred
-    this.childProcess.once('message', function(message) {
-      if (message.type === 'browserSyncReturnedDeviceHome' &&
-        _.intersection(message.device.browsersync, device.get('browsersync')).length > 0) {
-        clearTimeout(timeout);
-        that.recalled.push(device);
-        that.shouldInstanceStop();
-        deferred.resolve();
-      }
+    this.returned.push({
+      device: device,
+      deferred: deferred,
+      timeout: timeout,
+      done: false
     });
+
+    this.childProcess.send({
+      type: 'returnDeviceHome',
+      device: device
+    });
+
   } else {
     console.error('Instance::No child process or child process is not connected.');
-    this.shouldInstanceStop({ force: true });
+    this.stop();
     deferred.reject();
   }
   return deferred.promise;
 };
 
-Instance.prototype.shouldInstanceStop = function(options) {
+Instance.prototype.shouldInstanceStop = function() {
+  if (this.stopping === true) {
+    console.info('Instance::Already stopping.');
+    return;
+  }
   var that = this;
-  options = options || {};
   var original = this.getDevices().length;
-  var recalled = this.recalled.length;
+  var recalled = this.returned.length;
 
-  if (recalled >= original || options.force === true) {
-    setTimeout(function() {
-      console.log('Instance::Stopping Empty Instance.');
-      that.stop().then(function() {
-        console.log('Instance::Empty Instance Stopped.');
-      });
-    }, 5000);
+  if (recalled >= original) {
+    this.stopping = true;
+    console.log('Instance::Stopping Empty Instance.');
+    this.stop()
+    .then(function() {
+      console.log('Instance::Empty Instance Stopped.');
+    })
+    .fail(function() {
+      console.error('Instance::Failed to stop instance, force stopping.');
+      that.forceStop();
+    });
   }
 };
 
-Instance.prototype.stop = function() {
+Instance.prototype.stop = function(options) {
   'use strict';
   console.info("instance.stop current status: ", this.get('status'));
   var that = this;
   var deferred = Q.defer();
+  options = options || {};
   if (this.canBeStopped() === false) {
     deferred.reject('Instance.stop(): Instance is not in running state');
     return deferred.promise;
@@ -108,9 +113,17 @@ Instance.prototype.stop = function() {
   that.set('status', STATUS_STOPPING);
   console.log("instance stopping");
 
-  _.each(that.getDevices(), function(device) {
-    that.clearDevice(device);
-  });
+  if (options.all) {
+    _.each(that.getDevices(), function(device) {
+      that.clearDevice(device);
+    });
+  }
+
+  if (options.active) {
+    _.each(that.getActiveDevices(), function(device) {
+      that.clearDevice(device);
+    });
+  }
 
   if (that.isConnected()) {
     console.log("instance.stop sending browserSyncExit");
@@ -207,6 +220,7 @@ Instance.prototype._startBrowserSyncProcess = function(data) {
         });
         if (device) {
           device.set('browsersync', message.browsersync);
+          that.emitter.emit('connect:browsersync');
         }
         break;
       case 'browserSyncSocketRoomsUpdate':
@@ -216,6 +230,36 @@ Instance.prototype._startBrowserSyncProcess = function(data) {
         if (device) {
           device.set('browsersync', message.browsersync);
         }
+        break;
+      case 'browserSyncReturnedDeviceHome':
+        if (message.device && message.device.label) {
+          var msgLabel = message.device.label;
+          _.each(that.returned, function(obj) {
+            var objLabel = obj.device.properties.label;
+            if (obj.done === false && objLabel.indexOf(msgLabel) > -1) {
+              clearTimeout(obj.timeout);
+              obj.deferred.resolve();
+              obj.done = true;
+            }
+          });
+          that.shouldInstanceStop();
+        } else {
+          console.error('Instance::No device object in ReturnedDeviceHome message.');
+        }
+        break;
+      case 'browserSyncExternalUrl':
+        if (message.href) {
+          that.emitter.emit('click:externalurl', {
+            url: message.href,
+            labels: that.getActiveDeviceLabels(),
+            user: that.properties.user,
+            userAgentHeader: that.properties.userAgentHeader
+          });
+        }
+        break;
+      case 'browserSyncIdleTimeout':
+        console.log('BrowserSync timeout, stopping.');
+        that.stop({ active: true });
         break;
     }
   });
@@ -228,6 +272,29 @@ Instance.prototype._startBrowserSyncProcess = function(data) {
 
 Instance.prototype.getDevices = function() {
   return this.devices.find(this.get('labels'));
+};
+
+Instance.prototype.getActiveDevices = function() {
+  var activeDevices = this.getActiveDeviceLabels();
+  return _.filter(this.getDevices(), function(device) {
+    return activeDevices.indexOf(device.get('label')) > -1;
+  });
+};
+
+Instance.prototype.getDeviceLabels = function() {
+  return _.map(this.getDevices(), function(device) {
+    return device.get('label');
+  });
+};
+
+Instance.prototype.getReturnedDeviceLabels = function() {
+  return _.map(this.returned, function(obj) {
+    return obj.device.get('label');
+  });
+};
+
+Instance.prototype.getActiveDeviceLabels = function() {
+  return _.difference(this.getDeviceLabels(), this.getReturnedDeviceLabels());
 };
 
 Instance.prototype.update = function(data) {
@@ -264,11 +331,11 @@ Instance.prototype.toJSON = function() {
 
 Instance.prototype.canBeStarted = function() {
   return this.get('status') === STATUS_STOPPED;
-}
+};
 
 Instance.prototype.canBeStopped = function() {
   return this.get('status') === STATUS_RUNNING;
-}
+};
 
 Instance.prototype.markDevices = function(data, status) {
   _.each(this.getDevices(), function(device) {
@@ -281,6 +348,6 @@ Instance.prototype.markDevices = function(data, status) {
       });
     }
   });
-}
+};
 
 module.exports = Instance;

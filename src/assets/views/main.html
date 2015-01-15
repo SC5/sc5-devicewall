@@ -1,7 +1,7 @@
 <a class="home icon-layout" href="/"></a>
 <div id="content" class="devices">
   <section id="devices">
-    <form id="devices-form">
+    <form id="devices-form" data-ng-submit="submitUrl()">
       <div class="section-wrapper">
         <h2>Test website</h2>
 
@@ -18,7 +18,6 @@
             placeholder="http://www.sc5.io/"
             selected-object="url.selectedValue"
             initial-value="{{url.value}}"
-            override-suggestions="true"
             auto-match="true"
             local-data="url.visitedUrls"
             search-fields="url"
@@ -36,21 +35,21 @@
 
         <div class="buttons">
           <button
-            type="button"
+            type="submit"
             data-ng-disabled="btnGo.disabled"
             data-ng-show="btnGo.show"
             class="large"
-            data-ng-click="submitUrl()"
             id="go-button"
           >Go</button>
-          <button type="button" data-ng-show="btnStopTesting.show" class="large ng-hide" data-ng-click="stopTesting()" style="display:none" id="stop-button">Stop</button>
-          <button type="button" data-ng-show="btnStopAllTesting.show" class="large" data-ng-click="stopAllTesting()" id="stop-all-button">Stop all</button>
+          <button type="button" data-ng-show="btnStopTesting.show" data-ng-disabled="btnStopTesting.disabled" class="large ng-hide" data-ng-click="stopTesting()" style="display:none" id="stop-button">Stop</button>
+          <button type="button" data-ng-show="btnStopAllTesting.show" data-ng-disabled="btnStopAllTesting.disabled" class="large" data-ng-click="stopAllTesting()" id="stop-all-button">Stop all</button>
         </div>
       </div>
 
-      <section data-ng-show="config.connectionSetup.enabled">
+      <section data-ng-show="config.connectionSetup.enabled" id="connection-setup">
         <div class="section-wrapper accordion collapsed">
         <h2 toggle-accordion>Connection setup</h2>
+        <div class="selected-options" id="connection-setup-selected-options">{{ userAgent.selected.value ? 'User agent: ' + userAgent.selected.value : ''}}</div>
         <div class="connection-setup accordion-content">
           <div data-ng-hide="true" class="checkbox">
             <label>
@@ -106,12 +105,13 @@
               <th class="small-viewport-hidden" ng-hide="config.singleUser">User</th>
               <th class="small-viewport-hidden">Site</th>
               <th class="small-viewport-hidden">Proxy</th>
+              <th>Last seen</th>
               <th>Last used</th>
               <th>Test</th>
               <th></th>
             </tr>
             <tbody id="devices-list" ng-if="deviceList.length > 0">
-              <tr ng-repeat="device in deviceList | orderBy:predicate:reverse" data-ng-class="{'is-running': device.userId}">
+              <tr ng-repeat="device in deviceList | orderBy:predicate:reverse" data-ng-class="{'is-running': device.userId, 'is-offline': isOffline(device)}">
                 <td>{{ device.label }}</td>
                 <td class="small-viewport-hidden editable">
                   <input blurevent type="text" placeholder="model" data-ng-model="device.model" />
@@ -137,12 +137,13 @@
                 <td class="small-viewport-hidden" data-ng-class="{ hidden : !device.userId }">
                   <span>{{ device.proxy }}</span>
                 </td>
-                <td data-ng-class="{'is-running': device.userId}"><time>{{ device.lastUsed | timeSince }}</time></td>
+                <td><time>{{ device.lastSeen | timeSince }}</time></td>
+                <td><time>{{ device.lastUsed | timeSince }}</time></td>
                 <td>
                   <input
                     type="checkbox"
                     ng-model="device.selected"
-                    ng-disabled="{{ device.userId ? false : false }}"
+                    ng-disabled="isOffline(device)"
                   >
                 </td>
                 <td class="remove" data-ng-click="removeDevice(device)"><span class="icon-trash"></span></td>

@@ -1,7 +1,7 @@
 var url   = require('url');
 var http  = require('http');
 var https = require('https');
-var maxRedirects = require('./../config.json').maxRedirects;
+var config = require('./config.js');
 
 var redirectionCodes = [301, 302, 303, 304, 305, 307];
 
@@ -28,12 +28,11 @@ module.exports = {
         'User-Agent': proxyOptions.userAgentHeader
       };
     }
-
+    var redirected = false;
     var req = protocol.get(options,  function (res) {
-      var redirected = false;
       if(that._isRedirectionCode(res.statusCode)) {
         if (that._isMaxRedirectionsReached()) {
-          console.error('Max amount of redirects reached: ' + maxRedirects);
+          console.error('Max amount of redirects reached: ' + config.maxRedirects);
           cb('Maximum allowed redirects reached, aborting.');
           return;
         }
@@ -47,24 +46,25 @@ module.exports = {
       res.on("data", function (data) {
         chunks.push(data);
       });
-      res.on("end", function() {
+      res.once("end", function() {
         if (redirected === false) {
           cb(null, targetUrl);
         }
       });
-    }).on("error", function (err) {
+    }).once("error", function (err) {
       if (err.code === "ENOTFOUND" || err.code === "ECONNREFUSED") {
         cb("Unreachable");
       }
-    }).on("close", function () {
-      if (!chunks.length) {
+    }).once("close", function () {
+      if (!redirected && !chunks.length) {
         cb("Unreachable");
       }
     });
 
-    req.on("socket", function (socket) {
+    req.once("socket", function (socket) {
       socket.setTimeout(5000);
       socket.on("timeout", function() {
+        console.log("timed out");
         req.abort();
       });
     });
@@ -75,7 +75,7 @@ module.exports = {
   },
   _isMaxRedirectionsReached: function () {
     'use strict';
-    return redirectedCount >= maxRedirects;
+    return redirectedCount >= config.maxRedirects;
   },
   _getNewTargetUrl: function(oldTarget, newTarget) {
     'use strict';
@@ -100,5 +100,25 @@ module.exports = {
     urlObj.host = undefined;
 
     return url.format(urlObj);
+  },
+  guessURI: function(uri) {
+    if (/:\//g.test(uri) === true) {
+      if (/^(http|https):\/\//i.test(uri) === false) {
+        return false;
+      }
+    } else {
+      uri = 'http://' + uri;
+    }
+    return uri;
+  },
+  updateLastSeen: function(label, devices) {
+    var device = devices.find(label);
+    if (device) {
+      device.set('lastSeen', new Date().getTime());
+      devices.update(device.toJSON());
+    }
+  },
+  getVersion: function() {
+    return config.version;
   }
 };

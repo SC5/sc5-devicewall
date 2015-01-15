@@ -47,6 +47,7 @@ angular.module('DeviceWall')
       }
 
       $scope.url = {
+        selectedValue: {},
         value: '',
         visitedUrls: $window.localStorage.getItem('visitedUrls') ? JSON.parse($window.localStorage.getItem('visitedUrls')) : [],
         click: function() {
@@ -60,9 +61,9 @@ angular.module('DeviceWall')
         }
       };
 
-      $scope.btnGo =              {show: true};
-      $scope.btnStopAllTesting =  {show: false};
-      $scope.btnStopTesting =     {show: false};
+      $scope.btnGo =              {show: true, disabled: false};
+      $scope.btnStopAllTesting =  {show: false, disabled: false};
+      $scope.btnStopTesting =     {show: false, disabled: false};
 
       $scope.tooltipError = {
         show: false,
@@ -73,17 +74,26 @@ angular.module('DeviceWall')
 
 
       $scope.submitUrl = function() {
-        if ($scope.url.selectedValue) {
-          // If user has selected an existing url from the autocomplete array, use that value
+        if (
+          _.has($scope.url, "selectedValue") &&
+          _.has($scope.url.selectedValue, "originalObject") &&
+          _.has($scope.url.selectedValue.originalObject, "url")
+        ) {
           $scope.url.value = $scope.url.selectedValue.originalObject.url;
-        } else {
-          // Add new url to visitedUrls array and to local storage
-          $scope.url.visitedUrls.push({url: $scope.url.value});
-          $window.localStorage.setItem('visitedUrls', JSON.stringify($scope.url.visitedUrls));
+        } else if (_.has($scope.url.selectedValue, "originalObject")) {
+          $scope.url.value = $scope.url.selectedValue.originalObject;
         }
 
+        // Add new url to visitedUrls array and to local storage
+        $scope.url.visitedUrls.push({url: $scope.url.value});
+        $scope.url.visitedUrls = _.unique($scope.url.visitedUrls, function(obj) {
+          return obj.url;
+        });
+        $window.localStorage.setItem('visitedUrls', JSON.stringify($scope.url.visitedUrls));
+
         $log.debug('Submit url ', $scope.url.value);
-        if ($scope.url.value.length <= 4) {
+
+        if (!$scope.url.value || $scope.url.value.length <= 4) {
           $scope.tooltipError = {
             show: true,
             content: 'Invalid url'
@@ -103,12 +113,15 @@ angular.module('DeviceWall')
         $scope.tooltipError.content = '';
         socket.emit('start', formData);
         $scope.setButtonsStatus(false);
+        $scope.setButtonsDisabled(true);
       };
 
       $scope.selectAll = function(status) {
         _.each(DeviceList.toArray(), function(device) {
-          device.selected = status;
-          DeviceList.update(device);
+          if (!$scope.isOffline(device)) {
+            device.selected = status;
+            DeviceList.update(device);
+          }
         });
         $scope.deviceList = DeviceList.toArray();
       };
@@ -134,6 +147,7 @@ angular.module('DeviceWall')
 
       $scope.stopAllTesting = function() {
         $log.debug('stop All testing');
+        $scope.setButtonsDisabled(true);
         socket.emit('stopall');
       };
 
@@ -152,7 +166,7 @@ angular.module('DeviceWall')
           var instancesRunning = false;
           _.each(data, function(device) {
             // device selected by default
-            device.selected = true;
+            device.selected = !$scope.isOffline(device);
             if (device.userId) {
               instancesRunning = true;
             }
@@ -170,17 +184,24 @@ angular.module('DeviceWall')
         if (DeviceList.has({label: data.oldLabel})) {
           var device = DeviceList.get(data.oldLabel);
           DeviceList.remove(device);
+          if (DeviceList.has({label: data.newLabel})) {
+            DeviceList.remove(DeviceList.get(data.newLabel));
+          }
           device.label = data.newLabel;
           DeviceList.add(device);
+          $scope.deviceList = DeviceList.toArray();
         }
       });
+
       socket.on('update', function (data) {
         $scope.$apply(function() {
           _.each(data, function(device) {
             if (DeviceList.has(device)) {
+              var currentDevice = DeviceList.get(device.label);
+              device.selected = $scope.isOffline(device) ? false : !$scope.isOffline(currentDevice) ? currentDevice.selected : true;
               DeviceList.update(device);
             } else {
-              device.selected = true;
+              device.selected = !$scope.isOffline(device);
               DeviceList.add(device);
             }
           });
@@ -188,10 +209,20 @@ angular.module('DeviceWall')
         });
       });
 
+      socket.on('remove', function (data) {
+        var device;
+        _.each(data, function(label) {
+          if (DeviceList.has({label: label})) {
+            DeviceList.remove(DeviceList.get(label));
+          }
+        });
+        $scope.deviceList = DeviceList.toArray();
+      });
+
       socket.on('start', function (data) {
         if (data.user.id === $scope.user.id) {
           $scope.setButtonsStatus(false);
-          $scope.serverStatus = 'running';
+          $scope.setButtonsDisabled(true);
           if ($scope.openUrl) {
             $log.debug('Opening a popup view');
             if ($scope.popupWindow && !$scope.popupWindow.closed) {
@@ -201,6 +232,13 @@ angular.module('DeviceWall')
               $scope.popupWindow = $window.open(data.url, '_blank');
             }
           }
+        }
+      });
+
+      socket.on('running', function (data) {
+        if (data.user.id === $scope.user.id) {
+          $scope.setButtonsDisabled(false);
+          $scope.serverStatus = 'running';
         }
       });
 
@@ -223,8 +261,15 @@ angular.module('DeviceWall')
         $scope.setButtonsStatus(true);
       });
 
-      // simple helper for buttons
+      // simple helpers for buttons
+      $scope.setButtonsDisabled = function(disabled) {
+        $scope.btnStopAllTesting.disabled = disabled;
+        $scope.btnStopTesting.disabled = disabled;
+        $scope.btnGo.disabled = disabled;
+      };
+
       $scope.setButtonsStatus = function(status) {
+        $scope.setButtonsDisabled(false);
         $scope.btnStopAllTesting.show = !status;
         $scope.btnStopTesting.show = !status;
         $scope.btnGo.show = true;
@@ -240,11 +285,18 @@ angular.module('DeviceWall')
         if (disableGoButton && scope.openUrl) {
           disableGoButton = false;
         }
+        if (scope.btnStopAllTesting.disabled) {
+          disableGoButton = true;
+        }
         $scope.btnGo.disabled = disableGoButton;
       };
 
       $scope.showDeviceView = function() {
         $window.location.href = $window.location.protocol + '//' + $window.location.hostname + ':' +  appConfig.port;
+      };
+
+      $scope.isOffline = function(device) {
+        return !device.userId && (!device.lastSeen || device.lastSeen + $scope.config.client.pingIntervalSeconds * 2000 < new Date().getTime());
       };
 
       $scope.$watch('deviceList', $scope.checkGoButtonStatus, true);

@@ -11,6 +11,7 @@ var Instances = {
     this.instances = [];
     this.config = options.config;
     this.devices = options.devices;
+    this.emitter = options.emitter;
   },
   // if needle is array, return is array of matched objects
   find: function(needle) {
@@ -28,13 +29,13 @@ var Instances = {
   findInstanceByUrl: function(urlString) {
     'use strict';
     return _.find(this.instances, function(instance) {
-      return instance.get('url') === urlString;
+      return instance.get('url') === url.parse(urlString).href;
     });
   },
   removeInstance: function(urlString) {
     'use strict';
-    this.instances = _.filter(this.instances, function(instance) {
-      return instance.get('url') !== urlString;
+    this.instances = _.reject(this.instances, function(instance) {
+      return instance.get('url') === url.parse(urlString).href;
     });
   },
   start: function(data) {
@@ -61,19 +62,10 @@ var Instances = {
         console.log("url after checking all the redirections: ", resolvedUrl.href);
         data.url = resolvedUrl.href;
         if (instance && instance.isConnected()) {
-          var previousUrlObject = url.parse(instance.get('url'));
-          var nextUrlObject = resolvedUrl;
-          if (previousUrlObject.host === nextUrlObject.host) {
-            // same host, just send new location
-            instance.set('url', resolvedUrl.href);
-            instance.location(resolvedUrl.path);
-            deferred.resolve();
-          } else {
-            // stop before relaunch
-            that.stop(urlString).then(function() {
-              that.startInstance(data, deferred);
-            });
-          }
+          // stop before relaunch
+          that.stop(urlString).then(function() {
+            that.startInstance(data, deferred);
+          });
         } else {
           // make new instance
           that.startInstance(data, deferred);
@@ -92,7 +84,11 @@ var Instances = {
       clone.devices = _.filter(clone.devices, function(device) {
         return usedLabels.indexOf(device.get('label')) > -1;
       });
-      var instance = new Instance(data, {config: that.config, devices: clone});
+      var instance = new Instance(data, {
+        config: that.config,
+        devices: clone,
+        emitter: that.emitter
+      });
       that.instances.push(instance);
 
       instance.start(data)
@@ -161,7 +157,7 @@ var Instances = {
 
     if (instance) {
       console.log("Stopping instance", urlString);
-      instance.stop().then(function() {
+      instance.stop({ active: true }).then(function() {
         console.log("instance stopped:", urlString);
         that.removeInstance(urlString);
         deferred.resolve();
@@ -170,7 +166,7 @@ var Instances = {
       console.log("no instance:", urlString);
       deferred.resolve();
     }
-    return deferred.promise;    
+    return deferred.promise;
   },
   stopAll: function() {
     'use strict';
@@ -179,7 +175,7 @@ var Instances = {
         promises = [];
     console.log("instances.stopAll");
     _.each(this.instances, function(instance) {
-      promises.push(instance.stop());
+      promises.push(instance.stop({ all: true }));
     });
     Q.all(promises).fin(function() {
       that.instances = [];
@@ -193,6 +189,26 @@ var Instances = {
     _.each(this.instances, function(instance) {
       instance.forceStop();
     });
+  },
+  waitForClientConnections: function(amount) {
+    var that = this;
+    var deferred = Q.defer();
+    var deviceAmount = amount;
+    var timeout = setTimeout(function() {
+      that.emitter.removeAllListeners("connect:browsersync");
+      deferred.resolve();
+    }, 5000);
+    this.emitter.on("connect:browsersync", function() {
+      deviceAmount--;
+      if (deviceAmount === 0) {
+        if (timeout) {
+          clearTimeout(timeout);
+        }
+        that.emitter.removeAllListeners("connect:browsersync");
+        deferred.resolve();
+      }
+    });
+    return deferred.promise;
   }
 };
 

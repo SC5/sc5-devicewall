@@ -2,8 +2,15 @@
 <html ng-app="DeviceWall">
 <head>
   <base href="/">
+  <!--[if IE]><script type="text/javascript">
+    // Fix for IE ignoring relative base tags.
+    (function() {
+        var baseTag = document.getElementsByTagName('base')[0];
+        baseTag.href = baseTag.href;
+    })();
+  </script><![endif]-->
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, user-scalable=no, minimal-ui, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
   <title>Device Wall</title>
   <!-- inject:css -->
   <!-- endinject -->
@@ -12,14 +19,22 @@
   <!-- inject:js -->
   <!-- endinject -->
 </head>
-<body broadcast-activity ng-click="sendBroadcast()" ng-touch="sendBroadcast()">
+<body screensaver>
+  <div id="screensaver" class="{{screensaver ? 'visible' : 'not-visible'}} {{screensaverClass}}">
+    <img src="assets/images/sc5logo_w.png" class="saver-logo">
+    <img src="assets/images/screensaver_slogan.png" class="slogan slogan-text">
+    <a ng-href="/tutorial">
+      <img src="assets/images/screensaver_tutorial_link.png" class="slogan slogan-link">
+    </a>
+    <div ng-show="label" class="device-info"><h2>Label: {{ label }}</h2></div>
+  </div>
     <img src="/assets/images/sc5logo.png" class="logo">
     <h1>Device Wall</h1>
     <div id="container" ng-view>
     </div>
 
-    <footer>
-        Copyright 2014 SC5 Online
+    <footer version>
+        Copyright 2014 SC5 Online, version {{ version }}
     </footer>
 </body>
 

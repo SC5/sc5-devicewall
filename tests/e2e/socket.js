@@ -1,4 +1,4 @@
-var config = require('../../config.test.json');
+var config = require('../../server/config.js');
 var testHost = config.protocol + '://' + config.host + ':' + config.port;
 var socketApp = require('socket.io-client')(testHost + '/devicewallapp');
 var socket = require('socket.io-client')(testHost + '/devicewall');
@@ -54,10 +54,12 @@ module.exports.update = function() {
 module.exports.addDevices = function(labels) {
   var deferreds = [];
   var deferred = protractor.promise.defer();
+  var now = new Date().getTime();
   for(var i = 0; i < labels.length; i++) {
     deferreds.push(deferredEmit(socketApp, 'update', {
       "label": labels[i],
-      "appPlatform": "browser"
+      "appPlatform": "browser",
+      "lastSeen": now
     }, 500));
   }
   Q.all(deferreds).fin(function() {

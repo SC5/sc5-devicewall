@@ -1,11 +1,13 @@
 /*jshint -W072 */
 angular.module('DeviceWall')
-  .controller('ClientController', function($rootScope, $scope, $timeout, socketConnect, $window, appConfig, Util, $log) {
+  .controller('ClientController',
+  function($rootScope, $scope, $location, $timeout, $interval, socketConnect, $window, appConfig, Util, $log) {
     var screensaverTimeoutPromise;
     var screensaverTimeoutSeconds = appConfig.client.screenSaverTimeoutSeconds || 60;
-    var socket = socketConnect.connect('/devicewallapp');
-    // Scope variables
     $scope.label = $window.localStorage.getItem('label') || '';
+    var socket = socketConnect.connect('/devicewallapp', $scope.label);
+    // Scope variables
+    $scope.statusMessage = "Initializing connection";
     $scope.oldLabel = $scope.label;
     $scope.model = '';
     $scope.platform = '';
@@ -14,9 +16,10 @@ angular.module('DeviceWall')
     $scope.online = '';
     $scope.batteryStatus = {level: '', isPlugged: ''};
     $scope.view = {
-      label:        $scope.label === '',
-      connection:   $scope.label !== '',
-      screensaver:  false
+      label: $scope.label === '',
+      connection: $scope.label !== '',
+      screensaver: false,
+      screensaverClass: "center"
     };
 
     $scope.showSettings = function() {
@@ -25,11 +28,26 @@ angular.module('DeviceWall')
     };
 
     $scope.showControlPanel = function() {
-      var portString = $window.location.port.length > 0 ? ':' + $window.location.port : '';
-      var url = $window.location.protocol + '//' + $window.location.hostname + portString +
-        '/devices';
-      $window.location.href = url;
+      $location.path('/devices');
     };
+
+    $scope.showTutorial = function() {
+      $location.path('/tutorial');
+    };
+
+    socket.on('connect', function() {
+      $scope.statusMessage = "Ready for testing";
+    });
+    socket.on('version', function(data) {
+      if (data !== appConfig.version) {
+        $log.debug('old version reloading browser');
+        $window.location.reload();
+      }
+    });
+
+    socket.on('disconnect', function() {
+      $scope.statusMessage = "Not connected";
+    });
 
     socket.on('start', function(data) {
       var id = socket.io().engine.id;
@@ -44,7 +62,6 @@ angular.module('DeviceWall')
       $log.debug('stop: ', data);
     });
 
-
     $scope.updateLabel = function() {
       if ($scope.label) {
         $window.localStorage.setItem('label', $scope.label);
@@ -56,36 +73,22 @@ angular.module('DeviceWall')
           socket.emit('rename', {oldLabel: $scope.oldLabel, newLabel: $scope.label});
           $scope.oldLabel = $scope.label;
         } else {
-          socket.emit('update', {label: $scope.label});
+          socket.emit('update', {label: $scope.label, version: appConfig.version});
         }
       }
     };
 
-    function showScreensaver() {
-      $scope.view.screensaver = true;
-    }
-
-    function hideScreensaver() {
-      $scope.view.screensaver = false;
-    }
-
-    function resetScreensaverCounter() {
-      $timeout.cancel(screensaverTimeoutPromise);
-      if ($scope.view.screensaver) {
-        hideScreensaver();
-      }
-      screensaverTimeoutPromise = $timeout(showScreensaver, screensaverTimeoutSeconds*1000);
-    }
-
-    $scope.$on('app-activity', function() {
-      resetScreensaverCounter();
-    });
-
-    resetScreensaverCounter();
     if ($scope.label) {
       socket.emit('update', {label: $scope.label});
     }
 
+    $interval(function() {
+      if (socket) {
+        socket.emit('ping', {label: $scope.label});
+      } else {
+        $scope.statusMessage = "Not connected";
+      }
+    }, appConfig.client.pingIntervalSeconds*1000);
     $scope.$on('$destroy', function() {
       socket.removeAllListeners();
     });

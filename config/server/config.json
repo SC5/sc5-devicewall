@@ -1,14 +1,14 @@
 {
   "sessionKey": "devicewall12345",
-  "deviceWallAppURL": "https://devicewall.sc5.io/client",
+  "deviceWallAppURL": "http://localhost/client",
   "clientIdleReturnSeconds": 300,
   "maxSockets": 100,
   "sslKey": "./node_modules/browser-sync/lib/server/certs/server.key",
   "sslCert": "./node_modules/browser-sync/lib/server/certs/server.crt",
-  "proxyHost": "devicewall.sc5.io",
+  "proxyHost": "localhost",
   "devicesJson": "./server/data/devices.json",
-  "instancesJson": "./server/data/instances.json",
   "maxRedirects": 10,
   "maxListeners": 100,
-  "protocol": "https"
+  "protocol": "http",
+  "removeDeviceAfterUnusedDays": 30
 }

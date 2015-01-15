@@ -1,12 +1,13 @@
 var browserSync = require('browser-sync'),
     evt = browserSync.emitter,
-    config = require('../config.json'),
+    config = require('./config.js'),
     bs,
     url = require('url'),
     http = require('http'),
     https = require('https'),
     Q = require('q'),
-    path = require('path');
+    path = require('path'),
+    browserSyncTimeout;
 
 https.globalAgent.maxSockets = config.maxSockets || 5;
 http.globalAgent.maxSockets = config.maxSockets || 5;
@@ -27,7 +28,16 @@ function deferredEmit(socket, event, data, timeout) {
     deferred.resolve();
   });
   return deferred.promise;
-};
+}
+
+function resetTimeout() {
+  clearTimeout(browserSyncTimeout);
+  browserSyncTimeout = setTimeout(function() {
+    process.send({
+      type: 'browserSyncIdleTimeout'
+    });
+  }, config.clientIdleReturnSeconds*1000);
+}
 
 process.on('message', function(message) {
   'use strict';
@@ -63,29 +73,43 @@ process.on('message', function(message) {
       }
       evt.on('client:connected', function(client) {
         var referer = url.parse(client.referer);
-        var rooms = [];
+        var currentRoom = '';
         Object.keys(client.rooms).forEach(function(room) {
-          rooms.push(room);
+          if (room === client.id) {
+            currentRoom = room;
+          }
         });
         if (referer.query && referer.query.indexOf('devicewall=') > -1) {
           // First connection, save the devicewall websocket id
           var devicewall = referer.query.substring(referer.query.lastIndexOf('=') + 1);
           process.send({
             type: 'browserSyncSocketId',
-            browsersync: rooms,
+            browsersync: currentRoom,
             devicewall: devicewall
           });
         } else {
           // Clicking links on the UI, save the browsersync socket ids
           process.send({
             type: 'browserSyncSocketRoomsUpdate',
-            browsersync: rooms
+            browsersync: currentRoom
           });
         }
+      });
+      evt.on('click:externalurl', function(data) {
+        if (data.href) {
+          process.send({
+            type: 'browserSyncExternalUrl',
+            href: data.href
+          });
+        }
+      });
+      evt.on('resetTimeout', function() {
+        resetTimeout();
       });
       evt.on('init', function(api) {
         console.log("browserSync process: initialized");
         process.send({type: 'browserSyncInit', browserSync: api.options.urls.external});
+        resetTimeout();
       });
       bs = browserSync.init(null, browserSyncConfig);
       break;

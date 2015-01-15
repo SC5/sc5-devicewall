@@ -28,7 +28,7 @@ module.config(function($routeProvider, $locationProvider, $logProvider, appConfi
     }).
     when('/info', {
       templateUrl: 'assets/views/info.html',
-      controller: 'ClientController'
+      controller: 'InfoController'
     }).
     when('/tutorial', {
       templateUrl: 'assets/views/tutorial/tutorial.html',

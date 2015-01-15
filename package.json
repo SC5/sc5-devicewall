@@ -1,6 +1,6 @@
 {
   "name": "sc5-devicewall",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "engines": {
     "node": ">=0.10.10",
     "npm": ">=1.2.15"
@@ -64,12 +64,5 @@
     "build": "node_modules/gulp/bin/gulp.js",
     "test": "node_modules/gulp/bin/gulp.js test",
     "start": "node server/server.js"
-  },
-  "config": {
-    "server": {
-      "host": "devicewall.sc5.io",
-      "maxSockets": 100,
-      "port": 8080
-    }
   }
 }

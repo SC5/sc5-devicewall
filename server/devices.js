@@ -59,7 +59,7 @@ var Devices = {
     return json;
   },
   read: function() {
-    var that = this, 
+    var that = this,
         devices;
     if (fs.existsSync(this.config.devicesJson)) {
       devices = JSON.parse(fs.readFileSync(this.config.devicesJson, 'utf8'));
@@ -97,6 +97,14 @@ var Devices = {
     this.devices = [];
     this.updated = true;
     this.write();
+  },
+  getGhostDevices: function() {
+    var now = new Date().getTime();
+    return _.map(_.filter(this.devices, function(device) {
+      return device.get('lastSeen') && device.get('lastSeen') + this.config.removeDeviceAfterUnusedDays * 86400000  < now;
+    }), function(device ) {
+      return device.get('label');
+    });
   }
 };
 

@@ -5,11 +5,11 @@ var
   expressSession = require('express-session'),
   https = require('https'),
   http = require('http'),
-  config = require('../config.json'),
+  EventEmitter = require('events').EventEmitter;
+  config = require('./config.js'),
   fs = require('fs');
 
 if (process.env.NODE_ENV === "test") {
-  config = require('../config.test.json');
   if (fs.existsSync(config.devicesJson)) {
     fs.unlinkSync(config.devicesJson);
   }
@@ -59,5 +59,6 @@ server.listen(config.port, function () {
 
 // Socket IO
 require('./socket.js')(server, {
-  config: config
+  config: config,
+  emitter: new EventEmitter()
 });

@@ -4,13 +4,13 @@
 
   angular.module('DeviceWall')
     .factory('socketConnect', function($log, $window, socketFactory) {
-      if (('WebSocket' in $window) === false) {
-        return false;
-      }
+      // If no WebSocket support or device is WP7, force transport to be polling
+      var options = ('WebSocket' in $window === false || navigator.userAgent.match(/Windows Phone OS 7\.5/)) ? {transports: ["polling"]} : {};
       return {
-        connect: function(path) {
+        connect: function(path, label) {
+          options.query = {label: label};
           return socketFactory({
-            ioSocket: io.connect(path)
+            ioSocket: io.connect(path, options)
           });
         }
       };

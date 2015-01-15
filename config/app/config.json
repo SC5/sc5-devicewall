@@ -15,7 +15,15 @@
     },
     "client": {
       "screenSaverTimeoutSeconds": 600,
-      "redirectToClientModeAutomatically": false
+      "redirectToClientModeAutomatically": false,
+      "pingIntervalSeconds": 10
+    },
+    "tutorial": {
+      "wifi": {
+        "SSID": "SSID",
+        "password": "password"
+      },
+      "url": "https://devicewall.sc5.io"
     }
   }
 }

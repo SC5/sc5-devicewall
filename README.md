@@ -91,6 +91,11 @@ This URL is represents idle mode URL. Used when client jumps from testing back t
 Client is automatically redirected back to idle mode after clientIdleReturnSeconds is exceeded
 
     "clientIdleReturnSeconds": 300 # client returns from testing automatically after 300 seconds
+#### removeDeviceAfterUnusedDays
+Unused devices are removed completely after defined amount of days
+
+    "removeDeviceAfterUnusedDays": 30 # device removed from server after unused for 30 days
+
 ### Application configuration
 
 #### connectionSetup
@@ -104,6 +109,10 @@ Connection setup represents control panel configuration tab which is used to giv
         "redirectToClientModeAutomatically": false # automatic redirect disabled from main page if device detected as client
       }
 
+#### screenSaverTimeoutSeconds
+Controls the time after screen saver appears. Screen saver is supposed to keep devices displays to not burn.
+
+    "connectionsSetup.client.screenSaverTimeoutSeconds": 300 # Screen saver will appear after 300 seconds idle
 
 ## Building
 

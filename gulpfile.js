@@ -34,8 +34,6 @@ var config = {
 // Package management
 /* Install & update Bower dependencies */
 gulp.task('install', ['config', 'bower'], function() {
-  // Downloads the Selenium webdriver
-  $.protractor.webdriver_update(function() {});
   gulp.start('integrate');
 });
 
@@ -57,6 +55,7 @@ gulp.task('config', function() {
 
   // Server config
   var serverConfig = JSON.parse(fs.readFileSync(configLocalServer+'/config.json'));
+  serverConfig.version = packagejson.version;
   serverConfig = extend(true, serverConfig, config.server);
   // read local config
   if (fs.existsSync(configLocalServer+'/config.local.json')) {
@@ -72,10 +71,12 @@ gulp.task('config', function() {
     data = JSON.parse(fs.readFileSync(configLocalServer + '/config.test.local.json'));
     serverTestConfig = extend(true, serverTestConfig, data);
   }
+  serverTestConfig = extend(true, serverConfig, serverTestConfig);
   fs.writeFileSync('./config.test.json', JSON.stringify(serverTestConfig, null, 2));
 
   // Control panel app config
   var clientConfig = JSON.parse(fs.readFileSync(configLocalApp + '/config.json'));
+  clientConfig.appConfig.version = packagejson.version;
   clientConfig.appConfig.socketServer = config.protocol + '://' + serverConfig.host + ':' + serverConfig.port + '/devicewall';
   // read local config
   if (fs.existsSync(configLocalApp+'/config.local.json')) {
@@ -264,6 +265,7 @@ gulp.task('test:e2e', ['webdriver_manager_update'], function() {
   gulp.src(['tests/e2e/**/*.js'], { read: false })
     .pipe($.protractor.protractor(protractorConf)).on('error', function() {
       server.kill();
+      throw new Error('Selenium e2e tests failed.');
     }).on('end', function() {
       server.kill();
     });
@@ -300,7 +302,7 @@ gulp.task('test:e2e:ci', function() {
 
 
 
-
+gulp.task('test', ['test:e2e']);
 gulp.task('default', ['integrate']);
 gulp.task('build', ['clean'], function() {
   gulp.start('integrate');

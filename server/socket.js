@@ -1,26 +1,45 @@
 var _ = require('lodash');
 var socketio = require('socket.io');
+var utils = require('./utils.js');
 
 module.exports = function (app, options) {
   'use strict';
   var
     io = socketio(app),
     config = options.config,
+    emitter = options.emitter,
     nsApp = io.of('/devicewallapp'),
     nsCtrl = io.of('/devicewall'),
     devices = require('./devices'),
     instances = require('./instances');
 
   // Device
+  nsApp.use(function(socket, next) {
+    var label = socket.handshake.query.label;
+    if (label) {
+      utils.updateLastSeen(label, devices);
+      updateDevicesToControlPanel();
+    }
+    next();
+  });
   nsApp.on('connection', function (socket) {
     console.log('Test device connected!');
+    nsApp.emit("version", utils.getVersion());
 
+    socket.on('ping', pingApp);
     socket.on('rename', rename);
     socket.on('update', update);
     socket.on('started', started);
     socket.on('idling', idling);
     socket.on('disconnect', disconnect);
     socket.on('check-platform', checkPlatform);
+
+    function pingApp(data) {
+      if (data.label) {
+        utils.updateLastSeen(data.label, devices);
+        //console.log(new Date().toISOString() + " Client <<<< ping " + data.label);
+      }
+    }
 
     function rename(data) {
       console.log("Client <<<< rename ", data);
@@ -47,6 +66,12 @@ module.exports = function (app, options) {
         console.error("Client sent an empty label", data);
         return;
       }
+      if (_.has(data, 'version')) {
+        if (data.version !== utils.getVersion()) {
+          nsApp.emit("version", utils.getVersion());
+        }
+      };
+      data.lastSeen = new Date().getTime();
       device = devices.update(data);
       if (device.get('userId')) {
         var instance = instances.find(device.get('userId'));
@@ -121,37 +146,6 @@ module.exports = function (app, options) {
       socket.on('reset', resetAppData);
     }
 
-    function start(data) {
-      console.log("Control <<< start", data);
-      instances.start(data).then(
-        function(startData) {
-          var appData = _.clone(data);
-          appData.url = startData.startUrl;
-
-          console.log('Control >> socket "update"');
-          // Add site and proxy URIs to control panel 'update' event
-          var devicesClone = devices.toJSON();
-          _.each(devicesClone, function(device) {
-            if (data.labels.indexOf(device.label) > -1) {
-              device.site = data.url;
-              device.proxy = startData.startUrl;
-            }
-          });
-          nsCtrl.emit('update', devicesClone);
-
-          console.log('Control >> start"', data);
-          nsCtrl.emit('start', data);
-          console.log('Client >> start"', appData);
-          nsApp.emit('start', appData);
-        },
-        function(reason) {
-          var emitData = {user: data.user, reason: reason};
-          console.log('Control >> server-stop', emitData);
-          nsCtrl.emit('server-stop', emitData);
-        }
-      );
-    }
-
     function stop(data) {
       console.log("Control <<< stop", data);
       instances.stop(data.url).then(function() {
@@ -198,7 +192,7 @@ module.exports = function (app, options) {
         devices.update(device.toJSON());
       }
       app.emit('update-devices');
-      socket.broadcast.emit('update', devices);
+      socket.broadcast.emit('update', devices.toJSON());
     }
 
     function removeDevices(data) {
@@ -207,7 +201,7 @@ module.exports = function (app, options) {
         devices.remove(label);
       });
       app.emit('update-devices');
-      socket.broadcast.emit('update', devices);
+      socket.broadcast.emit('remove', data.labels);
     }
 
     function reloadDevices() {
@@ -227,14 +221,87 @@ module.exports = function (app, options) {
     }
   });
 
+  function start(data) {
+    console.log("Control <<< start", data);
+    var uri = utils.guessURI(data.url);
+    if (uri === false) {
+      console.log("Invalid URL: " + data.url);
+      var emitData = {user: data.user, reason: "Invalid URL"};
+      console.log('Control >> server-stop', emitData);
+      nsCtrl.emit('server-stop', emitData);
+      return;
+    }
+    data.url = uri;
+
+    instances.start(data).then(
+      function(startData) {
+        var appData = _.clone(data);
+        appData.url = startData.startUrl;
+
+        console.log('Control >> socket "update"');
+        // Add site and proxy URIs to control panel 'update' event
+        var devicesClone = devices.toJSON();
+        _.each(devicesClone, function(device) {
+          if (data.labels.indexOf(device.label) > -1) {
+            device.site = data.url;
+            device.proxy = startData.startUrl;
+          }
+        });
+        nsCtrl.emit('update', devicesClone);
+
+        console.log('Control >> start', data);
+        nsCtrl.emit('start', data);
+        console.log('Client >> start', appData);
+        nsApp.emit('start', appData);
+        instances.waitForClientConnections(data.labels.length).then(function() {
+          console.log('Control >> running', data);
+          nsCtrl.emit('running', data);
+        });
+      },
+      function(reason) {
+        var emitData = {user: data.user, reason: reason};
+        console.log('Control >> server-stop', emitData);
+        nsCtrl.emit('server-stop', emitData);
+      }
+    );
+  };
+
+  function removeGhostDevices() {
+    var labels = devices.getGhostDevices();
+    if (labels.length) {
+      console.log("Control <<< removeGhostDevices", labels);
+      labels.forEach(function(label) {
+        devices.remove(label);
+      });
+      app.emit('update-devices');
+      nsCtrl.emit('remove', labels);
+    }
+  }
+
+  function updateDevicesToControlPanel() {
+    nsCtrl.emit('update', devices.toJSON());
+  }
+
+  // Events
+  emitter.on('click:externalurl', function(data) {
+    start(data);
+  });
+
   devices.init({config: config});
   devices.read();
+  removeGhostDevices();
   instances.init({
     config: config,
-    devices: devices
+    devices: devices,
+    emitter: emitter
   });
   setInterval(function() {
     devices.write();
   }, 10000);
-
+  setInterval(function() {
+    updateDevicesToControlPanel();
+  }, 10000);
+  setInterval(function() {
+    removeGhostDevices();
+  }, 86400000);
 };
