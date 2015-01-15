@@ -287,6 +287,10 @@ module.exports = function (app, options) {
     start(data);
   });
 
+  emitter.on('client:connected', function() {
+    nsCtrl.emit('update', devices.toJSON());
+  });
+
   devices.init({config: config});
   devices.read();
   removeGhostDevices();
