@@ -7,6 +7,7 @@ var Q = require('q');
 module.exports.writeSingleTestDevice = function(label) {
   var devicesJson = path.resolve(config.devicesJson);
   var devices = [];
+  var now = new Date().getTime();
   if (fs.existsSync(devicesJson)) {
     devices = JSON.parse(fs.readFileSync(devicesJson));
   }
@@ -19,7 +20,8 @@ module.exports.writeSingleTestDevice = function(label) {
   if (!isDeviceInList) {
     devices.push({
       "label": label,
-      "appPlatform": "browser"
+      "appPlatform": "browser",
+      "lastSeen": now
     });
   }
   fs.writeFileSync(devicesJson, JSON.stringify(devices, null, 2));
@@ -27,7 +29,7 @@ module.exports.writeSingleTestDevice = function(label) {
 
 module.exports.reloadDevices = function() {
   return socket.reloadDevices();
-}
+};
 
 module.exports.addSingleTestDevice = function(label) {
   return socket.addDevices([label]);
@@ -43,7 +45,8 @@ module.exports.removeTestDevices = function() {
 
 module.exports.clearDevices = function() {
   return socket.removeAllDevices();
-}
+};
+
 module.exports.stopAll = function() {
   return socket.stopAll();
 };

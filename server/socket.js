@@ -18,6 +18,7 @@ module.exports = function (app, options) {
     var label = socket.handshake.query.label;
     if (label) {
       utils.updateLastSeen(label, devices);
+      updateDevicesToControlPanel();
     }
     next();
   });
@@ -39,6 +40,7 @@ module.exports = function (app, options) {
         console.log(new Date().toISOString() + " Client <<<< ping " + data.label);
       }
     }
+
     function rename(data) {
       console.log("Client <<<< rename ", data);
       var device = devices.find(data.oldLabel);
@@ -69,6 +71,7 @@ module.exports = function (app, options) {
           nsApp.emit("version", utils.getVersion());
         }
       };
+      data.lastSeen = new Date().getTime();
       device = devices.update(data);
       if (device.get('userId')) {
         var instance = instances.find(device.get('userId'));
@@ -275,6 +278,9 @@ module.exports = function (app, options) {
     }
   }
 
+  function updateDevicesToControlPanel() {
+    nsCtrl.emit('update', devices.toJSON());
+  }
 
   // Events
   emitter.on('click:externalurl', function(data) {
@@ -291,6 +297,9 @@ module.exports = function (app, options) {
   });
   setInterval(function() {
     devices.write();
+  }, 10000);
+  setInterval(function() {
+    updateDevicesToControlPanel();
   }, 10000);
   setInterval(function() {
     removeGhostDevices();

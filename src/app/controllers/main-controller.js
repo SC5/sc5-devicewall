@@ -164,7 +164,7 @@ angular.module('DeviceWall')
           var instancesRunning = false;
           _.each(data, function(device) {
             // device selected by default
-            device.selected = true;
+            device.selected = !$scope.isOffline(device);
             if (device.userId) {
               instancesRunning = true;
             }
@@ -195,9 +195,11 @@ angular.module('DeviceWall')
         $scope.$apply(function() {
           _.each(data, function(device) {
             if (DeviceList.has(device)) {
+              var currentDevice = DeviceList.get(device.label);
+              device.selected = $scope.isOffline(device) ? false : currentDevice.selected;
               DeviceList.update(device);
             } else {
-              device.selected = true;
+              device.selected = !$scope.isOffline(device);
               DeviceList.add(device);
             }
           });
@@ -289,6 +291,10 @@ angular.module('DeviceWall')
 
       $scope.showDeviceView = function() {
         $window.location.href = $window.location.protocol + '//' + $window.location.hostname + ':' +  appConfig.port;
+      };
+
+      $scope.isOffline = function(device) {
+        return !device.userId && (!device.lastSeen || device.lastSeen + $scope.config.client.pingIntervalSeconds * 2000 < new Date().getTime());
       };
 
       $scope.$watch('deviceList', $scope.checkGoButtonStatus, true);

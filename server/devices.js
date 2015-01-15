@@ -101,7 +101,7 @@ var Devices = {
   getGhostDevices: function() {
     var now = new Date().getTime();
     return _.map(_.filter(this.devices, function(device) {
-      return device.get('lastUsed') + this.config.removeDeviceAfterUnusedDays * 86400000  < now;
+      return device.get('lastSeen') && device.get('lastSeen') + this.config.removeDeviceAfterUnusedDays * 86400000  < now;
     }), function(device ) {
       return device.get('label');
     });
