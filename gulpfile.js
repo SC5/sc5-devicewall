@@ -13,10 +13,12 @@ var path = require('path'),
     scssLint = require('gulp-scss-lint'),
     server = require('gulp-develop-server'),
     find = require('find'),
-    del = require('del');
+    del = require('del'),
+    git = require('git-rev');
 
 var configLocalServer = './config/server';
 var configLocalApp = './config/app';
+var appBuild = '';
 
 /* Configurations. Note that most of the configuration is stored in
 the task context. These are mainly for repeating configuration items */
@@ -49,13 +51,31 @@ gulp.task('bump', function() {
     .pipe(gulp.dest('./'));
 });
 
+gulp.task('git-rev-build', function(cb) {
+  git.short(function (short) {
+
+    git.branch(function(b) {
+      var d = new Date();
+      var year = d.getFullYear();
+      var month = (d.getMonth()+1).toString().length === 1 ? "0"+(d.getMonth()+1).toString():(d.getMonth()+1).toString();
+      var day = (d.getDate()).toString().length === 1 ? "0"+(d.getDate()).toString():(d.getDate()).toString();
+      appBuild = year + '-'+ month + '-' + day;
+      if (b !== 'master') {
+        appBuild = appBuild + ' dev-' + short;
+      }
+      cb();
+    });
+  });
+});
+
 // install will run this task _before_ bower install task
-gulp.task('config', function() {
+gulp.task('config', ['git-rev-build'], function() {
   var data; // just a tmp variable
 
   // Server config
   var serverConfig = JSON.parse(fs.readFileSync(configLocalServer+'/config.json'));
   serverConfig.version = packagejson.version;
+  serverConfig.build = 'v'+ packagejson.version + ' ' + appBuild;
   serverConfig = extend(true, serverConfig, config.server);
   // read local config
   if (fs.existsSync(configLocalServer+'/config.local.json')) {
@@ -77,6 +97,7 @@ gulp.task('config', function() {
   // Control panel app config
   var clientConfig = JSON.parse(fs.readFileSync(configLocalApp + '/config.json'));
   clientConfig.appConfig.version = packagejson.version;
+  clientConfig.appConfig.build = serverConfig.build;
   clientConfig.appConfig.socketServer = config.protocol + '://' + serverConfig.host + ':' + serverConfig.port + '/devicewall';
   // read local config
   if (fs.existsSync(configLocalApp+'/config.local.json')) {
