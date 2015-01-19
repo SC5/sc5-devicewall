@@ -1,4 +1,4 @@
-  angular.module('DeviceWall').directive('screensaver', function($window, $interval, $log, appConfig) {
+  angular.module('DeviceWall').directive('screensaver', function($window, $location, $interval, $log, appConfig) {
     var screensaverTimeoutPromise;
     var screensaverTimeoutSeconds = appConfig.client.screenSaverTimeoutSeconds || 60;
     return {
@@ -31,7 +31,11 @@
           }
           $scope.screensaverClass = Math.random() <= 0.5 ? classes[0] : classes[1];
           $scope.screensaver = true;
-          $scope.label = $window.localStorage.getItem('label') || '';
+          if ($location.path() === '/devices') {
+            $scope.label = 'Control Panel'
+          } else {
+            $scope.label = 'Label: ' + $window.localStorage.getItem('label') || '';
+          }
           screensaverTimeoutPromise = $interval(showScreensaver, screensaverTimeoutSeconds*1000);
         }
 
