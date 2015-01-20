@@ -23,6 +23,10 @@ Device.prototype.get = function(property) {
   return this.properties[property] || null;
 };
 
+Device.prototype.has = function(property) {
+  return _.has(this.properties, property);
+};
+
 Device.prototype.toJSON = function() {
   return this.properties;
 };

@@ -66,13 +66,28 @@ module.exports = function (app, options) {
         console.error("Client sent an empty label", data);
         return;
       }
-      if (_.has(data, 'version')) {
-        if (data.version !== utils.getVersion()) {
+      if (_.has(data, 'appVersion')) {
+        if (data.appVersion !== utils.getVersion()) {
           nsApp.emit("version", utils.getVersion());
         }
-      };
+      }
+      device = devices.find(data.label);
+      if (!device) {
+        console.error("Device label not found", data.label);
+        return;
+      }
+
+      console.log("device:", device.toJSON());
       data.lastSeen = new Date().getTime();
-      device = devices.update(data);
+      // Set version and platform if not defined
+      _.each(['version', 'platform'], function(infoItem) {
+        if (_.has(data, infoItem) && device.has(infoItem) === false) {
+          device.set(infoItem, data[infoItem]);
+        }
+      });
+
+      device = devices.update(device.toJSON());
+
       if (device.get('userId')) {
         var instance = instances.find(device.get('userId'));
         if (instance) {
