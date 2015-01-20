@@ -48,9 +48,9 @@ process.on('message', function(message) {
       var browserSyncConfig = {
         proxy: parsedUrl.href,
         startPath: parsedUrl.path,
-        idleReturn: {
-          idleSeconds: config.clientIdleReturnSeconds,
-          returnUrl: config.deviceWallAppURL
+        socketCheck: {
+          returnUrl: config.deviceWallAppURL,
+          checkIntervalSeconds: config.clientSocketCheckSeconds
         },
         browser: 'disable',
         https: parsedUrl.protocol === "https:",
