@@ -1,9 +1,10 @@
 /*jshint -W072 */
 angular.module('DeviceWall')
   .controller('ClientController',
-  function($rootScope, $scope, $location, $timeout, $interval, socketConnect, $window, appConfig, Util, $log) {
-    var screensaverTimeoutPromise;
-    var screensaverTimeoutSeconds = appConfig.client.screenSaverTimeoutSeconds || 60;
+  function(
+    $rootScope, $scope, $location, $timeout, $interval,
+    socketConnect, $window, appConfig, Util, $log, DeviceInfo
+  ) {
     $scope.label = $window.localStorage.getItem('label') || '';
     var socket = socketConnect.connect('/devicewallapp', $scope.label);
     // Scope variables
@@ -73,13 +74,19 @@ angular.module('DeviceWall')
           socket.emit('rename', {oldLabel: $scope.oldLabel, newLabel: $scope.label});
           $scope.oldLabel = $scope.label;
         } else {
-          socket.emit('update', {label: $scope.label, version: appConfig.version});
+          socket.emit('update', {label: $scope.label, appVersion: appConfig.version});
         }
       }
     };
 
     if ($scope.label) {
-      socket.emit('update', {label: $scope.label});
+      var info = DeviceInfo.getPlatformInfo();
+      var updateData = {label: $scope.label};
+      if (info) {
+        updateData.platform = info.platform;
+        updateData.version = info.version;
+      }
+      socket.emit('update', updateData);
     }
 
     $interval(function() {
