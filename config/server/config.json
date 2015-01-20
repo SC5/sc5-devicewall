@@ -2,6 +2,7 @@
   "sessionKey": "devicewall12345",
   "deviceWallAppURL": "http://localhost/client",
   "clientIdleReturnSeconds": 300,
+  "clientSocketCheckSeconds": 15,
   "maxSockets": 100,
   "sslKey": "./node_modules/browser-sync/lib/server/certs/server.key",
   "sslCert": "./node_modules/browser-sync/lib/server/certs/server.crt",

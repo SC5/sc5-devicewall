@@ -32,7 +32,7 @@
           $scope.screensaverClass = Math.random() <= 0.5 ? classes[0] : classes[1];
           $scope.screensaver = true;
           if ($location.path() === '/devices') {
-            $scope.label = 'Control Panel'
+            $scope.label = 'Control Panel';
           } else {
             $scope.label = 'Label: ' + $window.localStorage.getItem('label') || '';
           }
