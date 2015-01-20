@@ -72,21 +72,18 @@ module.exports = function (app, options) {
         }
       }
       device = devices.find(data.label);
-      if (!device) {
-        console.error("Device label not found", data.label);
-        return;
+      if (device) {
+        // Set version and platform if not defined
+        _.each(['version', 'platform'], function(infoItem) {
+          if (_.has(data, infoItem) && device.has(infoItem) === false) {
+            device.set(infoItem, data[infoItem]);
+          }
+        });
+        data = device.toJSON();
       }
 
-      console.log("device:", device.toJSON());
       data.lastSeen = new Date().getTime();
-      // Set version and platform if not defined
-      _.each(['version', 'platform'], function(infoItem) {
-        if (_.has(data, infoItem) && device.has(infoItem) === false) {
-          device.set(infoItem, data[infoItem]);
-        }
-      });
-
-      device = devices.update(device.toJSON());
+      device = devices.update(data);
 
       if (device.get('userId')) {
         var instance = instances.find(device.get('userId'));
