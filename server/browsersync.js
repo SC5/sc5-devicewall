@@ -135,7 +135,7 @@ process.on('message', function(message) {
       var promises = [];
       bs.io.sockets.sockets.forEach(function(socket) {
         if (message.device && message.device.browsersync && message.device.browsersync.indexOf(socket.id) > -1) {
-          promises.push(deferredEmit(socket, 'location', {url: bs.options.idleReturn.returnUrl }, 5000));
+          promises.push(deferredEmit(socket, 'location', {url: bs.options.socketCheck.returnUrl }, 5000));
         }
       });
       Q.all(promises).fin(function() {
