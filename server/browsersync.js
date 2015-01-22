@@ -50,7 +50,9 @@ process.on('message', function(message) {
         startPath: parsedUrl.path,
         socketCheck: {
           returnUrl: config.deviceWallAppURL,
-          checkIntervalSeconds: config.clientSocketCheckSeconds
+          checkIntervalSeconds: config.clientSocketCheckSeconds,
+          pingPong: true,
+          pingPongIntervalSeconds: config.clientSocketPingPongSeconds
         },
         browser: 'disable',
         https: parsedUrl.protocol === "https:",
