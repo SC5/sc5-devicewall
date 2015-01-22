@@ -51,7 +51,7 @@ process.on('message', function(message) {
         socketCheck: {
           returnUrl: config.deviceWallAppURL,
           checkIntervalSeconds: config.clientSocketCheckSeconds,
-          pingPong: true,
+          pingPong: false,
           pingPongIntervalSeconds: config.clientSocketPingPongSeconds
         },
         browser: 'disable',
