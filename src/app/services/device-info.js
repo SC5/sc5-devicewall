@@ -8,9 +8,9 @@
         var matches;
         
         if (/(iPhone|iPad)/.test(agent)) {
-          matches = /(iPhone|iPad);.*OS (\d_\d)/.exec(agent);
+          matches = /(iPhone|iPad);.*OS (\d_\d(?:_\d)?)/.exec(agent);
           $log.debug('iOS matches', matches);
-          return {platform: "iOS", version: getVersion(matches).replace('_', '.')};
+          return {platform: "iOS", version: getVersion(matches).replace(/_/g, ".")};
         }
 
         if (/Windows Phone/.test(agent)) {
@@ -24,6 +24,12 @@
           matches = re.exec(agent);
           $log.debug('Android', matches);
           return {platform: "Android", version: getVersion(matches)};
+        }
+
+        if (/(Jolla|Sailfish)/.test(agent)) {
+          matches = /SailfishBrowser\/(\d.\d(?:.\d)?)/.exec(agent);
+          $log.debug('Sailfish', matches);
+          return {platform: "Jolla Sailfish", version: getVersion(matches)};
         }
 
         return false;
