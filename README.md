@@ -31,12 +31,10 @@ In addition, you will need [Ruby](https://www.ruby-lang.org/en/downloads/) to us
 Compass framework for compiling SASS stylesheets into CSS and sprite sheets:
 
     > gem update --system
-    > gem install sass
-    > gem install scss-lint
-    > gem install compass
     > gem install bundler
+    > bundle install
 
-Note that you may need to first uninstall other SASS versions than (3.2.x).
+Note: you may need to first uninstall other SASS versions than (3.2.x).
 
 Installing the project itself is easy. Both build system dependencies and app dependencies are
 triggered by
