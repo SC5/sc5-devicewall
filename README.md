@@ -16,6 +16,8 @@ Device Wall helps developers test web applications on multiple devices at the sa
 * [Running the Service](#Running-the-service)
   * [Live reloading the changes](#live-reloading-the-changes)
 * [Testing](#testing)
+  * [Testing in headless environment](#testing-in-headless-environment)
+* [License](#license)
 
 ## Installation
 
