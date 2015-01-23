@@ -1,4 +1,21 @@
 # SC5 Device Wall
+[![Build Status](https://travis-ci.org/SC5/sc5-devicewall.svg?branch=master)](https://travis-ci.org/SC5/sc5-devicewall) [![dependencies](https://david-dm.org/SC5/sc5-devicewall.png)](https://david-dm.org/SC5/sc5-devicewall)
+
+Device Wall helps developers test web applications on multiple devices at the same time.
+
+## Table of contents
+
+* [Installation](#installation)
+* [Configuration](#configuration)
+  * [Config files](#config-files)
+  * [Generated configurations](#generated-configurations)
+  * [Custom configuration files](#custom-configuration-files)
+  * [Local server configuration](#local-server-configuration)
+  * [Application configuration](#application-configuration)
+* [Building](#building)
+* [Running the Service](#Running-the-service)
+  * [Live reloading the changes](#live-reloading-the-changes)
+* [Testing](#testing)
 
 ## Installation
 
