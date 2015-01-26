@@ -1,7 +1,7 @@
 angular.module('DeviceWall').directive('version', function($window, $log, appConfig) {
   return {
-    link: function($scope, element) {
-      $scope.version = appConfig.version;
+    link: function($scope) {
+      $scope.version = appConfig.build;
     }
   };
 });

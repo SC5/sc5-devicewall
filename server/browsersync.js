@@ -48,9 +48,11 @@ process.on('message', function(message) {
       var browserSyncConfig = {
         proxy: parsedUrl.href,
         startPath: parsedUrl.path,
-        idleReturn: {
-          idleSeconds: config.clientIdleReturnSeconds,
-          returnUrl: config.deviceWallAppURL
+        socketCheck: {
+          returnUrl: config.deviceWallAppURL,
+          checkIntervalSeconds: config.clientSocketCheckSeconds,
+          pingPong: false,
+          pingPongIntervalSeconds: config.clientSocketPingPongSeconds
         },
         browser: 'disable',
         https: parsedUrl.protocol === "https:",
@@ -135,7 +137,7 @@ process.on('message', function(message) {
       var promises = [];
       bs.io.sockets.sockets.forEach(function(socket) {
         if (message.device && message.device.browsersync && message.device.browsersync.indexOf(socket.id) > -1) {
-          promises.push(deferredEmit(socket, 'location', {url: bs.options.idleReturn.returnUrl }, 5000));
+          promises.push(deferredEmit(socket, 'location', {url: bs.options.socketCheck.returnUrl }, 5000));
         }
       });
       Q.all(promises).fin(function() {

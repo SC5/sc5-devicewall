@@ -7,6 +7,8 @@ var STATUS_STARTING = 'starting';
 var STATUS_RUNNING = 'running';
 var STATUS_STOPPING = 'stopping';
 var STATUS_STOPPED = 'stopped';
+var BS_NOT_CONNECTED = 'Not Connected';
+var BS_CONNECTED = 'Connected';
 
 var Instance = function (data, options) {
   this.devices = options.devices;
@@ -43,7 +45,7 @@ Instance.prototype.clearDevice = function(device) {
       userId: null,
       userName: null,
       status: 'idle',
-      lastUsed: +new Date()
+      browsersyncStatus: BS_NOT_CONNECTED
     });
   }
 };
@@ -219,8 +221,8 @@ Instance.prototype._startBrowserSyncProcess = function(data) {
           return device.get('devicewall') === message.devicewall;
         });
         if (device) {
-          device.set('browsersync', message.browsersync);
           that.emitter.emit('connect:browsersync');
+          that.setDeviceConnected(device, message);
         }
         break;
       case 'browserSyncSocketRoomsUpdate':
@@ -228,7 +230,7 @@ Instance.prototype._startBrowserSyncProcess = function(data) {
           return _.intersection(message.browsersync, device.get('browsersync')).length > 0;
         });
         if (device) {
-          device.set('browsersync', message.browsersync);
+          that.setDeviceConnected(device, message);
         }
         break;
       case 'browserSyncReturnedDeviceHome':
@@ -268,6 +270,15 @@ Instance.prototype._startBrowserSyncProcess = function(data) {
   this.childProcess.send({type: 'init', url: data.url, userAgentHeader: data.userAgentHeader});
 
   return deferred.promise;
+};
+
+Instance.prototype.setDeviceConnected = function(device, message) {
+  var that = this;
+  if (device) {
+    device.set('browsersync', message.browsersync);
+    device.set('browsersyncStatus', BS_CONNECTED);
+    that.emitter.emit('client:connected');
+  }
 };
 
 Instance.prototype.getDevices = function() {
@@ -344,7 +355,7 @@ Instance.prototype.markDevices = function(data, status) {
         userId: data.user.id,
         userName: data.user.displayName,
         status: status,
-        lastUsed: +new Date()
+        browsersyncStatus: BS_NOT_CONNECTED
       });
     }
   });

@@ -66,13 +66,25 @@ module.exports = function (app, options) {
         console.error("Client sent an empty label", data);
         return;
       }
-      if (_.has(data, 'version')) {
-        if (data.version !== utils.getVersion()) {
+      if (_.has(data, 'appVersion')) {
+        if (data.appVersion !== utils.getVersion()) {
           nsApp.emit("version", utils.getVersion());
         }
-      };
+      }
+      device = devices.find(data.label);
+      if (device) {
+        // Set version and platform if not defined
+        _.each(['version', 'platform'], function(infoItem) {
+          if (_.has(data, infoItem) && device.has(infoItem) === false) {
+            device.set(infoItem, data[infoItem]);
+          }
+        });
+        data = device.toJSON();
+      }
+
       data.lastSeen = new Date().getTime();
       device = devices.update(data);
+
       if (device.get('userId')) {
         var instance = instances.find(device.get('userId'));
         if (instance) {
@@ -285,6 +297,10 @@ module.exports = function (app, options) {
   // Events
   emitter.on('click:externalurl', function(data) {
     start(data);
+  });
+
+  emitter.on('client:connected', function() {
+    nsCtrl.emit('update', devices.toJSON());
   });
 
   devices.init({config: config});
