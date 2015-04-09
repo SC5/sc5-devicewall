@@ -180,6 +180,8 @@ button {
 
 .icon-button {
 
+  cursor: pointer;
+
   &.settings {
     @include icon-button();
     position: fixed;
@@ -267,7 +269,7 @@ input[type=checkbox]:after,
   width: 100%;
   height: 100%;
   color: #fff;
-  font-family: arial, sans-serif;
+  font-family: 'gthm_medium', arial, sans-serif;
   font-size: 62.5%;
   background-image: url('../assets/images/screensaver_bg.jpg');
   background-attachment: fixed;
@@ -280,6 +282,7 @@ input[type=checkbox]:after,
 
   .saver-logo {
     width: 120px;
+    padding: 0px 40px;
   }
 
   .slogan {
@@ -309,7 +312,7 @@ input[type=checkbox]:after,
 
   &.left {
     text-align: left;
-    background: #0072a3;
+    background: $app-bg;
 
     .slogan {
       left: 0;

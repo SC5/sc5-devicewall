@@ -34,15 +34,9 @@
         </label>
 
         <div class="buttons">
-          <button
-            type="submit"
-            data-ng-disabled="btnGo.disabled"
-            data-ng-show="btnGo.show"
-            class="large"
-            id="go-button"
-          >Go</button>
-          <button type="button" data-ng-show="btnStopTesting.show" data-ng-disabled="btnStopTesting.disabled" class="large ng-hide" data-ng-click="stopTesting()" style="display:none" id="stop-button">Stop</button>
-          <button type="button" data-ng-show="btnStopAllTesting.show" data-ng-disabled="btnStopAllTesting.disabled" class="large" data-ng-click="stopAllTesting()" id="stop-all-button">Stop all</button>
+          <button type="submit" class="btn large" data-ng-disabled="btnGo.disabled" data-ng-show="btnGo.show" id="go-button">Go</button>
+          <button type="button" class="btn large" data-ng-show="btnStopTesting.show" data-ng-disabled="btnStopTesting.disabled" class="large ng-hide" data-ng-click="stopTesting()" style="display:none" id="stop-button">Stop</button>
+          <button type="button" class="btn large" data-ng-show="btnStopAllTesting.show" data-ng-disabled="btnStopAllTesting.disabled" class="large" data-ng-click="stopAllTesting()" id="stop-all-button">Stop all</button>
         </div>
       </div>
 
@@ -91,8 +85,8 @@
 
         <div class="accordion-content">
           <div class="buttons">
-            <button type="button" id="select-all" ng-click="selectAll(true)">Select all</button>
-            <button type="button" id="select-none" ng-click="selectAll(false)">Select none</button>
+            <button type="button" class="btn" id="select-all" ng-click="selectAll(true)">Select all</button>
+            <button type="button" class="btn" id="select-none" ng-click="selectAll(false)">Select none</button>
           </div>
 
           <table spellcheck="false">

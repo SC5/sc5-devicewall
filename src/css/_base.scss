@@ -1,9 +1,12 @@
-$font-blue:   #0072a3;
-$icon-bg:     #007fb5;
-$app-bg:      #0072a3;
-$section-bg:  #0084bd;
-$sc5-blue:    #00a4e4;
-$footer-blue: #005678;
+$font-blue:   #82a9b1;
+$icon-bg:     #82a9b1;
+$app-bg:      #528e97;
+$section-bg:  #82a9b1;
+$sc5-blue:    #82a9b1;
+$footer-blue: #31727d;
+
+$disabled-light:    #807983;
+$disabled-dark:     #807983;
 
 @mixin transition($value) {
   -webkit-transition: $value;
@@ -88,19 +91,44 @@ $footer-blue: #005678;
      url('/assets/fonts/entypo.svg#entypo') format('svg');
 }
 
+@font-face {
+  font-family: 'gthm_medium';
+  src: url('/assets/fonts/gotham_rounded_medium-webfont.eot');
+  src: url('/assets/fonts/gotham_rounded_medium-webfont.eot?#iefix') format('embedded-opentype'),
+  url('/assets/fonts/gotham_rounded_medium-webfont.woff2') format('woff2'),
+  url('/assets/fonts/gotham_rounded_medium-webfont.woff') format('woff'),
+  url('/assets/fonts/gotham_rounded_medium-webfont.ttf') format('truetype'),
+  url('/assets/fonts/gotham_rounded_medium-webfont.svg#gotham_rnd_ssmmedium') format('svg');
+  font-weight: normal;
+  font-style: normal;
+
+}
+
+@font-face {
+  font-family: 'gthm_book';
+  src: url('/assets/fonts/gotham_rounded_book-webfont.eot');
+  src: url('/assets/fonts/gotham_rounded_book-webfont.eot?#iefix') format('embedded-opentype'),
+  url('/assets/fonts/gotham_rounded_book-webfont.woff2') format('woff2'),
+  url('/assets/fonts/gotham_rounded_book-webfont.woff') format('woff'),
+  url('/assets/fonts/gotham_rounded_book-webfont.ttf') format('truetype'),
+  url('/assets/fonts/gotham_rounded_book-webfont.svg#gotham_rnd_ssmbook') format('svg');
+  font-weight: normal;
+  font-style: normal;
+
+}
+
 html {
   height: 100%;
   outline: none;
 }
 
 body {
-
   min-height: 100%;
   padding: 0;
   margin: 0;
   background-color: #005678;
   color: #fff;
-  font-family: arial, sans-serif;
+  font-family: 'gthm_book', arial, sans-serif;
   font-size: 62.5%;
   background-attachment: fixed;
 }
@@ -108,6 +136,28 @@ body {
 a {
   text-decoration: none;
   color: $sc5-blue;
+}
+
+.btn {
+  font-family: 'gthm_book', arial, sans-serif;
+  font-weight: lighter;
+  color: #ffffff;
+  border: none;
+  outline: none;
+  background: $app-bg;
+  border-radius: 0;
+  padding: 5px 20px;
+  text-decoration: none;
+  text-transform: uppercase;
+
+  &:hover {
+    background: $footer-blue;
+  }
+
+  &:disabled {
+    color: #cccccc;
+    background: $disabled-light;
+  }
 }
 
 #container {
