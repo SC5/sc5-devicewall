@@ -8,7 +8,7 @@ body {
   min-height: 100%;
   background-color: $app-bg;
   color: #fff;
-  font-family: arial, sans-serif;
+  font-family: 'gthm_book', arial, sans-serif;
   font-size: 62.5%;
   background-attachment: fixed;
   text-align: center;
@@ -78,7 +78,7 @@ body {
     }
 
     .is-offline {
-      background-color: #808080;
+      background-color: $disabled-dark;
       color: #cccccc;
     }
 
@@ -110,8 +110,8 @@ body {
 
   .section-wrapper {
     background-color: $section-bg;
+    border-radius: 0;
     margin: 20px;
-    border-radius: 5px;
     padding: 10px;
     overflow: auto;
   }
@@ -340,7 +340,7 @@ label {
 button {
   @include box-sizing(content-box);
   @include linear-gradient(#fff, #ddd);
-  font-family: arial, sans-serif;
+  font-family: 'gthm_book', arial, sans-serif;
   overflow: hidden;
   white-space: nowrap;
   -webkit-appearance: none;
