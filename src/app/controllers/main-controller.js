@@ -96,7 +96,7 @@ angular.module('DeviceWall')
         if (!$scope.url.value || $scope.url.value.length <= 4) {
           $scope.tooltipError = {
             show: true,
-            content: 'Invalid url'
+            content: 'Invalid URL'
           };
           return;
         }
