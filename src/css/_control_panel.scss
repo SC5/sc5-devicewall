@@ -202,7 +202,8 @@ h1 {
   font-weight: bold;
   position: relative;
   margin: 0;
-  padding: 0;
+  padding: 0px 0px 7% 0px;
+
 }
 
 h2 {
@@ -541,13 +542,14 @@ input[type=text].error {
   vertical-align: top;
   cursor: pointer;
   background-color: $icon-bg;
-  margin: 5px;
+  margin: 5px 0px 0px 0px;
 
   .text {
     font-size: 30px;
     text-transform: uppercase;
     width: 200px;
     margin: auto;
+    padding-top: 5%;
   }
 
   .icon {
