@@ -1,3 +1,5 @@
+$tutorial-circle:   #ebe5d9;
+
 .tutorial-button {
   display: inline-block;
   position: relative;
@@ -50,7 +52,6 @@
 
   .tutorial-nav {
     position: fixed;
-    background-color: rgba(0,114,163, 0.9);
     bottom: 20px;
     left: 0;
     right: 0;
@@ -60,14 +61,14 @@
       border-radius: 50%;
       width: 20px;
       height: 20px;
-      background: $footer-blue;
+      background: $tutorial-circle;
     }
     a {
       display: inline;
       margin: 5px 10px;
     }
     a.active {
-      background: $sc5-blue;
+      background: $footer-blue;
     }
   }
 }
