@@ -299,6 +299,18 @@ angular.module('DeviceWall')
         return !device.userId && (!device.lastSeen || device.lastSeen + $scope.config.client.pingIntervalSeconds * 2000 < new Date().getTime());
       };
 
+      $scope.deviceStatus = function(device) {
+        device = device || {};
+        var value = 'Connected';
+        if (device.browsersyncStatus === 'Not Connected') {
+          value = 'Ready for testing';
+        }
+        if ($scope.isOffline(device)) {
+          value = 'Device unavailable';
+        }
+        return value;
+      };
+
       $scope.$watch('deviceList', $scope.checkGoButtonStatus, true);
       $scope.$watch('openUrl', $scope.checkGoButtonStatus);
 
