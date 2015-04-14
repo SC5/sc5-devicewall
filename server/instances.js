@@ -197,7 +197,7 @@ var Instances = {
     var timeout = setTimeout(function() {
       that.emitter.removeAllListeners("connect:browsersync");
       deferred.resolve();
-    }, 5000);
+    }, 20000);
     this.emitter.on("connect:browsersync", function() {
       deviceAmount--;
       if (deviceAmount === 0) {
