@@ -299,8 +299,14 @@ module.exports = function (app, options) {
 
       nsCtrl.emit('update', devices.toJSON());
 
-      if (count > 10) {
-        console.log('Stop sending client >> re-start after 10 attempts');
+      if (count > 5) {
+        console.log('Problem with BrowserSync, recalling all devices');
+        instances.stopAll().done(function() {
+          console.log('Control >> update', devices.toJSON());
+          nsCtrl.emit('update', devices.toJSON());
+          console.log('Control >> stopall');
+          nsCtrl.emit('stopall');
+        });
         clear();
       } else if (check) {
         console.log('Not all requested devices in browsersync context');
