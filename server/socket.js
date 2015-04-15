@@ -11,7 +11,8 @@ module.exports = function (app, options) {
     nsApp = io.of('/devicewallapp'),
     nsCtrl = io.of('/devicewall'),
     devices = require('./devices'),
-    instances = require('./instances');
+    instances = require('./instances'),
+    bsInterval;
 
   // Device
   nsApp.use(function(socket, next) {
@@ -280,12 +281,16 @@ module.exports = function (app, options) {
   };
 
   function checkDevicesSentToBrowserSync(data, appData) {
+    if (bsInterval) {
+      return;
+    }
     var count = 0;
-    var interval = setInterval(function() {
+    bsInterval = setInterval(function() {
       count++;
-      if (count > 5) {
-        console.log('Stop sending client >> re-start after 5 attempts');
-        clearInterval(interval);
+      if (count > 10) {
+        console.log('Stop sending client >> re-start after 10 attempts');
+        clearInterval(bsInterval);
+        bsInterval = undefined;
       } else {
         var check = devices.devices.some(function(device) {
           if (data.labels.indexOf(device.get('label')) > -1 && device.get('browsersyncStatus') !== 'Connected') {
@@ -298,7 +303,8 @@ module.exports = function (app, options) {
           nsApp.emit('start', appData);
         } else {
           console.log('All requested devices in browsersync context');
-          clearInterval(interval);
+          clearInterval(bsInterval);
+          bsInterval = undefined;
         }
       }
     }, 5000);
