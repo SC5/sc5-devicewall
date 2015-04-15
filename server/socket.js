@@ -266,6 +266,7 @@ module.exports = function (app, options) {
         console.log('Client >> start', appData);
         nsApp.emit('start', appData);
         instances.waitForClientConnections(data.labels.length).then(function() {
+          checkDevicesSentToBrowserSync(data, appData);
           console.log('Control >> running', data);
           nsCtrl.emit('running', data);
         });
@@ -276,6 +277,31 @@ module.exports = function (app, options) {
         nsCtrl.emit('server-stop', emitData);
       }
     );
+  };
+
+  function checkDevicesSentToBrowserSync(data, appData) {
+    var count = 0;
+    var interval = setInterval(function() {
+      count++;
+      if (count > 5) {
+        console.log('Stop sending client >> re-start after 5 attempts');
+        clearInterval(interval);
+      } else {
+        var check = devices.devices.some(function(device) {
+          if (data.labels.indexOf(device.get('label')) > -1 && device.get('browsersyncStatus') !== 'Connected') {
+            return true;
+          }
+        });
+        if (check) {
+          console.log('Not all requested devices in browsersync context');
+          console.log('Client >> re-start');
+          nsApp.emit('start', appData);
+        } else {
+          console.log('All requested devices in browsersync context');
+          clearInterval(interval);
+        }
+      }
+    }, 5000);
   };
 
   function removeGhostDevices() {
