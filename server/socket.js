@@ -287,23 +287,13 @@ module.exports = function (app, options) {
     bsInterval = setInterval(function() {
       count++;
       var check = false;
-
-      devices.devices.forEach(function(device) {
-        if (data.labels.indexOf(device.get('label')) > -1 && device.get('browsersyncStatus') !== 'Connected') {
-          device.set('browsersyncConnecting', true);
-          check = true;
-        } else {
-          device.set('browsersyncConnecting', false);
-        }
-      });
-
-      nsCtrl.emit('update', devices.toJSON());
+      update();
 
       if (count > 5) {
         console.log('Problem with BrowserSync, recalling all devices');
         instances.stopAll().done(function() {
           console.log('Control >> update', devices.toJSON());
-          nsCtrl.emit('update', devices.toJSON());
+          update({ stopall: true });
           console.log('Control >> stopall');
           nsCtrl.emit('stopall');
         });
@@ -321,6 +311,22 @@ module.exports = function (app, options) {
         bsInterval = undefined;
       }
 
+      function update(options) {
+        options = options || {};
+        devices.devices.forEach(function(device) {
+          if (options.stopall) {
+            device.set('browsersyncConnecting', false);
+          } else {
+            if (data.labels.indexOf(device.get('label')) > -1 && device.get('browsersyncStatus') !== 'Connected') {
+              device.set('browsersyncConnecting', true);
+              check = true;
+            } else {
+              device.set('browsersyncConnecting', false);
+            }
+          }
+        });
+        nsCtrl.emit('update', devices.toJSON());
+      }
       nsApp.emit('start', appData);
     }, 5000);
   };
