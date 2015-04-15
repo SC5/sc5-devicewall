@@ -265,8 +265,8 @@ module.exports = function (app, options) {
         nsCtrl.emit('start', data);
         console.log('Client >> start', appData);
         nsApp.emit('start', appData);
+        checkDevicesSentToBrowserSync(data, appData);
         instances.waitForClientConnections(data.labels.length).then(function() {
-          checkDevicesSentToBrowserSync(data, appData);
           console.log('Control >> running', data);
           nsCtrl.emit('running', data);
         });
