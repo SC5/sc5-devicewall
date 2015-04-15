@@ -290,6 +290,7 @@ module.exports = function (app, options) {
       update();
 
       if (count > 5) {
+        /*
         console.log('Problem with BrowserSync, recalling all devices');
         instances.stopAll().done(function() {
           console.log('Control >> update', devices.toJSON());
@@ -297,6 +298,8 @@ module.exports = function (app, options) {
           console.log('Control >> stopall');
           nsCtrl.emit('stopall');
         });
+        */
+        console.log('Problem with moving all devices to same browsersync context.');
         clear();
       } else if (check) {
         console.log('Not all requested devices in browsersync context');
