@@ -281,32 +281,41 @@ module.exports = function (app, options) {
   };
 
   function checkDevicesSentToBrowserSync(data, appData) {
-    if (bsInterval) {
-      return;
-    }
+    if (bsInterval) { return; }
+
     var count = 0;
     bsInterval = setInterval(function() {
       count++;
+      var check = false;
+
+      devices.devices.forEach(function(device) {
+        if (data.labels.indexOf(device.get('label')) > -1 && device.get('browsersyncStatus') !== 'Connected') {
+          device.set('browsersyncConnecting', true);
+          check = true;
+        } else {
+          device.set('browsersyncConnecting', false);
+        }
+      });
+
+      nsCtrl.emit('update', devices.toJSON());
+
       if (count > 10) {
         console.log('Stop sending client >> re-start after 10 attempts');
+        clear();
+      } else if (check) {
+        console.log('Not all requested devices in browsersync context');
+        console.log('Client >> re-start');
+      } else {
+        console.log('All requested devices in browsersync context');
+        clear();
+      }
+
+      function clear() {
         clearInterval(bsInterval);
         bsInterval = undefined;
-      } else {
-        var check = devices.devices.some(function(device) {
-          if (data.labels.indexOf(device.get('label')) > -1 && device.get('browsersyncStatus') !== 'Connected') {
-            return true;
-          }
-        });
-        if (check) {
-          console.log('Not all requested devices in browsersync context');
-          console.log('Client >> re-start');
-          nsApp.emit('start', appData);
-        } else {
-          console.log('All requested devices in browsersync context');
-          clearInterval(bsInterval);
-          bsInterval = undefined;
-        }
       }
+
+      nsApp.emit('start', appData);
     }, 5000);
   };
 

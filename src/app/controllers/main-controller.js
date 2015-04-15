@@ -305,6 +305,9 @@ angular.module('DeviceWall')
         if (device.browsersyncStatus === 'Not Connected') {
           value = 'Ready for testing';
         }
+        if (device.browsersyncConnecting) {
+          value = 'Connecting to BrowserSync';
+        }
         if ($scope.isOffline(device)) {
           value = 'Device unavailable';
         }
