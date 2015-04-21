@@ -82,6 +82,15 @@ $disabled-dark:     #807983;
   }
 }
 
+@mixin unselectable($value) {
+  -webkit-user-select: $value;
+  -moz-user-select: $value;
+  -ms-user-select: $value;
+  -o-user-select: $value;
+  user-select: $value;
+  cursor: default;
+}
+
 @font-face {
   font-family: 'entypo';
   src: url('/assets/fonts/entypo.eot');
@@ -99,7 +108,7 @@ $disabled-dark:     #807983;
   url('/assets/fonts/gotham_rounded_medium-webfont.woff') format('woff'),
   url('/assets/fonts/gotham_rounded_medium-webfont.ttf') format('truetype'),
   url('/assets/fonts/gotham_rounded_medium-webfont.svg#gotham_rnd_ssmmedium') format('svg');
-  font-weight: normal;
+  font-weight: bold;
   font-style: normal;
 
 }
@@ -140,7 +149,9 @@ a {
 
 .btn {
   font-family: 'gthm_book', arial, sans-serif;
-  font-weight: lighter;
+  text-shadow: none;
+  letter-spacing: 0.04rem;
+  font-size: 1rem;
   color: #ffffff;
   border: none;
   outline: none;
@@ -162,6 +173,7 @@ a {
 
 .btn-light {
   background: $icon-bg;
+  text-shadow: none;
 }
 
 #container {

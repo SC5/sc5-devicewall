@@ -41,6 +41,9 @@ body {
   h2 {
     margin-bottom: 20px;
     margin-top: 0;
+    text-transform: uppercase;
+    font-size: 1.5rem;
+    letter-spacing: 0.04em;
   }
 
   .accordion {
@@ -129,6 +132,10 @@ body {
 
     .buttons {
       margin: 0 0 20px;
+    }
+
+    input {
+      border-radius: 0;
     }
   }
 
@@ -356,15 +363,18 @@ button {
   line-height: 38px;
   font-size: 1.2rem;
   vertical-align: middle;
+  min-width: 80px;
 
   text-shadow: 0 1px #fff;
   color: #333;
   cursor: pointer;
 
   &.large {
-    height: 48px;
-    line-height: 48px;
-    font-size: 1.6rem;
+    height: 40px;
+    line-height: 40px;
+    letter-spacing: 0.04rem;
+    font-size: 1.4rem;
+    text-shadow: none;
   }
 
   &:active {
@@ -545,7 +555,8 @@ input[type=text].error {
   margin: 20px 15px 0px 0px;
 
   .text {
-    font-size: 30px;
+    font-size: 1.4rem;
+    letter-spacing: 0.04rem;
     text-transform: uppercase;
     width: 200px;
     margin: auto;
