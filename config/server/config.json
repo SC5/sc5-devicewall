@@ -1,6 +1,6 @@
 {
   "sessionKey": "devicewall12345",
-  "deviceWallAppURL": "http://localhost:8080/client",
+  "deviceWallAppURL": "http://localhost/client",
   "clientIdleReturnSeconds": 300,
   "clientSocketCheckSeconds": 15,
   "clientSocketPingPongSeconds": 30,
